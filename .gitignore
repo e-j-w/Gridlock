@@ -1,0 +1,5 @@
+gridfit
+*.o
+*.out
+*.txt
+*~

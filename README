@@ -1,0 +1,24 @@
+Grid Fitter
+by Jonathan Williams
+
+INTRODUCTION
+
+Code to fit an n-dimensional grid of data points with a parabola or paraboloid (depending on the number of free parameters) and find the minimum/maximum.  Currently only implemented for data 3 with free parameters  (more options coming soon).
+
+
+FITTING FUNCTIONS USED
+
+3 free parameters (x,y,z): f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2 + a4*x*y + a5*x*z + a6*y*z +a7*x + a8*y + a9*z + a10
+
+
+INSTRUCTIONS
+
+Use 'make' to compile.  Requires gcc compiler.
+To run the program from anywhere, move the resulting 'gridfit' executable to any directory under your $PATH environment variable.
+Tested and working on Ubuntu 14.04 and Scientific Linux/CentOS 6.
+
+
+CONTRIBUTIONS
+
+J. Williams - core logic
+K. Starosta - linear equation solver code for determining fit parameter values
