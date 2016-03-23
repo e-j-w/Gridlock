@@ -1,4 +1,4 @@
-CFLAGS 	= -I./lin_eq_solver -o2
+CFLAGS 	= -I./lin_eq_solver -I./gridfit_functions -o2
 
 all: lib gridfit
 

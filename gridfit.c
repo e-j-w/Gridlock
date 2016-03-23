@@ -1,17 +1,25 @@
+//definitions
 #include "gridfit.h"
+//functions
+#include "2parfit.c"
+#include "3parfit.c"
 
 int main(int argc, char *argv[])
 {
 
-  if(argc!=2)
+  if(argc!=3)
     {
-      printf("gridfit filename\n");
-      printf("\nPerforms grid minimization on the data in the specified file.  The file should be in plaintext, with the first 3 columns corresponding to free parameters and the 4th column corresponding to the grid point value.\n");
+      printf("\ngridfit filename n\n");
+      printf("\nPerforms grid minimization on the data in the specified file.  The file should be in plaintext, with the first n columns corresponding to free parameters and the (n+1)th column corresponding to the grid point value.\n\n");
       exit(-1);
     }
 
-  //int numPar=atoi(argv[2]);
-  int numPar=3; //eventually plan to extend to n=2,n=1 case
+  int numPar=atoi(argv[2]);
+  if((numPar<2)||(numPar>3))
+    {
+      printf("ERROR: the number of free parameters n must be 2 or 3.\nAborting...\n");
+      exit(-1);
+    }
  
   if((inp=fopen(argv[1],"r"))==NULL)
     {
@@ -20,15 +28,17 @@ int main(int argc, char *argv[])
     }
 
   //initialize values
-  //int ndf=0.;
   int lines=0;
   int linenum=0;
   memset(x,0,sizeof(x));
   msum=0.;
   memset(xpowsum,0,sizeof(xpowsum));
   memset(mxpowsum,0,sizeof(mxpowsum));
+  memset(mxxpowsum,0,sizeof(mxxpowsum));
   memset(xxpowsum,0,sizeof(xxpowsum));
+  memset(xxxpowsum,0,sizeof(xxxpowsum));
 
+  //import data from file
   while(!(feof(inp)))//go until the end of file is reached
     {
       if(fgets(str,256,inp)!=NULL)
@@ -44,7 +54,6 @@ int main(int argc, char *argv[])
           linenum++;
         }
     }
-
   fclose(inp);
   printf("%i lines of data read from file: %s\n",lines,argv[1]);
 
@@ -96,129 +105,11 @@ int main(int argc, char *argv[])
     }
   
   
-  //construct equations (n=3 specific case)
-  linEq.dim=10;
-  
-  for(i=0;i<3;i++)//loop over free parameters
-    for(j=0;j<3;j++)//loop over free parameters
-      linEq.matrix[i][j]=xxpowsum[i][2][j][2];//top-left 3x3 entries
-      
-  linEq.matrix[0][3]=xxpowsum[0][3][1][1];
-  linEq.matrix[0][4]=xxpowsum[0][3][2][1];
-  linEq.matrix[0][5]=xxxpowsum[0][2][1][1][2][1];
-  linEq.matrix[0][6]=xpowsum[0][3];
-  linEq.matrix[0][7]=xxpowsum[0][2][1][1];
-  linEq.matrix[0][8]=xxpowsum[0][2][2][1];
-  linEq.matrix[0][9]=xpowsum[0][2];
-  
-  linEq.matrix[1][3]=xxpowsum[0][1][1][3];
-  linEq.matrix[1][4]=xxxpowsum[0][1][1][2][2][1];
-  linEq.matrix[1][5]=xxpowsum[1][3][2][1];
-  linEq.matrix[1][6]=xxpowsum[0][1][1][2];
-  linEq.matrix[1][7]=xpowsum[1][3];
-  linEq.matrix[1][8]=xxpowsum[1][2][2][1];
-  linEq.matrix[1][9]=xpowsum[1][2];
-  
-  linEq.matrix[2][3]=xxxpowsum[0][1][1][1][2][2];
-  linEq.matrix[2][4]=xxpowsum[0][1][2][3];
-  linEq.matrix[2][5]=xxpowsum[1][1][2][3];
-  linEq.matrix[2][6]=xxpowsum[0][1][2][2];
-  linEq.matrix[2][7]=xxpowsum[1][1][2][2];
-  linEq.matrix[2][8]=xpowsum[2][3];
-  linEq.matrix[2][9]=xpowsum[2][2];
-
-  linEq.matrix[3][3]=xxpowsum[0][2][1][2];  
-  linEq.matrix[3][4]=xxxpowsum[0][2][1][1][2][1];
-  linEq.matrix[3][5]=xxxpowsum[0][1][1][2][2][1];
-  linEq.matrix[3][6]=xxpowsum[0][2][1][1];
-  linEq.matrix[3][7]=xxpowsum[0][1][1][2];
-  linEq.matrix[3][8]=xxxpowsum[0][1][1][1][2][1];
-  linEq.matrix[3][9]=xxpowsum[0][1][1][1];
-  
-  linEq.matrix[4][4]=xxpowsum[0][2][2][2];
-  linEq.matrix[4][5]=xxxpowsum[0][1][1][1][2][2];
-  linEq.matrix[4][6]=xxpowsum[0][2][2][1];
-  linEq.matrix[4][7]=xxxpowsum[0][1][1][1][2][1];
-  linEq.matrix[4][8]=xxpowsum[0][1][2][2];
-  linEq.matrix[4][9]=xxpowsum[0][1][2][1];
-  
-  linEq.matrix[5][5]=xxpowsum[1][2][2][2];
-  linEq.matrix[5][6]=xxxpowsum[0][1][1][1][2][1];
-  linEq.matrix[5][7]=xxpowsum[1][2][2][1];
-  linEq.matrix[5][8]=xxpowsum[1][1][2][2];
-  linEq.matrix[5][9]=xxpowsum[1][1][2][1];
-  
-  linEq.matrix[6][6]=xpowsum[0][2];
-  linEq.matrix[6][7]=xxpowsum[0][1][1][1];
-  linEq.matrix[6][8]=xxpowsum[0][1][2][1];
-  linEq.matrix[6][9]=xpowsum[0][1];
-  
-  linEq.matrix[7][7]=xpowsum[1][2];
-  linEq.matrix[7][8]=xxpowsum[1][1][2][1];
-  linEq.matrix[7][9]=xpowsum[1][1];
-  
-  linEq.matrix[8][8]=xpowsum[2][2];
-  linEq.matrix[8][9]=xpowsum[2][1];
-      
-  linEq.matrix[9][9]=xpowsum[0][0];//bottom right entry
-  
-  //mirror the matrix (top right half mirrored to bottom left half)
-  for(i=1;i<linEq.dim;i++)
-    for(j=0;j<i;j++)
-      linEq.matrix[i][j]=linEq.matrix[j][i];
-  
-  for(i=0;i<3;i++)
-    linEq.vector[i]=mxpowsum[i][2];
-  linEq.vector[3]=mxxpowsum[0][1][1][1];
-  linEq.vector[4]=mxxpowsum[0][1][2][1];
-  linEq.vector[5]=mxxpowsum[1][1][2][1];
-  for(i=6;i<9;i++)
-    linEq.vector[i]=mxpowsum[i-6][1];
-  linEq.vector[9]=msum;
+  //call specific fitting routines depending on the number of free parameters
+  if(numPar==2)
+    fit2Par();
+  else if(numPar==3)
+    fit3Par();
     
-  //solve system of equations and assign values
-  if(!(solve_lin_eq(&linEq)==1))
-    {
-      printf("ERROR: Could not find a proper minimization of chisq!\n");
-      exit(-1);
-    }
-    
-  for(i=0;i<linEq.dim;i++)
-    a[i]=linEq.solution[i];
-  
-  printf("\nFIT RESULTS\n-----------\n");
-  printf("Coefficients from paraboloid fit:\n");
-  for(i=0;i<linEq.dim;i++)
-    printf("a%i = %LE\n",i+1,a[i]);
-    
-  //now that the fit is performed, use the fit parameters (and the derivative of the fitting function) to find the minimum
-  linEq.dim=3;
-  linEq.matrix[0][0]=2*a[0];
-  linEq.matrix[0][1]=a[3];
-  linEq.matrix[0][2]=a[4];
-  linEq.matrix[1][1]=2*a[1];
-  linEq.matrix[1][2]=a[5];
-  linEq.matrix[2][2]=2*a[2];
-  //mirror the matrix (top right half mirrored to bottom left half)
-  for(i=1;i<linEq.dim;i++)
-    for(j=0;j<i;j++)
-      linEq.matrix[i][j]=linEq.matrix[j][i];
-      
-  linEq.vector[0]=-1*a[6];
-  linEq.vector[1]=-1*a[7];
-  linEq.vector[2]=-1*a[8];
-  
-  //solve system of equations and assign values
-  if(!(solve_lin_eq(&linEq)==1))
-    {
-      printf("ERROR: Could not find a proper minimization of chisq!\n");
-      exit(-1);
-    }
-    
-  printf("Paraboloid minimum:\n");
-  printf("x0 = %LE\n",linEq.solution[0]);
-  printf("y0 = %LE\n",linEq.solution[1]);
-  printf("z0 = %LE\n",linEq.solution[2]);
-
   return 0; //great success
 }
