@@ -1,7 +1,7 @@
 Grid Fitter
 Maintainer: Jonathan Williams
 
-INTRODUCTION
+DESCRIPTION
 
 Code to fit an n-dimensional grid of data points with a parabola or paraboloid (depending on the number of free parameters) and find the minimum/maximum.  Currently implemented for data with 2 or 3 free parameters.  Example data is included in the 'sample_2par.txt' and 'sample_3par.txt' files.
 
@@ -15,7 +15,7 @@ INSTRUCTIONS
 
 Use 'make' to compile.  Requires gcc compiler.
 To run the program from anywhere, move the resulting 'gridfit' executable to any directory under your $PATH environment variable.
-Tested and working on Ubuntu 14.04 and Scientific Linux/CentOS 6.
+Tested and working on Ubuntu 14.04 and Scientific Linux/CentOS 6.  Should work on more or less any Linux distro.
 
 
 CONTRIBUTIONS

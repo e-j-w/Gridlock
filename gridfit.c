@@ -49,14 +49,44 @@ int main(int argc, char *argv[])
             }
           else
             {
-              printf("WARNING: Improperly formatted data on line %i of input file.\n",linenum+1);
+              printf("WARNING: Improperly formatted data on line %i of the input file.\n",linenum+1);
             }
           linenum++;
         }
     }
   fclose(inp);
   printf("%i lines of data read from file: %s\n",lines,argv[1]);
-
+  if(lines<1)
+    {
+      printf("ERROR: no data could be read from the input file.\n");
+      exit(-1);
+    }
+  
+  //find and report the maximum and minimum in the imported data
+  int maxInd,minInd;
+  long double maxVal=0.;
+  long double minVal=BIG_NUMBER;
+  for(i=0;i<lines;i++)
+    {
+      if(x[numPar][i]>maxVal)
+        {
+          maxVal=x[numPar][i];
+          maxInd=i;
+        }
+      if(x[numPar][i]<minVal)
+        {
+          minVal=x[numPar][i];
+          minInd=i;
+        }
+    }
+  printf("Data minimum value: %0.3LE at [",minVal);
+  for(i=0;i<numPar;i++)
+    printf(" %0.3LE ",x[i][minInd]);
+  printf("]\n");
+  printf("Data maximum value: %0.3LE at [",maxVal);
+  for(i=0;i<numPar;i++)
+    printf(" %0.3LE ",x[i][maxInd]);
+  printf("]\n");
 
   //construct sums
   long double powVal; 

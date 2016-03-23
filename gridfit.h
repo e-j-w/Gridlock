@@ -6,7 +6,9 @@
 
 #define POWSIZE   12
 #define MAXFILELENGTH   50000
+#define BIG_NUMBER      1E100
 
+//evil global variables
 FILE *inp;
 int i,j,k,l,m,n,o,p,status;
 char str[256], eq[256];
