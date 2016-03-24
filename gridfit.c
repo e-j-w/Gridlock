@@ -29,9 +29,16 @@ int main(int argc, char *argv[])
 
   //initialize values
   int lines=0;
+  int invalidLines=0;
+  int lineValid;
   int linenum=0;
   memset(x,0,sizeof(x));
   msum=0.;
+  for(i=0;i<POWSIZE;i++)
+    {
+      llimit[i]=-1*BIG_NUMBER;
+      ulimit[i]=BIG_NUMBER;
+    }
   memset(xpowsum,0,sizeof(xpowsum));
   memset(mxpowsum,0,sizeof(mxpowsum));
   memset(mxxpowsum,0,sizeof(mxxpowsum));
@@ -39,13 +46,45 @@ int main(int argc, char *argv[])
   memset(xxxpowsum,0,sizeof(xxxpowsum));
 
   //import data from file
+  char str2[256];
   while(!(feof(inp)))//go until the end of file is reached
     {
       if(fgets(str,256,inp)!=NULL)
         {
           if(sscanf(str,"%Lf %Lf %Lf %Lf %Lf %Lf",&x[0][lines],&x[1][lines],&x[2][lines],&x[3][lines],&x[4][lines],&x[5][lines])==numPar+1)
             {
-              lines++;
+              lineValid=1;
+              for(i=0;i<numPar;i++)
+                if(i<POWSIZE)
+                  if((x[i][lines]>ulimit[i])||(x[i][lines]<llimit[i]))//check against limits
+                    lineValid=0;
+              if(lineValid==1)      
+                lines++;
+              else
+                invalidLines++;
+            }
+          else if(sscanf(str,"%s %Lf %Lf %Lf %Lf %Lf",str2,&x[0][lines],&x[1][lines],&x[2][lines],&x[3][lines],&x[4][lines])==numPar+1)
+            {
+              if(strcmp(str2,"UPPER_LIMITS")==0)
+                {
+                  for(i=0;i<numPar;i++)
+                    if(i<POWSIZE)
+                      ulimit[i]=x[i][lines];
+                  printf("Set fit region upper limits to [");
+                  for(i=0;i<numPar;i++)
+                    printf(" %0.3LE ",ulimit[i]);
+                  printf("]\n");
+                }
+              if(strcmp(str2,"LOWER_LIMITS")==0)
+                { 
+                  for(i=0;i<numPar;i++)
+                    if(i<POWSIZE)
+                      llimit[i]=x[i][lines];
+                  printf("Set fit region lower limits to [");
+                  for(i=0;i<numPar;i++)
+                    printf(" %0.3LE ",llimit[i]);
+                  printf("]\n");
+                }
             }
           else
             {
@@ -55,15 +94,25 @@ int main(int argc, char *argv[])
         }
     }
   fclose(inp);
-  printf("%i lines of data read from file: %s\n",lines,argv[1]);
+  
   if(lines<1)
     {
       printf("ERROR: no data could be read from the input file.\n");
+      if(invalidLines>0)
+        printf("%i lines were skipped due to the fit region limits specified in the file.  Consider changing these limits.\n",invalidLines);
       exit(-1);
     }
+  else
+    {
+      printf("Successfully read data file: %s\n%i lines of data used.\n",argv[1],lines);
+      if(invalidLines>0)
+        printf("%i lines of data skipped (outside of fit region limits).\n",invalidLines);
+    }
   
-  //find and report the maximum and minimum in the imported data
-  int maxInd,minInd;
+  //find and report some maximum and minimum value(s) in the imported data
+  int maxInd[NUM_LIST],minInd[NUM_LIST];
+  int numMax=0;
+  int numMin=0;
   long double maxVal=0.;
   long double minVal=BIG_NUMBER;
   for(i=0;i<lines;i++)
@@ -71,22 +120,45 @@ int main(int argc, char *argv[])
       if(x[numPar][i]>maxVal)
         {
           maxVal=x[numPar][i];
-          maxInd=i;
+          for(j=1;j<NUM_LIST;j++)
+            maxInd[NUM_LIST-j]=maxInd[NUM_LIST-(j+1)];//shift values down the array
+          maxInd[0]=i;//record the new max index
+          numMax++;
         }
       if(x[numPar][i]<minVal)
         {
           minVal=x[numPar][i];
-          minInd=i;
+          for(j=1;j<NUM_LIST;j++)
+            minInd[NUM_LIST-j]=minInd[NUM_LIST-(j+1)];//shift values down the array
+          minInd[0]=i;//record the new min index
+          numMin++;
         }
     }
-  printf("Data minimum value: %0.3LE at [",minVal);
+  printf("\nData minimum value(s): %0.3LE at [",x[numPar][minInd[0]]);
   for(i=0;i<numPar;i++)
-    printf(" %0.3LE ",x[i][minInd]);
+    printf(" %0.3LE ",x[i][minInd[0]]);
   printf("]\n");
-  printf("Data maximum value: %0.3LE at [",maxVal);
+  for(i=1;i<numMin;i++)
+    if(i<NUM_LIST)
+      {
+        printf("                       %0.3LE at [",x[numPar][minInd[i]]);
+        for(j=0;j<numPar;j++)
+          printf(" %0.3LE ",x[j][minInd[i]]);
+        printf("]\n");
+      }
+
+  printf("\nData maximum value(s): %0.3LE at [",x[numPar][maxInd[0]]);
   for(i=0;i<numPar;i++)
-    printf(" %0.3LE ",x[i][maxInd]);
+    printf(" %0.3LE ",x[i][maxInd[0]]);
   printf("]\n");
+  for(i=1;i<numMax;i++)
+    if(i<NUM_LIST)
+      {
+        printf("                       %0.3LE at [",x[numPar][maxInd[i]]);
+        for(j=0;j<numPar;j++)
+          printf(" %0.3LE ",x[j][maxInd[i]]);
+        printf("]\n");
+      }
 
   //construct sums
   long double powVal; 

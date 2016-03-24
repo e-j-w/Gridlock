@@ -3,7 +3,9 @@ Maintainer: Jonathan Williams
 
 DESCRIPTION
 
-Code to fit an n-dimensional grid of data points with a parabola or paraboloid (depending on the number of free parameters) and find the minimum/maximum.  Currently implemented for data with 2 or 3 free parameters.  Example data is included in the 'sample_2par.txt' and 'sample_3par.txt' files.
+Code to fit an n-dimensional grid of data points with a parabola or paraboloid (depending on the number of free parameters) and find the minimum/maximum.  Currently implemented for data with 2 or 3 free parameters.  Example data is included in the 'sample_2par.txt' and 'sample_3par.txt' files.  
+
+It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.
 
 
 FITTING FUNCTIONS USED

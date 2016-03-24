@@ -4,9 +4,10 @@
 
 #include "lin_eq_solver.h"
 
-#define POWSIZE   12
+#define POWSIZE         12
 #define MAXFILELENGTH   50000
-#define BIG_NUMBER      1E100
+#define BIG_NUMBER      1E10
+#define NUM_LIST        5
 
 //evil global variables
 FILE *inp;
@@ -14,6 +15,7 @@ int i,j,k,l,m,n,o,p,status;
 char str[256], eq[256];
 double value[3];
 long double x[POWSIZE][MAXFILELENGTH];//array containing data points from the file, indexed by variable # then data point #
+long double ulimit[POWSIZE],llimit[POWSIZE];
 long double msum;//sum of measurements
 long double xpowsum[POWSIZE][POWSIZE];//sums of (x1)^0, (x1)^1, (x1)^2, etc. indexed first by variable # then by power #
 long double mxpowsum[POWSIZE][POWSIZE];//sums of m*(x1)^0, m*(x1)^1, m*(x1)^2, etc. indexed first by variable # then by power #

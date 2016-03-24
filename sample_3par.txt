@@ -1,4 +1,6 @@
 This is sample data with 3 free parameters.
+UPPER_LIMITS  14.3 1.5 2.35
+LOWER_LIMITS  14.1 0.5 2.20
 x y z chisq
 14.1	1.1	2.3	1000000
 14.1	1.1	2.24	1000000

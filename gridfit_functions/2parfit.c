@@ -92,4 +92,8 @@ void fit2Par()
     printf("Maximum in y direction, ");
   printf("y0 = %LE\n",linEq.solution[1]);
   
+  long double fitVal=a[0]*linEq.solution[0]*linEq.solution[0] + a[1]*linEq.solution[1]*linEq.solution[1] + a[2]*linEq.solution[0]*linEq.solution[1] + a[3]*linEq.solution[0] + a[4]*linEq.solution[1] + a[5];
+  
+  printf("\nf(x0,y0) = %LE\n",fitVal); 
+  
 }

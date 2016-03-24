@@ -141,4 +141,8 @@ void fit3Par()
     printf("Maximum in z direction, ");  
   printf("z0 = %LE\n",linEq.solution[2]);
   
+  long double fitVal=a[0]*linEq.solution[0]*linEq.solution[0] + a[1]*linEq.solution[1]*linEq.solution[1] + a[2]*linEq.solution[2]*linEq.solution[2] + a[3]*linEq.solution[0]*linEq.solution[1] + a[4]*linEq.solution[0]*linEq.solution[2] + a[5]*linEq.solution[1]*linEq.solution[2] + a[6]*linEq.solution[0] + a[7]*linEq.solution[1] + a[8]*linEq.solution[2] + a[9];
+  
+  printf("\nf(x0,y0,z0) = %LE\n",fitVal); 
+  
 }
