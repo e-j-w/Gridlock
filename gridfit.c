@@ -1,8 +1,12 @@
 //definitions
 #include "gridfit.h"
 //functions
+#include "import_data.c"
+#include "print_data_info.c"
+#include "generate_sums.c"
 #include "2parfit.c"
 #include "3parfit.c"
+#include "print_results.c"
 
 int main(int argc, char *argv[])
 {
@@ -14,204 +18,36 @@ int main(int argc, char *argv[])
       exit(-1);
     }
 
-  int numPar=atoi(argv[2]);
-  if((numPar<2)||(numPar>3))
+  //allocate structures
+  parameters *p=(parameters*)calloc(1,sizeof(parameters));
+  data *d=(data*)calloc(1,sizeof(data));
+  fit_results *fr=(fit_results*)calloc(1,sizeof(fit_results));
+
+  p->numVar=atoi(argv[2]);
+  if((p->numVar<2)||(p->numVar>3))
     {
       printf("ERROR: the number of free parameters n must be 2 or 3.\nAborting...\n");
       exit(-1);
-    }
- 
-  if((inp=fopen(argv[1],"r"))==NULL)
-    {
-      printf("\nERROR: input file %s can not be opened.\n",argv[1]);
-      exit(-1);
-    }
+    } 
 
-  //initialize values
-  int lines=0;
-  int invalidLines=0;
-  int lineValid;
-  int linenum=0;
-  memset(x,0,sizeof(x));
-  msum=0.;
-  for(i=0;i<POWSIZE;i++)
-    {
-      llimit[i]=-1*BIG_NUMBER;
-      ulimit[i]=BIG_NUMBER;
-    }
-  memset(xpowsum,0,sizeof(xpowsum));
-  memset(mxpowsum,0,sizeof(mxpowsum));
-  memset(mxxpowsum,0,sizeof(mxxpowsum));
-  memset(xxpowsum,0,sizeof(xxpowsum));
-  memset(xxxpowsum,0,sizeof(xxxpowsum));
-
-  //import data from file
-  char str2[256];
-  while(!(feof(inp)))//go until the end of file is reached
-    {
-      if(fgets(str,256,inp)!=NULL)
-        {
-          if(sscanf(str,"%Lf %Lf %Lf %Lf %Lf %Lf",&x[0][lines],&x[1][lines],&x[2][lines],&x[3][lines],&x[4][lines],&x[5][lines])==numPar+1)
-            {
-              lineValid=1;
-              for(i=0;i<numPar;i++)
-                if(i<POWSIZE)
-                  if((x[i][lines]>ulimit[i])||(x[i][lines]<llimit[i]))//check against limits
-                    lineValid=0;
-              if(lineValid==1)      
-                lines++;
-              else
-                invalidLines++;
-            }
-          else if(sscanf(str,"%s %Lf %Lf %Lf %Lf %Lf",str2,&x[0][lines],&x[1][lines],&x[2][lines],&x[3][lines],&x[4][lines])==numPar+1)
-            {
-              if(strcmp(str2,"UPPER_LIMITS")==0)
-                {
-                  for(i=0;i<numPar;i++)
-                    if(i<POWSIZE)
-                      ulimit[i]=x[i][lines];
-                  printf("Set fit region upper limits to [");
-                  for(i=0;i<numPar;i++)
-                    printf(" %0.3LE ",ulimit[i]);
-                  printf("]\n");
-                }
-              if(strcmp(str2,"LOWER_LIMITS")==0)
-                { 
-                  for(i=0;i<numPar;i++)
-                    if(i<POWSIZE)
-                      llimit[i]=x[i][lines];
-                  printf("Set fit region lower limits to [");
-                  for(i=0;i<numPar;i++)
-                    printf(" %0.3LE ",llimit[i]);
-                  printf("]\n");
-                }
-            }
-          else
-            {
-              printf("WARNING: Improperly formatted data on line %i of the input file.\n",linenum+1);
-            }
-          linenum++;
-        }
-    }
-  fclose(inp);
+  importData(argv[1],d,p); //see import_data.c
   
-  if(lines<1)
-    {
-      printf("ERROR: no data could be read from the input file.\n");
-      if(invalidLines>0)
-        printf("%i lines were skipped due to the fit region limits specified in the file.  Consider changing these limits.\n",invalidLines);
-      exit(-1);
-    }
-  else
-    {
-      printf("Successfully read data file: %s\n%i lines of data used.\n",argv[1],lines);
-      if(invalidLines>0)
-        printf("%i lines of data skipped (outside of fit region limits).\n",invalidLines);
-    }
-  
-  //find and report some maximum and minimum value(s) in the imported data
-  int maxInd[NUM_LIST],minInd[NUM_LIST];
-  int numMax=0;
-  int numMin=0;
-  long double maxVal=0.;
-  long double minVal=BIG_NUMBER;
-  for(i=0;i<lines;i++)
-    {
-      if(x[numPar][i]>maxVal)
-        {
-          maxVal=x[numPar][i];
-          for(j=1;j<NUM_LIST;j++)
-            maxInd[NUM_LIST-j]=maxInd[NUM_LIST-(j+1)];//shift values down the array
-          maxInd[0]=i;//record the new max index
-          numMax++;
-        }
-      if(x[numPar][i]<minVal)
-        {
-          minVal=x[numPar][i];
-          for(j=1;j<NUM_LIST;j++)
-            minInd[NUM_LIST-j]=minInd[NUM_LIST-(j+1)];//shift values down the array
-          minInd[0]=i;//record the new min index
-          numMin++;
-        }
-    }
-  printf("\nData minimum value(s): %0.3LE at [",x[numPar][minInd[0]]);
-  for(i=0;i<numPar;i++)
-    printf(" %0.3LE ",x[i][minInd[0]]);
-  printf("]\n");
-  for(i=1;i<numMin;i++)
-    if(i<NUM_LIST)
-      {
-        printf("                       %0.3LE at [",x[numPar][minInd[i]]);
-        for(j=0;j<numPar;j++)
-          printf(" %0.3LE ",x[j][minInd[i]]);
-        printf("]\n");
-      }
+  printDataInfo(d,p); //see print_data_info.c
 
-  printf("\nData maximum value(s): %0.3LE at [",x[numPar][maxInd[0]]);
-  for(i=0;i<numPar;i++)
-    printf(" %0.3LE ",x[i][maxInd[0]]);
-  printf("]\n");
-  for(i=1;i<numMax;i++)
-    if(i<NUM_LIST)
-      {
-        printf("                       %0.3LE at [",x[numPar][maxInd[i]]);
-        for(j=0;j<numPar;j++)
-          printf(" %0.3LE ",x[j][maxInd[i]]);
-        printf("]\n");
-      }
-
-  //construct sums
-  long double powVal; 
-  for(i=0;i<lines;i++)//loop over data points
-    {
-      msum+=x[numPar][i];
-      for(j=0;j<numPar;j++)//loop over free parameters
-        {
-          powVal=1.;
-          for(k=0;k<5;k++)//loop over powers
-            {
-              xpowsum[j][k] += powVal;
-              mxpowsum[j][k] += x[numPar][i]*powVal;
-              powVal=powVal*x[j][i];
-            }
-            
-          for(k=0;k<numPar;k++)//loop over free parameters
-            for(l=0;l<5;l++)//loop over powers (corresponding to parameter indexed by j)
-              for(m=0;m<5;m++)//loop over powers (corresponding to parameter indexed by k)
-                {
-                  powVal=1.;
-                  for(p=0;p<l;p++)
-                    powVal=powVal*x[j][i];
-                  for(p=0;p<m;p++)
-                    powVal=powVal*x[k][i];
-                  xxpowsum[j][l][k][m] += powVal;
-                  mxxpowsum[j][l][k][m] += x[numPar][i]*powVal;
-                }
-          
-          for(k=0;k<numPar;k++)//loop over free parameters
-            for(l=0;l<numPar;l++)//loop over free parameters
-              for(m=0;m<3;m++)//loop over powers (corresponding to parameter indexed by j)
-                for(n=0;n<3;n++)//loop over powers (corresponding to parameter indexed by k)
-                  for(o=0;o<3;o++)//loop over powers (corresponding to parameter indexed by l)
-                    {
-                      powVal=1.;
-                      for(p=0;p<m;p++)
-                        powVal=powVal*x[j][i];
-                      for(p=0;p<n;p++)
-                        powVal=powVal*x[k][i];
-                      for(p=0;p<o;p++)
-                        powVal=powVal*x[l][i];
-                      xxxpowsum[j][m][k][n][l][o] += powVal;         
-                    }
-        }
-    }
-  
+  generateSums(d,p); //construct sums for fitting (see generate_sums.c) 
   
   //call specific fitting routines depending on the number of free parameters
-  if(numPar==2)
-    fit2Par();
-  else if(numPar==3)
-    fit3Par();
+  if(p->numVar==2)
+    fit2Par(d,fr); //see 2parfit.c
+  else if(p->numVar==3)
+    fit3Par(d,fr); //see 3parfit.c
+  
+  printResults(d,p,fr); //see print_results.c
+  
+  //free structures
+  free(d);
+  free(p);
+  free(fr);
     
   return 0; //great success
 }
