@@ -9,10 +9,6 @@
 #define BIG_NUMBER      1E10
 #define NUM_LIST        5
 
-//evil global variables
-FILE *inp;
-int status;
-
 typedef struct
 {
   int numVar;

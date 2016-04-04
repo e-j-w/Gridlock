@@ -1,30 +1,44 @@
 //prints info and statistics for data
 void printDataInfo(const data * d, const parameters * p)
 {
-  int i,j;
+  int i,j,k;
   int maxInd[NUM_LIST],minInd[NUM_LIST];
+  long double maxVal[NUM_LIST],minVal[NUM_LIST];
+  for(i=0;i<NUM_LIST;i++)
+    {
+      maxVal[i]=0.;
+      minVal[i]=BIG_NUMBER;
+    }
   int numMax=0;
   int numMin=0;
-  long double maxVal=0.;
-  long double minVal=BIG_NUMBER;
   for(i=0;i<d->lines;i++)
     {
-      if(d->x[p->numVar][i]>maxVal)
-        {
-          maxVal=d->x[p->numVar][i];
-          for(j=1;j<NUM_LIST;j++)
-            maxInd[NUM_LIST-j]=maxInd[NUM_LIST-(j+1)];//shift values down the array
-          maxInd[0]=i;//record the new max index
-          numMax++;
-        }
-      if(d->x[p->numVar][i]<minVal)
-        {
-          minVal=d->x[p->numVar][i];
-          for(j=1;j<NUM_LIST;j++)
-            minInd[NUM_LIST-j]=minInd[NUM_LIST-(j+1)];//shift values down the array
-          minInd[0]=i;//record the new min index
-          numMin++;
-        }
+      for(j=0;j<NUM_LIST;j++)
+        if(d->x[p->numVar][i]>maxVal[j])
+          { 
+            for(k=1;k<NUM_LIST-j;k++)
+              {
+                maxInd[NUM_LIST-k]=maxInd[NUM_LIST-(k+1)];//shift values down the array
+                maxVal[NUM_LIST-k]=maxVal[NUM_LIST-(k+1)];//shift values down the array
+              }
+            maxVal[j]=d->x[p->numVar][i];
+            maxInd[j]=i;//record the new max index entry
+            numMax++;
+            break;
+          }
+      for(j=0;j<NUM_LIST;j++)
+        if(d->x[p->numVar][i]<minVal[j])
+          {
+            for(k=1;k<NUM_LIST-j;k++)
+              {
+                minInd[NUM_LIST-k]=minInd[NUM_LIST-(k+1)];//shift values down the array
+                minVal[NUM_LIST-k]=minVal[NUM_LIST-(k+1)];//shift values down the array
+              }
+            minVal[j]=d->x[p->numVar][i];
+            minInd[j]=i;//record the new min index entry
+            numMin++;
+            break;
+          }
     }
   printf("\nData minimum value(s): %0.3LE at [",d->x[p->numVar][minInd[0]]);
   for(i=0;i<p->numVar;i++)
