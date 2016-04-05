@@ -1,7 +1,9 @@
+#include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "gnuplot_i.h"
 #include "lin_eq_solver.h"
 
 #define POWSIZE         12
@@ -11,6 +13,8 @@
 
 typedef struct
 {
+  int plotData;//0=don't plot, 1=plot
+  char plotMode[256];//the plotting style to be used
   int numVar;
   long double ulimit[POWSIZE],llimit[POWSIZE];
 }parameters;
@@ -29,6 +33,17 @@ typedef struct
 
 typedef struct
 {
+  long double fixedParVal[POWSIZE];//values to fix parameters at when plotting in less dimensions than the data provides
+  double x[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing data points to be plotted, indexed by plot # then variable # then data point #
+  int plotDataSize[POWSIZE];
+}plot_data;
+
+typedef struct
+{
   long double a[MAX_DIM]; //array holding parameters (desribing parboloid) from chisq minimization
-  long double fitVert[MAX_DIM]; //the vertex of the fit paraboloid
+  long double fitVert[POWSIZE]; //the vertex of the fit paraboloid
 }fit_results;
+
+//evil global variables
+gnuplot_ctrl *handle;
+int plotOpen;//1 if plots are being displayed, 0 otherwise

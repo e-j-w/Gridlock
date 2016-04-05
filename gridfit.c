@@ -7,9 +7,15 @@
 #include "2parfit.c"
 #include "3parfit.c"
 #include "print_results.c"
+#include "plot_data.c"
 
 int main(int argc, char *argv[])
 {
+
+  //set up handler to take action upon SIGINT (CTRL-C command)
+  struct sigaction sigIntHandler;
+  sigIntHandler.sa_handler = sigint_cleanup;
+  sigaction(SIGINT, &sigIntHandler, NULL);
 
   if(argc!=3)
     {
@@ -22,13 +28,23 @@ int main(int argc, char *argv[])
   parameters *p=(parameters*)calloc(1,sizeof(parameters));
   data *d=(data*)calloc(1,sizeof(data));
   fit_results *fr=(fit_results*)calloc(1,sizeof(fit_results));
+  plot_data *pd=(plot_data*)calloc(1,sizeof(plot_data));
+
+  //dummy data
+  //p->plotData=1;
+  //strcpy(p->plotMode,"1d");
 
   p->numVar=atoi(argv[2]);
   if((p->numVar<2)||(p->numVar>3))
     {
       printf("ERROR: the number of free parameters n must be 2 or 3.\nAborting...\n");
       exit(-1);
-    } 
+    }
+  if(p->numVar>(POWSIZE-1))
+    {
+      printf("ERROR: the number of free parameters is greater than POWSIZE - 1 (%i).\nPlease edit the value in gridfit.h and recompile.\n",POWSIZE-1);
+      exit(-1);
+    }
 
   importData(argv[1],d,p); //see import_data.c
   
@@ -38,11 +54,18 @@ int main(int argc, char *argv[])
   
   //call specific fitting routines depending on the number of free parameters
   if(p->numVar==2)
+  
     fit2Par(d,fr); //see 2parfit.c
   else if(p->numVar==3)
     fit3Par(d,fr); //see 3parfit.c
   
   printResults(d,p,fr); //see print_results.c
+  
+  if(p->plotData==1)
+    {
+      getPlotDataNearMin(d,p,fr,pd);
+      plotData(d,p,fr,pd);
+    }
   
   //free structures
   free(d);
