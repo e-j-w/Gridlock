@@ -68,6 +68,7 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle);
  * @param title
  */
 void gnuplot_plot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char const* title);
+void gnuplot_splot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char const* title);
 
 /*---------------------------------------------------------------------------
                             Function codes
@@ -443,6 +444,75 @@ void gnuplot_plot_xy(
     return ;
 }
 
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Plot a 3d graph from a list of points.
+  @param    handle      Gnuplot session control handle.
+  @param    x           Pointer to a list of x coordinates.
+  @param    y           Pointer to a list of y coordinates.
+  @param    z           Pointer to a list of z coordinates.
+  @param    n           Number of doubles in x (assumed the same as in y and z).
+  @param    title       Title of the plot.
+  @return   void
+
+  Plots out a 3d graph from a list of points. Provide points through a list
+  of x and a list of y coordinates. Both provided arrays are assumed to
+  contain the same number of values.
+
+  @code
+    gnuplot_ctrl    *h ;
+    double          x[50] ;
+    double          y[50] ;
+    double          z[50] ;
+    int             i ;
+
+    h = gnuplot_init() ;
+    for (i=0 ; i<50 ; i++) {
+        x[i] = (double)(i)/10.0 ;
+        y[i] = x[i] * x[i] ;
+        z[i] = x[i] * x[i] ;
+    }
+    gnuplot_plot_xyz(h, x, y, z, 50, "parabola") ;
+    sleep(2) ;
+    gnuplot_close(h) ;
+  @endcode
+ */
+/*--------------------------------------------------------------------------*/
+
+void gnuplot_plot_xyz(
+    gnuplot_ctrl    *   handle,
+    double          *   x,
+    double          *   y,
+    double          *   z,
+    int                 n,
+    char            *   title
+)
+{
+    int     i ;
+    FILE*   tmpfd ;
+    char const * tmpfname;
+
+    if (handle==NULL || x==NULL || y==NULL || z==NULL || (n<1)) return ;
+
+    /* Open temporary file for output   */
+    tmpfname = gnuplot_tmpfile(handle);
+    tmpfd = fopen(tmpfname, "w");
+
+    if (tmpfd == NULL) {
+        fprintf(stderr,"cannot create temporary file: exiting plot") ;
+        return ;
+    }
+
+    /* Write data to this file  */
+    for (i=0 ; i<n; i++) {
+        fprintf(tmpfd, "%.18e %.18e %.18e\n", x[i], y[i], z[i]) ;
+    }
+    fclose(tmpfd) ;
+
+    gnuplot_splot_atmpfile(handle,tmpfname,title);
+    return ;
+}
+
 
 
 /*-------------------------------------------------------------------------*/
@@ -721,6 +791,18 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
 void gnuplot_plot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char const* title)
 {
     char const *    cmd    = (handle->nplots > 0) ? "replot" : "plot";
+    title                  = (title == NULL)      ? "(none)" : title;
+    if(handle->colSet==0)
+        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s", cmd, tmp_filename,title, handle->pstyle) ;
+    else
+        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
+    handle->nplots++ ;
+    return ;
+}
+
+void gnuplot_splot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char const* title)
+{
+    char const *    cmd    = (handle->nplots > 0) ? "replot" : "splot";
     title                  = (title == NULL)      ? "(none)" : title;
     if(handle->colSet==0)
         gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s", cmd, tmp_filename,title, handle->pstyle) ;
