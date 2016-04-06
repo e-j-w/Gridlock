@@ -13,6 +13,7 @@
 
 typedef struct
 {
+  char filename[256];//name of the data file
   int plotData;//0=don't plot, 1=plot
   char plotMode[256];//the plotting style to be used
   int numVar;
@@ -34,7 +35,8 @@ typedef struct
 typedef struct
 {
   long double fixedParVal[POWSIZE];//values to fix parameters at when plotting in less dimensions than the data provides
-  double x[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing data points to be plotted, indexed by plot # then variable # then data point #
+  double data[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing data points to be plotted, indexed by plot # then variable # then data point #
+  double fit[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing fit data to be plotted, indexed by plot # then variable # then data point #
   int plotDataSize[POWSIZE];
 }plot_data;
 

@@ -17,9 +17,6 @@ void getPlotDataNearMin(const data * d, const parameters * p, const fit_results 
             }
         }
     }
-  
-  for(i=0;i<p->numVar;i++)
-    printf("Parameter %i data point value closest to vertex: %Lf\n",i,pd->fixedParVal[i]);
     
   
   //generate plot data
@@ -40,13 +37,10 @@ void getPlotDataNearMin(const data * d, const parameters * p, const fit_results 
             if(useDataPoint==1)
               {
                 for(k=0;k<=p->numVar;k++)//parameter index (x,y,z)
-                  pd->x[i][k][pd->plotDataSize[i]]=((double)d->x[k][j]);
+                  pd->data[i][k][pd->plotDataSize[i]]=((double)d->x[k][j]);
                 pd->plotDataSize[i]++;
               }
           }
-      
-      for(i=0;i<3;i++)
-        printf("Data points in plot %i: %i\n",i,pd->plotDataSize[i]);
     }
   else if((p->numVar==3)&&(strcmp(p->plotMode,"2d")==0))
     {
@@ -56,12 +50,9 @@ void getPlotDataNearMin(const data * d, const parameters * p, const fit_results 
           if(d->x[i][j]==pd->fixedParVal[i])
             {
               for(k=0;k<=p->numVar;k++)//parameter index (x,y,z,value)
-                pd->x[i][k][pd->plotDataSize[i]]=((double)d->x[k][j]);
+                pd->data[i][k][pd->plotDataSize[i]]=((double)d->x[k][j]);
               pd->plotDataSize[i]++;
             }
-      
-      for(i=0;i<3;i++)
-        printf("Data points in plot %i: %i\n",i,pd->plotDataSize[i]);
     }
   else if (p->plotData!=0)
     {
@@ -80,21 +71,40 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
   
   if((p->numVar==3)&&(strcmp(p->plotMode,"1d")==0))
     {
-      for(i=0;i<p->numVar;i++)
+      for(i=0;i<3;i++)
         {
-          //gnuplot_setstyle(handle,"steps");
+          gnuplot_setstyle(handle,"points"); //set style for grid points
           gnuplot_cmd(handle,"set ylabel 'Value'");
           sprintf(str,"set xlabel 'Parameter %i'",i+1);
           gnuplot_cmd(handle,str);
-          gnuplot_plot_xy(handle, pd->x[i][i], pd->x[i][p->numVar], pd->plotDataSize[i], "Data");
-          printf("Showing plot for parameter %i.  Press [ENTER] to continue.",i);
+          gnuplot_plot_xy(handle, pd->data[i][i], pd->data[i][p->numVar], pd->plotDataSize[i], "Data");
+          gnuplot_setstyle(handle,"lines");//set style for fit data
+          //generate fit data functional forms
+          if(i==0)
+            sprintf(str, "%Lf*(x**2) + %Lf*(%Lf**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x*%Lf + %Lf*%Lf*%Lf + %Lf*x + %Lf*%Lf + %Lf*%Lf + %Lf",fr->a[0],fr->a[1],pd->fixedParVal[1],fr->a[2],pd->fixedParVal[2],fr->a[3],pd->fixedParVal[1],fr->a[4],pd->fixedParVal[2],fr->a[5],pd->fixedParVal[1],pd->fixedParVal[2],fr->a[6],fr->a[7],pd->fixedParVal[1],fr->a[8],pd->fixedParVal[2],fr->a[9]);
+          else if(i==1)
+            sprintf(str, "%Lf*(%Lf**2) + %Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*%Lf*%Lf + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf*%Lf + %Lf",fr->a[0],pd->fixedParVal[0],fr->a[1],fr->a[2],pd->fixedParVal[2],fr->a[3],pd->fixedParVal[0],fr->a[4],pd->fixedParVal[0],pd->fixedParVal[2],fr->a[5],pd->fixedParVal[2],fr->a[7],fr->a[6],pd->fixedParVal[0],fr->a[8],pd->fixedParVal[2],fr->a[9]);
+          else if(i==2)
+            sprintf(str, "%Lf*(%Lf**2) + %Lf*(%Lf**2) + %Lf*(x**2) + %Lf*%Lf*%Lf + %Lf*x*%Lf + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf*%Lf + %Lf",fr->a[0],pd->fixedParVal[0],fr->a[1],pd->fixedParVal[1],fr->a[2],fr->a[3],pd->fixedParVal[0],pd->fixedParVal[1],fr->a[4],pd->fixedParVal[0],fr->a[5],pd->fixedParVal[1],fr->a[8],fr->a[6],pd->fixedParVal[0],fr->a[7],pd->fixedParVal[1],fr->a[9]);
+          gnuplot_plot_equation(handle, str, "Fit");       
+          printf("Showing plot for parameter %i.\n",i+1);
+          if(i==0)
+            printf("Parameter %i fixed to %Lf\nParameter %i fixed to %Lf\n",2,pd->fixedParVal[1],3,pd->fixedParVal[2]);
+          if(i==1)
+            printf("Parameter %i fixed to %Lf\nParameter %i fixed to %Lf\n",1,pd->fixedParVal[0],3,pd->fixedParVal[2]);
+          if(i==2)
+            printf("Parameter %i fixed to %Lf\nParameter %i fixed to %Lf\n",1,pd->fixedParVal[0],2,pd->fixedParVal[1]);
+          printf("%i data points available for plot.\n",pd->plotDataSize[i]);
+          printf("Press [ENTER] to continue.");
           getc(stdin);
           gnuplot_resetplot(handle);
         }
     }
-  
-
-  return;
+  else
+    {
+      printf("ERROR: The plot mode '%s' defined in the data file '%s' is not supported!\n",p->plotMode,p->filename);
+      exit(-1);
+    }
 
 }
 

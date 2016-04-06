@@ -1,5 +1,5 @@
 //imports data from file
-void importData(const char * filename, data * d, parameters * p)
+void importData(data * d, parameters * p)
 {
 
   FILE *inp;
@@ -9,20 +9,21 @@ void importData(const char * filename, data * d, parameters * p)
   int invalidLines=0;
   int lineValid;
   int linenum=0;
+  p->plotData=0;
   for(i=0;i<POWSIZE;i++)
     {
       p->llimit[i]=-1*BIG_NUMBER;
       p->ulimit[i]=BIG_NUMBER;
     }
     
-  if((inp=fopen(filename,"r"))==NULL)
+  if((inp=fopen(p->filename,"r"))==NULL)
     {
-      printf("\nERROR: input file %s can not be opened.\n",filename);
+      printf("\nERROR: input file %s can not be opened.\n",p->filename);
       exit(-1);
     }
 
   //import data from file
-  char str[256],str2[256];
+  char str[256],str2[256],str3[256];
   while(!(feof(inp)))//go until the end of file is reached
     {
       if(fgets(str,256,inp)!=NULL)
@@ -62,9 +63,24 @@ void importData(const char * filename, data * d, parameters * p)
                   printf("]\n");
                 }
             }
+          else if(sscanf(str,"%s %s",str2,str3)==2)
+            {
+              if(strcmp(str2,"PLOT")==0)
+                {
+                  p->plotData=1;
+                  strcpy(p->plotMode,str3);
+                  printf("Will plot data using mode: %s\n",p->plotMode);
+                }
+            }
           else
             {
-              printf("WARNING: Improperly formatted data on line %i of the input file.\n",linenum+1);
+              if(strcmp(str,"PLOT\n")==0)
+                {
+                  p->plotData=1;
+                  printf("Will plot data.\n");
+                }
+              else
+                printf("WARNING: Improperly formatted data on line %i of the input file.\n",linenum+1);
             }
           linenum++;
         }
@@ -80,7 +96,7 @@ void importData(const char * filename, data * d, parameters * p)
     }
   else
     {
-      printf("Successfully read data file: %s\n%i lines of data used.\n",filename,d->lines);
+      printf("Successfully read data file: %s\n%i lines of data used.\n",p->filename,d->lines);
       if(invalidLines>0)
         printf("%i lines of data skipped (outside of fit region limits).\n",invalidLines);
     }

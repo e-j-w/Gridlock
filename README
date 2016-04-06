@@ -7,6 +7,7 @@ Code to fit an n-dimensional grid of data points with a parabola or paraboloid (
 
 It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.
 
+It is possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style.  See the 'sample_3par.txt' file for an example.
 
 FITTING FUNCTIONS USED
 2 free parameters: f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
@@ -24,3 +25,4 @@ CONTRIBUTIONS
 
 J. Williams - core logic
 K. Starosta - linear equation solver code for determining fit parameter values
+N. Devillard - public domain gnuplot_i library for displaying plots

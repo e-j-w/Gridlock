@@ -31,9 +31,9 @@ int main(int argc, char *argv[])
   plot_data *pd=(plot_data*)calloc(1,sizeof(plot_data));
 
   //dummy data
-  //p->plotData=1;
-  //strcpy(p->plotMode,"1d");
+  strcpy(p->plotMode,"1d");
 
+  strcpy(p->filename,argv[1]);
   p->numVar=atoi(argv[2]);
   if((p->numVar<2)||(p->numVar>3))
     {
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
       exit(-1);
     }
 
-  importData(argv[1],d,p); //see import_data.c
+  importData(d,p); //see import_data.c
   
   printDataInfo(d,p); //see print_data_info.c
 
