@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
   sigIntHandler.sa_handler = sigint_cleanup;
   sigaction(SIGINT, &sigIntHandler, NULL);
 
-  if(argc!=3)
+  if(argc!=2)
     {
-      printf("\ngridfit filename n\n");
-      printf("\nPerforms grid minimization on the data in the specified file.  The file should be in plaintext, with the first n columns corresponding to free parameters and the (n+1)th column corresponding to the grid point value.\n\n");
+      printf("\ngridfit filename\n");
+      printf("\nPerforms grid minimization on the data in the specified file.  The file should be in plaintext, with a line specifying the number of free parameters using the format:\nNUM_PAR  n\nwhere n is the number of parameters.  Data in the file should be formatted in in columns with the (n+1)th column corresponding to the grid point value.\n\n");
       exit(-1);
     }
 
@@ -30,11 +30,9 @@ int main(int argc, char *argv[])
   fit_results *fr=(fit_results*)calloc(1,sizeof(fit_results));
   plot_data *pd=(plot_data*)calloc(1,sizeof(plot_data));
 
-  //dummy data
-  strcpy(p->plotMode,"1d");
-
   strcpy(p->filename,argv[1]);
-  p->numVar=atoi(argv[2]);
+  importData(d,p); //see import_data.c
+  
   if((p->numVar<2)||(p->numVar>3))
     {
       printf("ERROR: the number of free parameters n must be 2 or 3.\nAborting...\n");
@@ -45,8 +43,6 @@ int main(int argc, char *argv[])
       printf("ERROR: the number of free parameters is greater than POWSIZE - 1 (%i).\nPlease edit the value in gridfit.h and recompile.\n",POWSIZE-1);
       exit(-1);
     }
-
-  importData(d,p); //see import_data.c
   
   printDataInfo(d,p); //see print_data_info.c
 

@@ -4,6 +4,7 @@ void importData(data * d, parameters * p)
 
   FILE *inp;
   int i;
+  char str[256],str2[256],str3[256];
   
   //initialize values
   int invalidLines=0;
@@ -22,13 +23,34 @@ void importData(data * d, parameters * p)
       exit(-1);
     }
 
-  //import data from file
-  char str[256],str2[256],str3[256];
+  //read the number of parameters from the file
   while(!(feof(inp)))//go until the end of file is reached
     {
       if(fgets(str,256,inp)!=NULL)
         {
-          if(sscanf(str,"%Lf %Lf %Lf %Lf %Lf %Lf",&d->x[0][d->lines],&d->x[1][d->lines],&d->x[2][d->lines],&d->x[3][d->lines],&d->x[4][d->lines],&d->x[5][d->lines])==p->numVar+1)
+          if(sscanf(str,"%s %s",str2,str3)==2)
+            if(strcmp(str2,"NUM_PAR")==0)
+              {
+                p->numVar=atoi(str3);
+                printf("Will fit with %i free parameters.\n",p->numVar);
+              }
+        }
+    }
+  fclose(inp);
+  if(p->numVar<=0)
+    {
+      printf("ERROR: number of free parameters is not specified in the input file %s.\nMake sure to include a line in the file with the format\n\nNUM_PAR  n\n\nwhere n is the number of parameters in the file.\n",p->filename);
+      exit(-1);
+    }
+  
+  //import data from file
+  if((inp=fopen(p->filename,"r"))==NULL)
+    exit(-1);
+  while(!(feof(inp)))//go until the end of file is reached
+    {
+      if(fgets(str,256,inp)!=NULL)
+        {
+          if((p->numVar>0)&&(sscanf(str,"%Lf %Lf %Lf %Lf %Lf %Lf",&d->x[0][d->lines],&d->x[1][d->lines],&d->x[2][d->lines],&d->x[3][d->lines],&d->x[4][d->lines],&d->x[5][d->lines])==p->numVar+1))
             {
               lineValid=1;
               for(i=0;i<p->numVar;i++)
@@ -40,7 +62,7 @@ void importData(data * d, parameters * p)
               else
                 invalidLines++;
             }
-          else if(sscanf(str,"%s %Lf %Lf %Lf %Lf %Lf",str2,&d->x[0][d->lines],&d->x[1][d->lines],&d->x[2][d->lines],&d->x[3][d->lines],&d->x[4][d->lines])==p->numVar+1)
+          else if((p->numVar>0)&&(sscanf(str,"%s %Lf %Lf %Lf %Lf %Lf",str2,&d->x[0][d->lines],&d->x[1][d->lines],&d->x[2][d->lines],&d->x[3][d->lines],&d->x[4][d->lines])==p->numVar+1))
             {
               if(strcmp(str2,"UPPER_LIMITS")==0)
                 {
