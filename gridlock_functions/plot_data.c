@@ -125,7 +125,10 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
                 printf("Parameter %i fixed to %Lf\n",1,pd->fixedParVal[0]);
             }
           printf("%i data points available for plot.\n",pd->plotDataSize[i]);
-          printf("Press [ENTER] to continue.");
+          if(i<(p->numVar-1))
+            printf("Press [ENTER] to continue.");
+          else
+            printf("Press [ENTER] to exit.");
           getc(stdin);
           gnuplot_resetplot(handle);
         }
@@ -140,17 +143,17 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
               if(i==0)
                 {
                   gnuplot_plot_xyz(handle, pd->data[i][1], pd->data[i][2], pd->data[i][p->numVar], pd->plotDataSize[i], "Data");
-                  sprintf(str,"set xlabel 'Parameter 2'; set ylabel 'Parameter 3';");
+                  sprintf(str,"set xlabel 'Parameter 2'; set ylabel 'Parameter 3'; set zlabel 'Value'");
                 }
               if(i==1)
                 {
                   gnuplot_plot_xyz(handle, pd->data[i][0], pd->data[i][2], pd->data[i][p->numVar], pd->plotDataSize[i], "Data");
-                  sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 3';");
+                  sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 3'; set zlabel 'Value'");
                 }
               if(i==2)
                 {
                   gnuplot_plot_xyz(handle, pd->data[i][0], pd->data[i][1], pd->data[i][p->numVar], pd->plotDataSize[i], "Data");
-                  sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2';");
+                  sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2'; set zlabel 'Value'");
                 }
               gnuplot_cmd(handle,str);
               gnuplot_setstyle(handle,"lines");
@@ -165,7 +168,10 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
               gnuplot_plot_equation(handle, str, "Fit");
               printf("Showing surface plot with parameter %i fixed to %Lf\n",i+1,pd->fixedParVal[i]);
               printf("%i data points available for plot.\n",pd->plotDataSize[i]);
-              printf("Press [ENTER] to continue.");
+              if(i<(p->numVar-1))
+                printf("Press [ENTER] to continue.");
+              else
+                printf("Press [ENTER] to exit.");
               getc(stdin);
               gnuplot_resetplot(handle);
             }
@@ -174,7 +180,7 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
         {
           gnuplot_setstyle(handle,"points"); //set style for grid points
           gnuplot_plot_xyz(handle, pd->data[0][0], pd->data[0][1], pd->data[0][p->numVar], pd->plotDataSize[0], "Data");
-          sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2';");
+          sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2'; set zlabel 'Value'");
           gnuplot_cmd(handle,str);
           gnuplot_setstyle(handle,"lines");
           gnuplot_cmd(handle,"set grid");//set style for fit data
@@ -183,7 +189,7 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
           gnuplot_plot_equation(handle, str, "Fit");
           printf("Showing surface plot.\n");
           printf("%i data points available for plot.\n",pd->plotDataSize[0]);
-          printf("Press [ENTER] to continue.");
+          printf("Press [ENTER] to exit.");
           getc(stdin);
           gnuplot_resetplot(handle);
         }

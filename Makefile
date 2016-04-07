@@ -1,10 +1,10 @@
-CFLAGS 	= -I./gnuplot_i -I./lin_eq_solver -I./gridfit_functions -o2
+CFLAGS 	= -I./gnuplot_i -I./lin_eq_solver -I./gridlock_functions -o2
 
-all: lib gridfit
+all: lib gridlock
 
-gridfit: gridfit.c gridfit.h gnuplot_i.o lin_eq_solver.o
-	@echo Making gridfit...
-	gcc $(CFLAGS) gridfit.c -Wall -o gridfit gnuplot_i.o lin_eq_solver.o
+gridlock: gridlock.c gridlock.h gnuplot_i.o lin_eq_solver.o
+	@echo Making gridlock...
+	gcc $(CFLAGS) gridlock.c -Wall -o gridlock gnuplot_i.o lin_eq_solver.o
 	@echo Tidying up...
 	rm -rf *~ *.o
 	
@@ -14,4 +14,4 @@ lib:gnuplot_i/gnuplot_i.c gnuplot_i/gnuplot_i.h lin_eq_solver/lin_eq_solver.c li
 	gcc -I./lin_eq_solver -o2 -c -o lin_eq_solver.o lin_eq_solver/lin_eq_solver.c
 
 clean:
-	rm -rf *~ gridfit *.o
+	rm -rf *~ gridlock *.o

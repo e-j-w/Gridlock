@@ -1,23 +1,28 @@
-Grid Fitter
+Gridlock (A program to fit grids of data)
 Maintainer: Jonathan Williams
 
 DESCRIPTION
 
-Code to fit an n-dimensional grid of data points with a parabola or paraboloid (depending on the number of free parameters) and find the minimum/maximum.  Currently implemented for data with 2 or 3 free parameters.  Example data is included in the 'sample_2par.txt' and 'sample_3par.txt' files.  
+Code to fit a grid of data points with a parabola or paraboloid (depending on the number of free parameters) via chisq minimization and find the vertex.  Currently implemented for data with 2 or 3 free parameters.  Example data is included in the 'sample_2par.txt' and 'sample_3par.txt' files.
 
-It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.
-
-It is possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style.  See the 'sample_3par.txt' file for an example.
+Data files must contain a line specifying the number of free parameters, formatted 'NUM_PAR n' where n is the number of free parameters.  It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.  It is also possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style, see the plotting section below.
 
 FITTING FUNCTIONS USED
+
+Currently, paraboloid type functions are used.
 2 free parameters: f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
 3 free parameters: f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2 + a4*x*y + a5*x*z + a6*y*z + a7*x + a8*y + a9*z + a10
 
+PLOTTING
+
+Add these commands (eg. 'PLOT 1d') as a line in the data file to enable plotting:
+PLOT 1d - Shows plot(s) in one variable, using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
+PLOT 2d - Shows plot(s) in two variables (surface plot), using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
 
 INSTRUCTIONS
 
 Use 'make' to compile.  Requires gcc compiler.
-To run the program from anywhere, move the resulting 'gridfit' executable to any directory under your $PATH environment variable.
+To run the program from anywhere, move the resulting 'gridlock' executable to any directory under your $PATH environment variable.
 Tested and working on Ubuntu 14.04 and Scientific Linux/CentOS 6.  Should work on more or less any Linux distro.
 
 
