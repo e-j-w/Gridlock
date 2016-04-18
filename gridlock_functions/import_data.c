@@ -104,6 +104,15 @@ void importData(data * d, parameters * p)
               else
                 printf("WARNING: Improperly formatted data on line %i of the input file.\n",linenum+1);
             }
+          if((p->numVar==1)&&(sscanf(str,"%s %s",str2,str3)==2))//workaround to allow plotting lines to be read when using 1 free parameter
+            {
+              if(strcmp(str2,"PLOT")==0)
+                {
+                  p->plotData=1;
+                  strcpy(p->plotMode,str3);
+                  printf("Will plot data using mode: %s\n",p->plotMode);
+                }
+            }
           linenum++;
         }
     }

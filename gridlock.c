@@ -4,6 +4,7 @@
 #include "import_data.c"
 #include "print_data_info.c"
 #include "generate_sums.c"
+#include "1parfit.c"
 #include "2parfit.c"
 #include "3parfit.c"
 #include "print_results.c"
@@ -33,9 +34,9 @@ int main(int argc, char *argv[])
   strcpy(p->filename,argv[1]);
   importData(d,p); //see import_data.c
   
-  if((p->numVar<2)||(p->numVar>3))
+  if((p->numVar<1)||(p->numVar>3))
     {
-      printf("ERROR: the number of free parameters n must be 2 or 3.\nAborting...\n");
+      printf("ERROR: the number of free parameters (NUM_PAR) must be 3 or less, and cannot be negative.\nAborting...\n");
       exit(-1);
     }
   if(p->numVar>(POWSIZE-1))
@@ -49,8 +50,9 @@ int main(int argc, char *argv[])
   generateSums(d,p); //construct sums for fitting (see generate_sums.c) 
   
   //call specific fitting routines depending on the number of free parameters
-  if(p->numVar==2)
-  
+  if(p->numVar==1)
+    fit1Par(d,fr); //see 1parfit.c
+  else if(p->numVar==2)
     fit2Par(d,fr); //see 2parfit.c
   else if(p->numVar==3)
     fit3Par(d,fr); //see 3parfit.c

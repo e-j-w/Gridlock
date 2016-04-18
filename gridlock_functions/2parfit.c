@@ -2,7 +2,7 @@
 //f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
 void fit2Par(const data * d, fit_results * fr)
 {
-  //construct equations (n=3 specific case)
+  //construct equations (n=2 specific case)
   int i,j;
   lin_eq_type linEq;
   linEq.dim=6;

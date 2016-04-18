@@ -4,6 +4,37 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
 
   int i;
 
+  if(p->numVar==1)
+    {
+      printf("\nFIT RESULTS\n-----------\n");
+      printf("Fit function: f(x,y) = a1*x^2 + a2*x + a3\n\n");
+      printf("Coefficients from fit: a1 = %LE\n",fr->a[0]);
+      for(i=1;i<3;i++)
+        printf("                       a%i = %LE\n",i+1,fr->a[i]);
+      printf("\n");
+      
+      if(fr->a[0]>=0)
+        printf("Minimum in x direction, ");
+      else
+        printf("Maximum in x direction, ");
+      printf("x0 = %LE\n",fr->fitVert[0]);
+      
+      long double fitVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[0] + fr->a[2];
+      
+      printf("\nf(x0) = %LE\n",fitVal); 
+      
+      //get chisq value
+      long double f;
+      long double chisq=0;
+      int ndf=d->lines-4;
+      for(i=0;i<d->lines;i++)//loop over data points
+        {
+          f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[0][i] + fr->a[2];
+          chisq+=(d->x[p->numVar][i] - f)*(d->x[p->numVar][i] - f);
+        }
+      printf("\nchisq: %0.3Lf\nchisq/NDF: %0.3Lf\n",chisq,chisq/ndf);
+    }
+
   if(p->numVar==2)
     {
       printf("\nFIT RESULTS\n-----------\n");
