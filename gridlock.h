@@ -18,6 +18,7 @@ typedef struct
   char plotMode[256];//the plotting style to be used
   int numVar;
   long double ulimit[POWSIZE],llimit[POWSIZE];
+  int verbose;//0=print everything,1=print vertex location only
 }parameters;
 
 typedef struct

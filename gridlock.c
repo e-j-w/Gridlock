@@ -45,7 +45,8 @@ int main(int argc, char *argv[])
       exit(-1);
     }
   
-  printDataInfo(d,p); //see print_data_info.c
+  if(p->verbose<1)
+    printDataInfo(d,p); //see print_data_info.c
 
   generateSums(d,p); //construct sums for fitting (see generate_sums.c) 
   
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
   
   printResults(d,p,fr); //see print_results.c
   
-  if(p->plotData==1)
+  if((p->plotData==1)&&(p->verbose<1))
     {
       getPlotDataNearMin(d,p,fr,pd);
       plotData(d,p,fr,pd);

@@ -4,6 +4,16 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
 
   int i;
 
+  //simplified data printing depending on verbosity setting
+  if(p->verbose==1)
+    {
+      for(i=0;i<p->numVar;i++)
+        printf("%LE ",fr->fitVert[i]);
+      printf("\n");
+      return;
+    }
+  
+
   if(p->numVar==1)
     {
       printf("\nFIT RESULTS\n-----------\n");

@@ -23,19 +23,24 @@ void importData(data * d, parameters * p)
       exit(-1);
     }
 
-  //read the number of parameters from the file
+  //read the number of parameters from the file and set verbosity of output
   while(!(feof(inp)))//go until the end of file is reached
     {
       if(fgets(str,256,inp)!=NULL)
         {
           if(sscanf(str,"%s %s",str2,str3)==2)
-            if(strcmp(str2,"NUM_PAR")==0)
-              {
-                p->numVar=atoi(str3);
-                printf("Will fit with %i free parameters.\n",p->numVar);
-              }
+            {
+              if(strcmp(str2,"NUM_PAR")==0)
+                {
+                  p->numVar=atoi(str3);
+                }
+            }
+          else if(strcmp(str,"NONVERBOSE\n")==0)
+            p->verbose=1;//only print the fit vertex data, unless an error occurs
         }
     }
+  if(p->verbose<1)
+    printf("Will fit with %i free parameters.\n",p->numVar);
   fclose(inp);
   if(p->numVar<=0)
     {
@@ -69,20 +74,26 @@ void importData(data * d, parameters * p)
                   for(i=0;i<p->numVar;i++)
                     if(i<POWSIZE)
                       p->ulimit[i]=d->x[i][d->lines];
-                  printf("Set fit region upper limits to [");
-                  for(i=0;i<p->numVar;i++)
-                    printf(" %0.3LE ",p->ulimit[i]);
-                  printf("]\n");
+                  if(p->verbose<1)
+                    {
+                      printf("Set fit region upper limits to [");
+                      for(i=0;i<p->numVar;i++)
+                        printf(" %0.3LE ",p->ulimit[i]);
+                      printf("]\n");
+                    }
                 }
               if(strcmp(str2,"LOWER_LIMITS")==0)
                 { 
                   for(i=0;i<p->numVar;i++)
                     if(i<POWSIZE)
                       p->llimit[i]=d->x[i][d->lines];
-                  printf("Set fit region lower limits to [");
-                  for(i=0;i<p->numVar;i++)
-                    printf(" %0.3LE ",p->llimit[i]);
-                  printf("]\n");
+                  if(p->verbose<1)
+                    {
+                      printf("Set fit region lower limits to [");
+                      for(i=0;i<p->numVar;i++)
+                        printf(" %0.3LE ",p->llimit[i]);
+                      printf("]\n");
+                    }
                 }
             }
           else if(sscanf(str,"%s %s",str2,str3)==2)
@@ -91,7 +102,8 @@ void importData(data * d, parameters * p)
                 {
                   p->plotData=1;
                   strcpy(p->plotMode,str3);
-                  printf("Will plot data using mode: %s\n",p->plotMode);
+                  if(p->verbose<1)
+                    printf("Will plot data using mode: %s\n",p->plotMode);
                 }
             }
           else
@@ -99,9 +111,10 @@ void importData(data * d, parameters * p)
               if(strcmp(str,"PLOT\n")==0)
                 {
                   p->plotData=1;
-                  printf("Will plot data.\n");
+                  if(p->verbose<1)
+                    printf("Will plot data.\n");
                 }
-              else
+              else if(p->verbose<1)
                 printf("WARNING: Improperly formatted data on line %i of the input file.\n",linenum+1);
             }
           if((p->numVar==1)&&(sscanf(str,"%s %s",str2,str3)==2))//workaround to allow plotting lines to be read when using 1 free parameter
@@ -110,7 +123,8 @@ void importData(data * d, parameters * p)
                 {
                   p->plotData=1;
                   strcpy(p->plotMode,str3);
-                  printf("Will plot data using mode: %s\n",p->plotMode);
+                  if(p->verbose<1)
+                    printf("Will plot data using mode: %s\n",p->plotMode);
                 }
             }
           linenum++;
@@ -125,7 +139,7 @@ void importData(data * d, parameters * p)
         printf("%i lines were skipped due to the fit region limits specified in the file.  Consider changing these limits.\n",invalidLines);
       exit(-1);
     }
-  else
+  else if(p->verbose<1)
     {
       printf("Successfully read data file: %s\n%i lines of data used.\n",p->filename,d->lines);
       if(invalidLines>0)
