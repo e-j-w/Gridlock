@@ -86,11 +86,13 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
   for(i=0;i<pd->numPlots;i++)
     for(j=0;j<p->numVar;j++)
       for(k=0;k<pd->plotDataSize[i];k++)
-        if(pd->data[i][j][k]<0.001)
-          {
-            pd->axisLabelStyle[i][j]=1;
-            break;
-          }
+        if((abs(pd->data[i][j][k])<0.001)&&(pd->data[i][j][k]!=0.))
+          pd->axisLabelStyle[i][j]=1;
+        else
+        	{
+        		pd->axisLabelStyle[i][j]=0;
+        		break;//if any data point is not small, use regular labels
+        	}
     
   printf("\nDATA PLOTS\n----------\nUse 'l' in the plotting window to switch between linear and logarithmic scale.\n");
   

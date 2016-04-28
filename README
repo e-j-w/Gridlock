@@ -22,7 +22,7 @@ PLOT 2d - Shows plot(s) in two variables (surface plot), using fixed values for 
 
 INSTRUCTIONS
 
-Use 'make' to compile.  Requires gcc compiler.
+Use 'make' to compile.  Tested using GNU make and gcc.
 To run the program from anywhere, move the resulting 'gridlock' executable to any directory under your $PATH environment variable.
 Tested and working on Ubuntu 14.04 and Scientific Linux/CentOS 6.  Should work on more or less any Linux distro.
 
