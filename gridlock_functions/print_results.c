@@ -40,7 +40,8 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
       for(i=0;i<d->lines;i++)//loop over data points
         {
           f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[0][i] + fr->a[2];
-          chisq+=(d->x[p->numVar][i] - f)*(d->x[p->numVar][i] - f);
+          chisq+=(d->x[p->numVar][i] - f)*(d->x[p->numVar][i] - f)
+                      /(d->x[p->numVar+1][i]*d->x[p->numVar+1][i]);
         }
       printf("\nchisq: %0.3Lf\nchisq/NDF: %0.3Lf\n",chisq,chisq/ndf);
     }

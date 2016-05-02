@@ -19,6 +19,7 @@ typedef struct
   int numVar;
   long double ulimit[POWSIZE],llimit[POWSIZE];
   int verbose;//0=print everything,1=print vertex location only
+  int readWeights;//0=don't read data weights from file,1=read weights
 }parameters;
 
 typedef struct

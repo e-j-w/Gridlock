@@ -39,9 +39,9 @@ int main(int argc, char *argv[])
       printf("ERROR: the number of free parameters (NUM_PAR) must be 3 or less, and cannot be negative.\nAborting...\n");
       exit(-1);
     }
-  if(p->numVar>(POWSIZE-1))
+  if(p->numVar>(POWSIZE-2))
     {
-      printf("ERROR: the number of free parameters is greater than POWSIZE - 1 (%i).\nPlease edit the value in gridfit.h and recompile.\n",POWSIZE-1);
+      printf("ERROR: the number of free parameters is greater than POWSIZE - 2 (%i).\nPlease edit the value of POWSIZE in gridlock.h and recompile.\n",POWSIZE-2);
       exit(-1);
     }
   

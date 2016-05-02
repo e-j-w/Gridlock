@@ -1,11 +1,13 @@
 Gridlock (A program to fit grids of data)
 Maintainer: Jonathan Williams
 
+
 DESCRIPTION
 
 Code to fit a grid of data points with a parabola or paraboloid (depending on the number of free parameters) via chisq minimization and find the vertex.  Currently implemented for data with up to 3 free parameters.  Example data is included in the 'sample_1par.txt', 'sample_2par.txt' and 'sample_3par.txt' files.
 
 Data files must contain a line specifying the number of free parameters, formatted 'NUM_PAR n' where n is the number of free parameters.  It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.  It is also possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style, see the plotting section below.
+
 
 FITTING FUNCTIONS USED
 
@@ -14,11 +16,15 @@ Currently, parabola/paraboloid type functions are used.
 2 free parameters: f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
 3 free parameters: f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2 + a4*x*y + a5*x*z + a6*y*z + a7*x + a8*y + a9*z + a10
 
-PLOTTING
 
-Add these commands (eg. 'PLOT 1d') as a line in the data file to enable plotting:
+OPTIONS
+
+Add these commands (eg. 'PLOT 1d') as a single line anywhere in the data file to enable them:
 PLOT 1d - Shows plot(s) in one variable, using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
 PLOT 2d - Shows plot(s) in two variables (surface plot), using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
+WEIGHTED - Use weights for the data points, specified in a column after the data values.
+NONVERBOSE - If used, the program will only output the fit parameters (coordinates of the fit paraboloid vertex), which can be useful for interfacing the program with shell scripts.
+
 
 INSTRUCTIONS
 

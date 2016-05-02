@@ -8,7 +8,7 @@ void fit2Par(const data * d, fit_results * fr)
   linEq.dim=6;
   
   for(i=0;i<2;i++)//loop over free parameters
-    for(j=0;j<2;j++)//loop over free parameters
+    for(j=i;j<2;j++)//loop over free parameters
       linEq.matrix[i][j]=d->xxpowsum[i][2][j][2];//top-left 2x2 entries
       
   linEq.matrix[0][2]=d->xxpowsum[0][3][1][1];

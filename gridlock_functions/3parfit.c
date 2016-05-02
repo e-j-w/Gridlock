@@ -8,7 +8,7 @@ void fit3Par(const data * d, fit_results * fr)
   linEq.dim=10;
   
   for(i=0;i<3;i++)//loop over free parameters
-    for(j=0;j<3;j++)//loop over free parameters
+    for(j=i;j<3;j++)//loop over free parameters
       linEq.matrix[i][j]=d->xxpowsum[i][2][j][2];//top-left 3x3 entries
       
   linEq.matrix[0][3]=d->xxpowsum[0][3][1][1];
