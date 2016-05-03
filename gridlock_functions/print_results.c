@@ -18,9 +18,10 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
     {
       printf("\nFIT RESULTS\n-----------\n");
       printf("Fit function: f(x,y) = a1*x^2 + a2*x + a3\n\n");
-      printf("Coefficients from fit: a1 = %LE\n",fr->a[0]);
+      printf("Best chisq: %0.3Lf\nBest chisq/NDF: %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+      printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
       for(i=1;i<3;i++)
-        printf("                       a%i = %LE\n",i+1,fr->a[i]);
+        printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
       printf("\n");
       
       if(fr->a[0]>=0)
@@ -32,27 +33,18 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
       long double fitVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[0] + fr->a[2];
       
       printf("\nf(x0) = %LE\n",fitVal); 
-      
-      //get chisq value
-      long double f;
-      long double chisq=0;
-      int ndf=d->lines-4;
-      for(i=0;i<d->lines;i++)//loop over data points
-        {
-          f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[0][i] + fr->a[2];
-          chisq+=(d->x[p->numVar][i] - f)*(d->x[p->numVar][i] - f)
-                      /(d->x[p->numVar+1][i]*d->x[p->numVar+1][i]);
-        }
-      printf("\nchisq: %0.3Lf\nchisq/NDF: %0.3Lf\n",chisq,chisq/ndf);
+
     }
 
   if(p->numVar==2)
     {
+    
       printf("\nFIT RESULTS\n-----------\n");
       printf("Fit function: f(x,y) = a1*x^2 + a2*y^2 + a3*x*y\n                     + a4*x + a5*y + a6\n\n");
-      printf("Coefficients from fit: a1 = %LE\n",fr->a[0]);
+      printf("Best chisq: %0.3Lf\nBest chisq/NDF: %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+      printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
       for(i=1;i<6;i++)
-        printf("                       a%i = %LE\n",i+1,fr->a[i]);
+        printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
       printf("\n");
       
       if(fr->a[0]>=0)
@@ -69,26 +61,17 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
       long double fitVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[2]*fr->fitVert[0]*fr->fitVert[1] + fr->a[3]*fr->fitVert[0] + fr->a[4]*fr->fitVert[1] + fr->a[5];
       
       printf("\nf(x0,y0) = %LE\n",fitVal); 
-      
-      //get chisq value
-      long double f;
-      long double chisq=0;
-      int ndf=d->lines-7;
-      for(i=0;i<d->lines;i++)//loop over data points
-        {
-          f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[1][i]*d->x[1][i] + fr->a[2]*d->x[0][i]*d->x[1][i] + fr->a[3]*d->x[0][i] + fr->a[4]*d->x[1][i] + fr->a[5];
-          chisq+=(d->x[p->numVar][i] - f)*(d->x[p->numVar][i] - f);
-        }
-      printf("\nchisq: %0.3Lf\nchisq/NDF: %0.3Lf\n",chisq,chisq/ndf);
+
     }
 
   if(p->numVar==3)
     {
       printf("\nFIT RESULTS\n-----------\n");
       printf("Fit function: f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2\n                       + a4*x*y + a5*x*z + a6*y*z\n                       + a7*x + a8*y + a9*z + a10\n\n");
-      printf("Coefficients from fit: a1 = %LE\n",fr->a[0]);
+      printf("Best chisq: %0.3Lf\nBest chisq/NDF: %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+      printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
       for(i=1;i<10;i++)
-        printf("                       a%i = %LE\n",i+1,fr->a[i]);
+        printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
       printf("\n");
       
       if(fr->a[0]>=0)
@@ -110,18 +93,7 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
       long double fitVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[2]*fr->fitVert[2]*fr->fitVert[2] + fr->a[3]*fr->fitVert[0]*fr->fitVert[1] + fr->a[4]*fr->fitVert[0]*fr->fitVert[2] + fr->a[5]*fr->fitVert[1]*fr->fitVert[2] + fr->a[6]*fr->fitVert[0] + fr->a[7]*fr->fitVert[1] + fr->a[8]*fr->fitVert[2] + fr->a[9];
       
       printf("\nf(x0,y0,z0) = %LE\n",fitVal);
-      
-      //get chisq value
-      long double f;
-      long double chisq=0;
-      int ndf=d->lines-11;
-      for(i=0;i<d->lines;i++)//loop over data points
-        {
-          f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[1][i]*d->x[1][i] + fr->a[2]*d->x[2][i]*d->x[2][i] + fr->a[3]*d->x[0][i]*d->x[1][i] + fr->a[4]*d->x[0][i]*d->x[2][i] + fr->a[5]*d->x[1][i]*d->x[2][i] + fr->a[6]*d->x[0][i] + fr->a[7]*d->x[1][i] + fr->a[8]*d->x[2][i] + fr->a[9];
-          chisq+=(d->x[p->numVar][i] - f)*(d->x[p->numVar][i] - f);
-        }
-        
-      printf("\nchisq: %0.3Lf\nchisq/NDF: %0.3Lf\n",chisq,chisq/ndf);
+
     } 
   
 }

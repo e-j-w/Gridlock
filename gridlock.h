@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include "gnuplot_i.h"
 #include "lin_eq_solver.h"
@@ -47,7 +48,9 @@ typedef struct
 typedef struct
 {
   long double a[MAX_DIM]; //array holding parameters (desribing parboloid) from chisq minimization
+  long double aerr[MAX_DIM]; //array holding uncertainties in parameters
   long double fitVert[POWSIZE]; //the vertex of the fit paraboloid
+  long double chisq,ndf;
 }fit_results;
 
 //evil global variables

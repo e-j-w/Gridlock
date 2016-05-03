@@ -35,6 +35,17 @@ void fit1Par(const data * d, fit_results * fr)
   //save fit parameters  
   for(i=0;i<linEq.dim;i++)
     fr->a[i]=linEq.solution[i];
+  long double f;
+  fr->chisq=0;
+  fr->ndf=d->lines-4;
+  for(i=0;i<d->lines;i++)//loop over data points for chisq
+    {
+      f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[0][i] + fr->a[2];
+      fr->chisq+=(d->x[1][i] - f)*(d->x[1][i] - f)
+                  /(d->x[1+1][i]*d->x[1+1][i]);
+    }
+  for(i=0;i<linEq.dim;i++)
+    fr->aerr[i]=(long double)sqrt((double)(linEq.inv_matrix[i][i]*(fr->chisq/fr->ndf)));
     
   //now that the fit is performed, use the fit parameters (and the derivative of the fitting function) to find the minimum
   fr->fitVert[0]=-1.0*fr->a[1]/(2.*fr->a[0]);

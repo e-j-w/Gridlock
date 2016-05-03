@@ -1,56 +1,97 @@
 #include "lin_eq_solver.h"
 
-int solve_lin_eq(lin_eq_type *lin_eq)
+int solve_lin_eq(lin_eq_type * lin_eq)
 {
-  lin_eq_type z;
-  long double w;
-  int i,n;
+
+  int i,j,n;
 
   n=lin_eq->dim;
-
-  memcpy(z.matrix,lin_eq->matrix,sizeof(lin_eq->matrix));
-  w=det(n,&z);
-
-  if(w==0.) 
-	  {
-	    //printf("Linear equation set has no solutions\n");
-	    return 0;
-	  }
+  if(get_inv(lin_eq)==0) //compute the inverse matrix
+    {
+      //printf("Linear equation set has no solutions\n");
+      return 0;
+    }
+  
+  //use inverse matrix to find solutions  
   for(i=0;i<n;i++)
     {
-      memcpy(z.matrix,lin_eq->matrix,sizeof(lin_eq->matrix));
-      memcpy(z.matrix[i],lin_eq->vector,sizeof(lin_eq->vector));
-      lin_eq->solution[i]=det(n,&z)/w;
+      lin_eq->solution[i]=0.;
+      for(j=0;j<n;j++)
+        lin_eq->solution[i]+=lin_eq->inv_matrix[i][j]*lin_eq->vector[j];
     }
+  
   return 1;
 }
 
-
-long double  det(int m, lin_eq_type *lin_eq)
+//get the inverse matrix using Gauss-Jordan elimination
+int get_inv(lin_eq_type * lin_eq)
 {
-  int i,j;
-  long double s;
 
-  if(m==1)
-    return lin_eq->matrix[0][0];
+  int i,j,k,l,n;
+  long double s,t;
 
-  if(lin_eq->matrix[m-1][m-1]==0.)
+  n=lin_eq->dim;//dimension of the matrix (assume square)
+  memcpy(lin_eq->inv_matrix,lin_eq->matrix,sizeof(lin_eq->matrix));
+  
+  //allocate the identity matrix to be transformed to the inverse
+  memset(id,0,sizeof(id));
+  for(i=0;i<n;i++)
+    for(j=0;j<n;j++)
+      if(i==j)
+        id[i][j]=1.;
+        
+  for(i=0;i<n;i++)
     {
-      j=m-1;
-      while(lin_eq->matrix[m-1][j]==0 && j>=0) j--;
-      if(j<0) 
-	      return 0.;
-      else
-	      for(i=0;i<m;i++)
-      	  {
-	          s=lin_eq->matrix[i][m-1];
-	          lin_eq->matrix[i][m-1]=lin_eq->matrix[i][j];
-	          lin_eq->matrix[i][j]=s;
-	        }
+      for(j=i;j<n;j++)
+        {
+          if(lin_eq->inv_matrix[j][i]!=0)
+            {
+              for(k=0;k<n;k++)
+                {
+                  s=lin_eq->inv_matrix[i][k];
+                  lin_eq->inv_matrix[i][k]=lin_eq->inv_matrix[j][k];
+                  lin_eq->inv_matrix[j][k]=s;
+                  
+                  s=id[i][k];
+                  id[i][k]=id[j][k];
+                  id[j][k]=s;
+                }
+              t=1./lin_eq->inv_matrix[i][i];
+              for(k=0;k<n;k++)
+                {
+                  lin_eq->inv_matrix[i][k]=t*lin_eq->inv_matrix[i][k];
+                  id[i][k]=t*id[i][k];
+                }
+              for(k=0;k<n;k++)
+                if(k!=i)
+                  {
+                    t=-1.*lin_eq->inv_matrix[k][i];
+                    for(l=0;l<n;l++)
+                      {
+                        lin_eq->inv_matrix[k][l]=lin_eq->inv_matrix[k][l] + t*lin_eq->inv_matrix[i][l];
+                        id[k][l]=id[k][l] + t*id[i][l];
+                      }
+                  }
+            }
+          break;
+        }
+      if(lin_eq->inv_matrix[j][i]==0)
+        return 0;//matrix is singular
     }
-  for(j=m-2;j>=0;j--)
-    for(i=0;i<m;i++)
-      lin_eq->matrix[i][j]-=lin_eq->matrix[i][m-1]/lin_eq->matrix[m-1][m-1]*lin_eq->matrix[m-1][j];
-  return lin_eq->matrix[m-1][m-1]*det(m-1,lin_eq);
-}
+        
+  //print the new identity matrix      
+  /*for(i=0;i<n;i++)
+    for(j=0;j<n;j++)
+     printf("id[%i][%i] = %0.6LE\n",i,j,lin_eq->inv_matrix[i][j]);*/
+  
+  memcpy(lin_eq->inv_matrix,id,sizeof(id));
+  
+  //print the inverse matrix
+  /*printf("\n");
+  for(i=0;i<n;i++)
+    for(j=0;j<n;j++)
+     printf("inverse[%i][%i] = %0.6LE\n",i,j,lin_eq->inv_matrix[i][j]);*/
 
+  return 1;
+
+}
