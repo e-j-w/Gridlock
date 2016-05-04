@@ -102,8 +102,13 @@ void fit3Par(const data * d, fit_results * fr)
       f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[1][i]*d->x[1][i] + fr->a[2]*d->x[2][i]*d->x[2][i] + fr->a[3]*d->x[0][i]*d->x[1][i] + fr->a[4]*d->x[0][i]*d->x[2][i] + fr->a[5]*d->x[1][i]*d->x[2][i] + fr->a[6]*d->x[0][i] + fr->a[7]*d->x[1][i] + fr->a[8]*d->x[2][i] + fr->a[9];
       fr->chisq+=(d->x[3][i] - f)*(d->x[3][i] - f)/(d->x[3+1][i]*d->x[3+1][i]);;
     }
+  //Calculate covariances and uncertainties, see J. Wolberg 
+  //'Data Analysis Using the Method of Least Squares' sec 2.5
   for(i=0;i<linEq.dim;i++)
-    fr->aerr[i]=(long double)sqrt((double)(linEq.inv_matrix[i][i]*(fr->chisq/fr->ndf)));
+    for(j=0;j<linEq.dim;j++)
+      fr->covar[i][j]=linEq.inv_matrix[i][j]*(fr->chisq/fr->ndf);
+  for(i=0;i<linEq.dim;i++)
+    fr->aerr[i]=(long double)sqrt((double)(fr->covar[i][i]));
     
   //now that the fit is performed, use the fit parameters (and the derivative of the fitting function) to find the minimum
   linEq.dim=3;

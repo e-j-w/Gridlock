@@ -135,6 +135,14 @@ void importData(data * d, parameters * p)
                   if(p->verbose<1)
                     printf("Will plot data using mode: %s\n",p->plotMode);
                 }
+              if(strcmp(str2,"DATA_TYPE")==0)
+                {
+                  p->plotData=1;
+                  strcpy(p->dataType,str3);
+                  if(p->verbose<1)
+                    if(strcmp(p->dataType,"chisq")==0)
+                      printf("Will treat data points as chi-squared values.\n");
+                }
             }
           else
             {

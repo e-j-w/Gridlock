@@ -20,10 +20,11 @@ Currently, parabola/paraboloid type functions are used.
 OPTIONS
 
 Add these commands (eg. 'PLOT 1d') as a single line anywhere in the data file to enable them:
+DATA_TYPE chisq - Tells the program that the data provided corresponds to reduced chi-square goodness of fit statistic values computed on a grid for each of the free parameters.
+NONVERBOSE - If used, the program will only output the fit parameters (coordinates of the fit paraboloid vertex), which can be useful for interfacing the program with shell scripts.
 PLOT 1d - Shows plot(s) in one variable, using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
 PLOT 2d - Shows plot(s) in two variables (surface plot), using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
 WEIGHTED - Use weights for the data points, specified in a column after the data values.
-NONVERBOSE - If used, the program will only output the fit parameters (coordinates of the fit paraboloid vertex), which can be useful for interfacing the program with shell scripts.
 
 
 INSTRUCTIONS

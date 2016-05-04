@@ -101,7 +101,10 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
       for(i=0;i<p->numVar;i++)
         {
           gnuplot_setstyle(handle,"points"); //set style for grid points
-          gnuplot_cmd(handle,"set ylabel 'Value'");
+          if(strcmp(p->dataType,"chisq")==0)
+            gnuplot_cmd(handle,"set ylabel 'Chisq'");
+          else  
+            gnuplot_cmd(handle,"set ylabel 'Value'");
           sprintf(str,"set xlabel 'Parameter %i'",i+1);
           gnuplot_cmd(handle,str);
           gnuplot_plot_xy(handle, pd->data[i][i], pd->data[i][p->numVar], pd->plotDataSize[i], "Data");
@@ -174,7 +177,7 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
                     gnuplot_cmd(handle,"set format y '%%12.2E'");
                   if(pd->axisLabelStyle[i][p->numVar]==1)
                     gnuplot_cmd(handle,"set format z '%%12.2E'");
-                  sprintf(str,"set xlabel 'Parameter 2'; set ylabel 'Parameter 3'; set zlabel 'Value'");
+                  sprintf(str,"set xlabel 'Parameter 2'; set ylabel 'Parameter 3'");
                 }
               if(i==1)
                 {
@@ -185,7 +188,7 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
                     gnuplot_cmd(handle,"set format y '%%12.2E'");
                   if(pd->axisLabelStyle[i][p->numVar]==1)
                     gnuplot_cmd(handle,"set format z '%%12.2E'");
-                  sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 3'; set zlabel 'Value'");
+                  sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 3'");
                 }
               if(i==2)
                 {
@@ -196,8 +199,12 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
                     gnuplot_cmd(handle,"set format y '%%12.2E'");
                   if(pd->axisLabelStyle[i][p->numVar]==1)
                     gnuplot_cmd(handle,"set format z '%%12.2E'");
-                  sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2'; set zlabel 'Value'");
+                  sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2'");
                 }
+              if(strcmp(p->dataType,"chisq")==0)
+                gnuplot_cmd(handle,"set zlabel 'Chisq'");
+              else  
+                gnuplot_cmd(handle,"set zlabel 'Value'");
               gnuplot_cmd(handle,str);
               gnuplot_setstyle(handle,"lines");
               gnuplot_cmd(handle,"set grid");//set style for fit data
@@ -228,8 +235,12 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
           if(pd->axisLabelStyle[0][1]==1)
             gnuplot_cmd(handle,"set format y '%%12.2E'");
           if(pd->axisLabelStyle[0][p->numVar]==1)
-            gnuplot_cmd(handle,"set format z '%%12.2E'");
-          sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2'; set zlabel 'Value'");
+            gnuplot_cmd(handle,"set format z '%%12.2E'"); 
+          if(strcmp(p->dataType,"chisq")==0)
+            gnuplot_cmd(handle,"set zlabel 'Chisq'");
+          else  
+            gnuplot_cmd(handle,"set zlabel 'Value'");
+          sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2'");
           gnuplot_cmd(handle,str);
           gnuplot_setstyle(handle,"lines");
           gnuplot_cmd(handle,"set grid");//set style for fit data

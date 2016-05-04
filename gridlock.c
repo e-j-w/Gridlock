@@ -50,13 +50,22 @@ int main(int argc, char *argv[])
 
   generateSums(d,p); //construct sums for fitting (see generate_sums.c) 
   
-  //call specific fitting routines depending on the number of free parameters
-  if(p->numVar==1)
-    fit1Par(d,fr); //see 1parfit.c
-  else if(p->numVar==2)
-    fit2Par(d,fr); //see 2parfit.c
-  else if(p->numVar==3)
-    fit3Par(d,fr); //see 3parfit.c
+  //Call specific fitting routines depending on 
+  //the number of free parameters and other settings.
+  if(p->numVar==1) //see 1parfit.c
+    {
+      fit1Par(d,fr);
+      if(strcmp(p->dataType,"chisq")==0)
+        fit1ParChisqConf(fr);//generate confidence interval bounds for chisq data
+    }
+  else if(p->numVar==2) //see 2parfit.c
+    {
+      fit2Par(d,fr);
+      if(strcmp(p->dataType,"chisq")==0)
+        fit2ParChisqConf(fr);//generate confidence interval bounds for chisq data
+    }
+  else if(p->numVar==3) //see 3parfit.c
+    fit3Par(d,fr);
   
   printResults(d,p,fr); //see print_results.c
   

@@ -44,10 +44,44 @@ void fit1Par(const data * d, fit_results * fr)
       fr->chisq+=(d->x[1][i] - f)*(d->x[1][i] - f)
                   /(d->x[1+1][i]*d->x[1+1][i]);
     }
+  //Calculate covariances and uncertainties, see J. Wolberg 
+  //'Data Analysis Using the Method of Least Squares' sec 2.5
   for(i=0;i<linEq.dim;i++)
-    fr->aerr[i]=(long double)sqrt((double)(linEq.inv_matrix[i][i]*(fr->chisq/fr->ndf)));
+    for(j=0;j<linEq.dim;j++)
+      fr->covar[i][j]=linEq.inv_matrix[i][j]*(fr->chisq/fr->ndf);
+  for(i=0;i<linEq.dim;i++)
+    fr->aerr[i]=(long double)sqrt((double)(fr->covar[i][i]));
     
   //now that the fit is performed, use the fit parameters (and the derivative of the fitting function) to find the minimum
   fr->fitVert[0]=-1.0*fr->a[1]/(2.*fr->a[0]);
+
+  //find the value of the fit function at the vertex
+  fr->vertVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[0] + fr->a[2];
+  
+}
+
+//determine uncertainty bounds for the vertex by intersection of fit function with line defining values at min + delta
+//derived by: 
+//1) setting f(x,y)=delta+min
+//2) solving for x bounds using the quadratic formula (calculated below)
+void fit1ParChisqConf(fit_results * fr)
+{
+  
+  long double a,b,c;
+  long double delta=1.00;//confidence level for 1-sigma in 1 parameter
+  fr->vertBoundsFound=1;
+  
+  a=fr->a[0];
+  b=fr->a[1];
+  c=fr->a[2] - delta - fr->vertVal;
+  if((b*b - 4*a*c)<0.) 
+    c=fr->a[2] + delta - fr->vertVal;//try flipping delta
+  if((b*b - 4*a*c)<0.)
+    fr->vertBoundsFound=0;
+  else
+    {
+      fr->vertUBound[0]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
+      fr->vertLBound[0]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
+    }
 
 }
