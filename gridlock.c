@@ -65,7 +65,11 @@ int main(int argc, char *argv[])
         fit2ParChisqConf(fr);//generate confidence interval bounds for chisq data
     }
   else if(p->numVar==3) //see 3parfit.c
-    fit3Par(d,fr);
+    {
+      fit3Par(d,fr);
+      if(strcmp(p->dataType,"chisq")==0)
+        fit3ParChisqConf(fr);//generate confidence interval bounds for chisq data
+    }
   
   printResults(d,p,fr); //see print_results.c
   

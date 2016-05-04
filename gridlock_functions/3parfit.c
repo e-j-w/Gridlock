@@ -136,5 +136,47 @@ void fit3Par(const data * d, fit_results * fr)
   
   for(i=0;i<linEq.dim;i++)
     fr->fitVert[i]=linEq.solution[i];
+    
   
+  //find the value of the fit function at the vertex
+  fr->vertVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[2]*fr->fitVert[2]*fr->fitVert[2] + fr->a[3]*fr->fitVert[0]*fr->fitVert[1] + fr->a[4]*fr->fitVert[0]*fr->fitVert[2] + fr->a[5]*fr->fitVert[1]*fr->fitVert[2] + fr->a[6]*fr->fitVert[0] + fr->a[7]*fr->fitVert[1] + fr->a[8]*fr->fitVert[2] + fr->a[9];
+  
+}
+
+//determine uncertainty ellipsoid bounds for the vertex by from fit function values fixed at min + delta
+//derived using the same procedure as for 2 free variables (see 2parfit.c), with an extra step solving the quadratic formula in between
+void fit3ParChisqConf(fit_results * fr)
+{
+  
+  long double a,b,c;
+  long double delta=3.53;//confidence level for 1-sigma in 3 parameters
+  fr->vertBoundsFound=1;
+
+  a=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*fr->a[1] - fr->a[3]*fr->a[3]) - 16.*(fr->a[0]*fr->a[0]*fr->a[5]*fr->a[5] - fr->a[0]*fr->a[3]*fr->a[4]*fr->a[5]) - 4.*fr->a[3]*fr->a[3]*fr->a[4]*fr->a[4];  
+  b=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*fr->a[7] - 2.*fr->a[3]*fr->a[6]) - 16.*(2.*fr->a[5]*fr->a[8]*fr->a[0]*fr->a[0] - fr->a[0]*fr->a[4]*(fr->a[5]*fr->a[6] + fr->a[8]*fr->a[3])) - 8.*fr->a[4]*fr->a[4]*fr->a[3]*fr->a[6];  
+  c=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*(fr->a[9] - delta - fr->vertVal) - fr->a[6]*fr->a[6]) - 16.*(fr->a[0]*fr->a[0]*fr->a[8]*fr->a[8] - fr->a[0]*fr->a[4]*fr->a[6]*fr->a[8]) - 4.*fr->a[4]*fr->a[4]*fr->a[6]*fr->a[6];
+  if((b*b - 4*a*c)<0.) 
+    c=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*(fr->a[9] + delta - fr->vertVal) - fr->a[6]*fr->a[6]) - 16.*(fr->a[0]*fr->a[0]*fr->a[8]*fr->a[8] - fr->a[0]*fr->a[4]*fr->a[6]*fr->a[8]) - 4.*fr->a[4]*fr->a[4]*fr->a[6]*fr->a[6];//try flipping delta
+  if((b*b - 4*a*c)<0.)  
+    fr->vertBoundsFound=0;
+  else
+    {
+      fr->vertUBound[1]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
+      fr->vertLBound[1]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
+    }
+  
+  a=(16.*fr->a[0]*fr->a[1] - 4.*fr->a[3]*fr->a[3])*(4.*fr->a[0]*fr->a[2] - fr->a[4]*fr->a[4]) - 16.*(fr->a[0]*fr->a[0]*fr->a[5]*fr->a[5] - fr->a[0]*fr->a[3]*fr->a[4]*fr->a[5]) - 4.*fr->a[3]*fr->a[3]*fr->a[4]*fr->a[4];
+  b=(16.*fr->a[0]*fr->a[1] - 4.*fr->a[3]*fr->a[3])*(4.*fr->a[0]*fr->a[8] - 2.*fr->a[4]*fr->a[6]) - 16.*(2.*fr->a[5]*fr->a[7]*fr->a[0]*fr->a[0] - fr->a[0]*fr->a[3]*(fr->a[5]*fr->a[6] + fr->a[7]*fr->a[4])) - 8.*fr->a[3]*fr->a[3]*fr->a[4]*fr->a[6];
+  c=(16.*fr->a[0]*fr->a[1] - 4.*fr->a[3]*fr->a[3])*(4.*fr->a[0]*(fr->a[9] - delta - fr->vertVal) - fr->a[6]*fr->a[6]) - 16.*(fr->a[0]*fr->a[0]*fr->a[7]*fr->a[7] - fr->a[0]*fr->a[3]*fr->a[6]*fr->a[7]) - 4.*fr->a[3]*fr->a[3]*fr->a[6]*fr->a[6];  
+  if((b*b - 4*a*c)<0.) 
+    c=(16.*fr->a[0]*fr->a[1] - 4.*fr->a[3]*fr->a[3])*(4.*fr->a[0]*(fr->a[9] + delta - fr->vertVal) - fr->a[6]*fr->a[6]) - 16.*(fr->a[0]*fr->a[0]*fr->a[7]*fr->a[7] - fr->a[0]*fr->a[3]*fr->a[6]*fr->a[7]) - 4.*fr->a[3]*fr->a[3]*fr->a[6]*fr->a[6];//try flipping delta
+  if((b*b - 4*a*c)<0.)  
+    fr->vertBoundsFound=0;
+  else
+    {
+      fr->vertUBound[2]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
+      fr->vertLBound[2]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
+    }
+    
+
 }
