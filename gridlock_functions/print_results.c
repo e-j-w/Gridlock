@@ -105,7 +105,17 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
         printf("Minimum in x direction, ");
       else
         printf("Maximum in x direction, ");
-      printf("x0 = %LE\n",fr->fitVert[0]);
+      if(fr->vertBoundsFound==1)
+        {
+          //these values were calculated at long double precision, 
+          //check if they are the same to within float precision
+          if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
+            printf("x0 = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
+          else
+            printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+        }
+      else
+        printf("x0 = %LE\n",fr->fitVert[0]);
       if(fr->a[1]>=0)
         printf("Minimum in y direction, ");
       else

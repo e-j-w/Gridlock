@@ -151,6 +151,19 @@ void fit3ParChisqConf(fit_results * fr)
   long double a,b,c;
   long double delta=3.53;//confidence level for 1-sigma in 3 parameters
   fr->vertBoundsFound=1;
+  
+  a=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[0]*fr->a[2] - fr->a[4]*fr->a[4]) - 16.*(fr->a[2]*fr->a[2]*fr->a[3]*fr->a[3] - fr->a[2]*fr->a[3]*fr->a[4]*fr->a[5]) - 4.*fr->a[4]*fr->a[4]*fr->a[5]*fr->a[5];
+  b=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[2]*fr->a[6] - 2.*fr->a[4]*fr->a[8]) - 16.*(2.*fr->a[2]*fr->a[2]*fr->a[3]*fr->a[7] - fr->a[2]*fr->a[5]*(fr->a[3]*fr->a[8] + fr->a[7]*fr->a[4])) - 8.*fr->a[5]*fr->a[5]*fr->a[4]*fr->a[8];
+  c=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[2]*(fr->a[9] - delta - fr->vertVal) - fr->a[8]*fr->a[8]) - 16.*(fr->a[2]*fr->a[2]*fr->a[7]*fr->a[7] - fr->a[2]*fr->a[5]*fr->a[7]*fr->a[8]) - 4.*fr->a[5]*fr->a[5]*fr->a[8]*fr->a[8]; 
+  if((b*b - 4*a*c)<0.)
+    c=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[2]*(fr->a[9] + delta - fr->vertVal) - fr->a[8]*fr->a[8]) - 16.*(fr->a[2]*fr->a[2]*fr->a[7]*fr->a[7] - fr->a[2]*fr->a[5]*fr->a[7]*fr->a[8]) - 4.*fr->a[5]*fr->a[5]*fr->a[8]*fr->a[8];//try flipping delta
+  if((b*b - 4*a*c)<0.)
+    fr->vertBoundsFound=0;
+  else
+    {
+      fr->vertUBound[0]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
+      fr->vertLBound[0]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
+    }
 
   a=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*fr->a[1] - fr->a[3]*fr->a[3]) - 16.*(fr->a[0]*fr->a[0]*fr->a[5]*fr->a[5] - fr->a[0]*fr->a[3]*fr->a[4]*fr->a[5]) - 4.*fr->a[3]*fr->a[3]*fr->a[4]*fr->a[4];  
   b=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*fr->a[7] - 2.*fr->a[3]*fr->a[6]) - 16.*(2.*fr->a[5]*fr->a[8]*fr->a[0]*fr->a[0] - fr->a[0]*fr->a[4]*(fr->a[5]*fr->a[6] + fr->a[8]*fr->a[3])) - 8.*fr->a[4]*fr->a[4]*fr->a[3]*fr->a[6];  
@@ -177,6 +190,16 @@ void fit3ParChisqConf(fit_results * fr)
       fr->vertUBound[2]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
       fr->vertLBound[2]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
     }
+  
+  //swap bounds if needed
+  int i;
+  for(i=0;i<3;i++)
+    if(fr->vertLBound[i]>fr->vertUBound[i])
+      {
+        a=fr->vertUBound[i];
+        fr->vertUBound[i]=fr->vertLBound[i];
+        fr->vertLBound[i]=a;
+      }
     
 
 }

@@ -126,4 +126,14 @@ void fit2ParChisqConf(fit_results * fr)
       fr->vertLBound[1]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
     }
 
+  //swap bounds if needed
+  int i;
+  for(i=0;i<2;i++)
+    if(fr->vertLBound[i]>fr->vertUBound[i])
+      {
+        a=fr->vertUBound[i];
+        fr->vertUBound[i]=fr->vertLBound[i];
+        fr->vertLBound[i]=a;
+      }
+
 }
