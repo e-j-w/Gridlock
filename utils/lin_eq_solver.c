@@ -3,22 +3,20 @@
 int solve_lin_eq(lin_eq_type * lin_eq)
 {
 
-  int i,j,n;
-
-  n=lin_eq->dim;
+  int i,j;//iterators
+  int n=lin_eq->dim;//dimension of the matrix (assume square)
+  
   if(get_inv(lin_eq)==0) //compute the inverse matrix
     {
       //printf("Linear equation set has no solutions\n");
       return 0;
     }
   
-  //use inverse matrix to find solutions  
+  //use inverse matrix to find solutions
+  memset(lin_eq->solution,0,sizeof(lin_eq->solution));
   for(i=0;i<n;i++)
-    {
-      lin_eq->solution[i]=0.;
-      for(j=0;j<n;j++)
-        lin_eq->solution[i]+=lin_eq->inv_matrix[i][j]*lin_eq->vector[j];
-    }
+    for(j=0;j<n;j++)
+      lin_eq->solution[i]+=lin_eq->inv_matrix[i][j]*lin_eq->vector[j];
   
   return 1;
 }
@@ -27,18 +25,19 @@ int solve_lin_eq(lin_eq_type * lin_eq)
 int get_inv(lin_eq_type * lin_eq)
 {
 
-  int i,j,k,l,n;
-  long double s,t;
+  int i,j,k,l;//iterators
+  int n=lin_eq->dim;//dimension of the matrix (assume square) 
+  long double s;//storage variable
 
-  n=lin_eq->dim;//dimension of the matrix (assume square)
-  memcpy(lin_eq->inv_matrix,lin_eq->matrix,sizeof(lin_eq->matrix));
-  
   //allocate the identity matrix to be transformed to the inverse
+  long double id[MAX_DIM][MAX_DIM];//stack overflow risk?
   memset(id,0,sizeof(id));
   for(i=0;i<n;i++)
     for(j=0;j<n;j++)
       if(i==j)
         id[i][j]=1.;
+        
+  memcpy(lin_eq->inv_matrix,lin_eq->matrix,sizeof(lin_eq->matrix));
         
   for(i=0;i<n;i++)
     {
@@ -56,20 +55,20 @@ int get_inv(lin_eq_type * lin_eq)
                   id[i][k]=id[j][k];
                   id[j][k]=s;
                 }
-              t=1./lin_eq->inv_matrix[i][i];
+              s=1./lin_eq->inv_matrix[i][i];
               for(k=0;k<n;k++)
                 {
-                  lin_eq->inv_matrix[i][k]=t*lin_eq->inv_matrix[i][k];
-                  id[i][k]=t*id[i][k];
+                  lin_eq->inv_matrix[i][k]=s*lin_eq->inv_matrix[i][k];
+                  id[i][k]=s*id[i][k];
                 }
               for(k=0;k<n;k++)
                 if(k!=i)
                   {
-                    t=-1.*lin_eq->inv_matrix[k][i];
+                    s=-1.*lin_eq->inv_matrix[k][i];
                     for(l=0;l<n;l++)
                       {
-                        lin_eq->inv_matrix[k][l]=lin_eq->inv_matrix[k][l] + t*lin_eq->inv_matrix[i][l];
-                        id[k][l]=id[k][l] + t*id[i][l];
+                        lin_eq->inv_matrix[k][l]=lin_eq->inv_matrix[k][l] + s*lin_eq->inv_matrix[i][l];
+                        id[k][l]=id[k][l] + s*id[i][l];
                       }
                   }
             }
