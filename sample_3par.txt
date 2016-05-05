@@ -1,5 +1,5 @@
 This is sample data with 3 free parameters.
-NUM_PAR 3
+FIT par3
 LOWER_LIMITS  14.1 0.6 2.20
 UPPER_LIMITS  14.3 1.4 2.35
 PLOT 2d

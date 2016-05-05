@@ -1,5 +1,5 @@
 This is sample data with 2 free parameters.
-NUM_PAR 2
+FIT par2
 PLOT 2d
 x y value
 0.9	2.24	5000

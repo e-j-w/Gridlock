@@ -15,6 +15,7 @@
 typedef struct
 {
   char filename[256];//name of the data file
+  char fitType[256];//the type of fit (linear,parabola,etc)
   char dataType[256];//the type of data provided (regular, chisq values, etc.)
   int plotData;//0=don't plot, 1=plot
   char plotMode[256];//the plotting style to be used

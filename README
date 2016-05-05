@@ -4,17 +4,20 @@ Maintainer: Jonathan Williams
 
 DESCRIPTION
 
-Code to fit a grid of data points with a parabola or paraboloid (depending on the number of free parameters) via chisq minimization and find the vertex.  Currently implemented for data with up to 3 free parameters.  Example data is included in the 'sample_1par.txt', 'sample_2par.txt' and 'sample_3par.txt' files.
+Code to fit grids of data points with various functions via chisq minimization and find fit properties (eg. vertex of fit paraboloid).  Currently implemented for data with up to 3 free parameters.  Example data is included in the 'sample_*.txt' files.
 
-Data files must contain a line specifying the number of free parameters, formatted 'NUM_PAR n' where n is the number of free parameters.  It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.  It is also possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style, see the options section below.
+Data files must contain a line specifying the fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see section on available fitting functions below).  It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.  It is also possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style, see the options section below.
 
 
 FITTING FUNCTIONS USED
 
-Currently, parabola/paraboloid type functions are used.
-1 free parameter: f(x) = a1*x^2 + a2*x + a3
-2 free parameters: f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
-3 free parameters: f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2 + a4*x*y + a5*x*z + a6*y*z + a7*x + a8*y + a9*z + a10
+Currently, parabola/paraboloid type functions are implemented.
+Functions with 1 free parameter
+par1: f(x) = a1*x^2 + a2*x + a3
+Functions with 2 free parameters
+par2: f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
+Functions with 3 free parameters
+par3: f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2 + a4*x*y + a5*x*z + a6*y*z + a7*x + a8*y + a9*z + a10
 
 
 OPTIONS

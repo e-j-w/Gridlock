@@ -30,9 +30,9 @@ void importData(data * d, parameters * p)
         {
           if(sscanf(str,"%s %s",str2,str3)==2)
             {
-              if(strcmp(str2,"NUM_PAR")==0)
+              if(strcmp(str2,"FIT")==0)
                 {
-                  p->numVar=atoi(str3);
+                  strcpy(p->fitType,str3);
                 }
             }
           else if(strcmp(str,"NONVERBOSE\n")==0)
@@ -43,20 +43,38 @@ void importData(data * d, parameters * p)
             p->readWeights=0;//data is unweighted
         }
     }
+  //check the fit type  
+  if(strcmp(p->fitType,"par1")==0)
+    p->numVar=1;
+  else if(strcmp(p->fitType,"par2")==0)
+    p->numVar=2;
+  else if(strcmp(p->fitType,"par3")==0)
+    p->numVar=3;
+  else if(strcmp(p->fitType,"")==0)
+    {
+      printf("ERROR: a fit type must be specified.\nMake sure to include a line in the file with the format\n\nFIT  type\n\nwhere 'type' is a valid fit type (eg. 'par1').\n");
+      exit(-1);
+    }
+  else
+    {
+      printf("ERROR: invalid fit type '%s' specified.\n",p->fitType);
+      exit(-1);
+    }
+    
   if(p->verbose<1)
     {
-      printf("Will fit with %i free parameters.\n",p->numVar);
+      if(strcmp(p->fitType,"par1")==0)
+        printf("Will fit a parabola.\n");
+      if(strcmp(p->fitType,"par2")==0)
+        printf("Will fit a paraboloid with %i free parameters.\n",p->numVar);
+      if(strcmp(p->fitType,"par3")==0)
+        printf("Will fit a paraboloid with %i free parameters.\n",p->numVar);
       if(p->readWeights==0)
         printf("No weights will be taken for data points.\n");
       if(p->readWeights==1)
         printf("Weights for data points will be taken from the last column of the data file.\n");
     }
   fclose(inp);
-  if(p->numVar<=0)
-    {
-      printf("ERROR: number of free parameters is not specified in the input file %s.\nMake sure to include a line in the file with the format\n\nNUM_PAR  n\n\nwhere n is the number of parameters in the file.\n",p->filename);
-      exit(-1);
-    }
   
   //import data from file
   if((inp=fopen(p->filename,"r"))==NULL)

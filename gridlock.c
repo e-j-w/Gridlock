@@ -4,11 +4,12 @@
 #include "import_data.c"
 #include "print_data_info.c"
 #include "generate_sums.c"
+#include "print_results.c"
+#include "plot_data.c"
+//fitting routines
 #include "1parfit.c"
 #include "2parfit.c"
 #include "3parfit.c"
-#include "print_results.c"
-#include "plot_data.c"
 
 int main(int argc, char *argv[])
 {

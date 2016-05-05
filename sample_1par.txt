@@ -1,4 +1,4 @@
-NUM_PAR 1
+FIT par1
 DATA_TYPE chisq
 PLOT 1d
 0.1	6.257993
