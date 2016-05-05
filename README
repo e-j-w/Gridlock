@@ -37,7 +37,6 @@ To run the program from anywhere, move the resulting 'gridlock' executable to an
 Tested and working on Ubuntu 14.04 and Scientific Linux/CentOS 6.  Should work on more or less any Linux distro.
 
 
-CONTRIBUTIONS
+ACKNOWLEDGEMENTS
 
-J. Williams - core logic
-N. Devillard - public domain gnuplot_i library for displaying plots
+This program uses the public domain gnuplot_i library by N. Devillard for displaying plots.

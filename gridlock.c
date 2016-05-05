@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
   if(argc!=2)
     {
       printf("\ngridlock filename\n-----------------\n\n");
-      printf("Performs grid minimization on the data in the specified file.  The file should be in plaintext, with a line specifying the number of free parameters using the format:\n\nNUM_PAR  n\n\nwhere n is the number of parameters.  Data in the file should be formatted in in columns with the (n+1)th column corresponding to the grid point value.\n\n");
+      printf("Fits the data in the specified file.  The file should be in plaintext, with a line specifying the fit type using the format:\n\nFIT  type\n\nPossible values of 'type' are listed in the README.\n\n");
       exit(-1);
     }
 
