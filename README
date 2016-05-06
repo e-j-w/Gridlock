@@ -9,15 +9,15 @@ Code to fit grids of data points with various functions via chisq minimization a
 Data files must contain a line specifying the fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see section on available fitting functions below).  It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.  It is also possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style, see the options section below.
 
 
-FITTING FUNCTIONS USED
+FITTING FUNCTIONS AVAILABLE
 
-Currently, parabola/paraboloid type functions are implemented.
-Functions with 1 free parameter
-par1: f(x) = a1*x^2 + a2*x + a3
-Functions with 2 free parameters
-par2: f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
-Functions with 3 free parameters
-par3: f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2 + a4*x*y + a5*x*z + a6*y*z + a7*x + a8*y + a9*z + a10
+Functions with 1 free parameter:
+lin - f(x) = a0*x + a1
+par1 - f(x) = a1*x^2 + a2*x + a3
+Functions with 2 free parameters:
+par2 - f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
+Functions with 3 free parameters:
+par3 - f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2 + a4*x*y + a5*x*z + a6*y*z + a7*x + a8*y + a9*z + a10
 
 
 OPTIONS
@@ -32,9 +32,9 @@ WEIGHTED - Use weights for the data points, specified in a column after the data
 
 INSTRUCTIONS
 
-Use 'make' to compile.  Tested using GNU make and gcc.
-To run the program from anywhere, move the resulting 'gridlock' executable to any directory under your $PATH environment variable.
-Tested and working on Ubuntu 14.04 and Scientific Linux/CentOS 6.  Should work on more or less any Linux distro.
+Use 'make' to compile.  Optional data plotting requires gnuplot to be installed.
+To run the program from anywhere, move the resulting 'topspek' executable to any directory under your $PATH environment variable.
+Tested and working using gcc and GNU make on Ubuntu 14.04 and Scientific Linux/CentOS 6.  Should work on more or less any Linux distro.
 
 
 ACKNOWLEDGEMENTS

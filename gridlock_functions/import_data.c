@@ -50,6 +50,8 @@ void importData(data * d, parameters * p)
     p->numVar=2;
   else if(strcmp(p->fitType,"par3")==0)
     p->numVar=3;
+  else if(strcmp(p->fitType,"lin")==0)
+    p->numVar=1;
   else if(strcmp(p->fitType,"")==0)
     {
       printf("ERROR: a fit type must be specified.\nMake sure to include a line in the file with the format\n\nFIT  type\n\nwhere 'type' is a valid fit type (eg. 'par1').\n");

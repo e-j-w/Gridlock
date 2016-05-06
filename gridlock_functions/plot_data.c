@@ -130,11 +130,11 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
               else if(i==1)
                 sprintf(str, "%Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[1],fr->a[0],pd->fixedParVal[0],fr->a[2],pd->fixedParVal[0],fr->a[4],fr->a[3],pd->fixedParVal[0],fr->a[5]);
             }
-          else if(p->numVar==1)
-            {
-              sprintf(str, "%Lf*(x**2) + %Lf*x + %Lf",fr->a[0],fr->a[1],fr->a[2]);
-            }
-          gnuplot_plot_equation(handle, str, "Fit");       
+          else if(strcmp(p->fitType,"par1")==0)
+            sprintf(str, "%Lf*(x**2) + %Lf*x + %Lf",fr->a[0],fr->a[1],fr->a[2]);
+          else if(strcmp(p->fitType,"lin")==0)
+            sprintf(str, "%Lf*x + %Lf",fr->a[0],fr->a[1]);
+          gnuplot_plot_equation(handle, str, "Fit");
           printf("Showing plot for parameter %i.\n",i+1);
           if(p->numVar==3)
             {

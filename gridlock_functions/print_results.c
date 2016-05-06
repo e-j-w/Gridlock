@@ -13,8 +13,22 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
       return;
     }
   
+  if(strcmp(p->fitType,"lin")==0)
+    {
+      printf("\nFIT RESULTS\n-----------\n");
+      printf("Uncertainties reported at 1-sigma.\n");
+      printf("Fit function: f(x,y) = a1*x + a2\n\n");
+      printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+      printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
+      printf("                       a2 = %LE +/- %LE\n",fr->a[1],fr->aerr[1]);
+      printf("\n");
+      
+      printf("x-intercept = %LE\n",fr->fitVert[0]);
+      printf("y-intercept = %LE\n",fr->fitVert[1]);
 
-  if(p->numVar==1)
+    }
+
+  if(strcmp(p->fitType,"par1")==0)
     {
       printf("\nFIT RESULTS\n-----------\n");
       printf("Uncertainties reported at 1-sigma.\n");
@@ -45,7 +59,7 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
 
     }
 
-  if(p->numVar==2)
+  if(strcmp(p->fitType,"par2")==0)
     {
     
       printf("\nFIT RESULTS\n-----------\n");
@@ -90,7 +104,7 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
       
     }
 
-  if(p->numVar==3)
+  if(strcmp(p->fitType,"par3")==0)
     {
       printf("\nFIT RESULTS\n-----------\n");
       printf("Uncertainties reported at 1-sigma.\n");

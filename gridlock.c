@@ -7,6 +7,7 @@
 #include "print_results.c"
 #include "plot_data.c"
 //fitting routines
+#include "linfit.c"
 #include "1parfit.c"
 #include "2parfit.c"
 #include "3parfit.c"
@@ -53,23 +54,27 @@ int main(int argc, char *argv[])
   
   //Call specific fitting routines depending on 
   //the number of free parameters and other settings.
-  if(p->numVar==1) //see 1parfit.c
+  if(strcmp(p->fitType,"par1")==0) //see 1parfit.c
     {
       fit1Par(d,fr);
       if(strcmp(p->dataType,"chisq")==0)
         fit1ParChisqConf(fr);//generate confidence interval bounds for chisq data
     }
-  else if(p->numVar==2) //see 2parfit.c
+  else if(strcmp(p->fitType,"par2")==0) //see 2parfit.c
     {
       fit2Par(d,fr);
       if(strcmp(p->dataType,"chisq")==0)
         fit2ParChisqConf(fr);//generate confidence interval bounds for chisq data
     }
-  else if(p->numVar==3) //see 3parfit.c
+  else if(strcmp(p->fitType,"par3")==0) //see 3parfit.c
     {
       fit3Par(d,fr);
       if(strcmp(p->dataType,"chisq")==0)
         fit3ParChisqConf(fr);//generate confidence interval bounds for chisq data
+    }
+  else if(strcmp(p->fitType,"lin")==0)
+    {
+      fitLin(d,fr);
     }
   
   printResults(d,p,fr); //see print_results.c
@@ -84,6 +89,7 @@ int main(int argc, char *argv[])
   free(d);
   free(p);
   free(fr);
+  free(pd);
     
   return 0; //great success
 }
