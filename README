@@ -12,7 +12,7 @@ Data files must contain a line specifying the fit function, formatted 'FIT type'
 FITTING FUNCTIONS AVAILABLE
 
 Functions with 1 free parameter:
-lin - f(x) = a0*x + a1
+lin - f(x) = a1*x + a2
 par1 - f(x) = a1*x^2 + a2*x + a3
 Functions with 2 free parameters:
 par2 - f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
