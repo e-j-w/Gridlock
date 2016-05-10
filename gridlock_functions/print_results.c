@@ -7,9 +7,25 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
   //simplified data printing depending on verbosity setting
   if(p->verbose==1)
     {
-      for(i=0;i<p->numVar;i++)
-        printf("%LE ",fr->fitVert[i]);
-      printf("\n");
+      if(strcmp(p->fitType,"lin")==0)
+        {
+          //print x and y intercept
+          printf("%LE %LE\n",fr->fitVert[0],fr->fitVert[1]);
+        }
+      else if(strcmp(p->fitType,"poly3")==0)
+        {
+          //print critical points
+          printf("%LE %LE\n",fr->fitVert[0],fr->fitVert[1]);
+        }
+      else if((strcmp(p->fitType,"par1")==0)
+              ||(strcmp(p->fitType,"par2")==0)
+              ||(strcmp(p->fitType,"par3")==0))
+        {
+          //print vertex of paraboloid
+          for(i=0;i<p->numVar;i++)
+            printf("%LE ",fr->fitVert[i]);
+          printf("\n");
+        }
       return;
     }
   
@@ -25,6 +41,25 @@ void printResults(const data * d, const parameters * p, const fit_results * fr)
       
       printf("x-intercept = %LE\n",fr->fitVert[0]);
       printf("y-intercept = %LE\n",fr->fitVert[1]);
+
+    }
+    
+  if(strcmp(p->fitType,"poly3")==0)
+    {
+      printf("\nFIT RESULTS\n-----------\n");
+      printf("Uncertainties reported at 1-sigma.\n");
+      printf("Fit function: f(x,y) = a1*x^3 + a2*x^2 + a3*x + a4\n\n");
+      printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+      printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
+      for(i=1;i<4;i++)
+        printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
+      printf("\n");
+      
+      //check for NaN
+      if((fr->fitVert[0]==fr->fitVert[0])&&(fr->fitVert[1]==fr->fitVert[1]))
+        printf("Critical points at x = [ %LE %LE ]\n",fr->fitVert[0],fr->fitVert[1]);
+      else
+        printf("Fit function is monotonic (no critical points).\n");
 
     }
 

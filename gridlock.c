@@ -11,6 +11,7 @@
 #include "1parfit.c"
 #include "2parfit.c"
 #include "3parfit.c"
+#include "poly3fit.c"
 
 int main(int argc, char *argv[])
 {
@@ -75,6 +76,10 @@ int main(int argc, char *argv[])
   else if(strcmp(p->fitType,"lin")==0)
     {
       fitLin(d,fr);
+    }
+  else if(strcmp(p->fitType,"poly3")==0)
+    {
+      fitPoly3(d,fr);
     }
   
   printResults(d,p,fr); //see print_results.c

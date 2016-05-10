@@ -69,7 +69,13 @@ void getPlotDataNearMin(const data * d, const parameters * p, const fit_results 
     }
   else if (p->plotData!=0)
     {
-      printf("ERROR: Plotting mode '%s' is not availiable for this data!\n",p->plotMode);
+      printf("ERROR: Plotting mode '%s' is not availiable for the fit type used (%s).\n",p->plotMode,p->fitType);
+      if(p->numVar==1)
+        printf("Available plot modes: 1d.\n");
+      else if(p->numVar>=2)
+        printf("Available plot modes: 1d, 2d.\n");
+      else
+        printf("No plot modes available for this fit type.\n");
       exit(-1);
     }
 
@@ -134,6 +140,8 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
             sprintf(str, "%Lf*(x**2) + %Lf*x + %Lf",fr->a[0],fr->a[1],fr->a[2]);
           else if(strcmp(p->fitType,"lin")==0)
             sprintf(str, "%Lf*x + %Lf",fr->a[0],fr->a[1]);
+          else if(strcmp(p->fitType,"poly3")==0)
+            sprintf(str, "%Lf*(x**3) + %Lf*(x**2) + %Lf*x + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3]);
           gnuplot_plot_equation(handle, str, "Fit");
           printf("Showing plot for parameter %i.\n",i+1);
           if(p->numVar==3)
