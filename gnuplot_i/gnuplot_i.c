@@ -69,6 +69,7 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle);
  */
 void gnuplot_plot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char const* title);
 void gnuplot_splot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char const* title);
+void gnuplot_splot4d_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char const* title);
 
 /*---------------------------------------------------------------------------
                             Function codes
@@ -513,6 +514,41 @@ void gnuplot_plot_xyz(
     return ;
 }
 
+void gnuplot_plot_xyza(
+    gnuplot_ctrl    *   handle,
+    double          *   x,
+    double          *   y,
+    double          *   z,
+    double          *   a,
+    int                 n,
+    char            *   title
+)
+{
+    int     i ;
+    FILE*   tmpfd ;
+    char const * tmpfname;
+
+    if (handle==NULL || x==NULL || y==NULL || z==NULL || a==NULL || (n<1)) return ;
+
+    /* Open temporary file for output   */
+    tmpfname = gnuplot_tmpfile(handle);
+    tmpfd = fopen(tmpfname, "w");
+
+    if (tmpfd == NULL) {
+        fprintf(stderr,"cannot create temporary file: exiting plot") ;
+        return ;
+    }
+
+    /* Write data to this file  */
+    for (i=0 ; i<n; i++) {
+        fprintf(tmpfd, "%.18e %.18e %.18e %.18e\n", x[i], y[i], z[i], a[i]) ;
+    }
+    fclose(tmpfd) ;
+
+    gnuplot_splot4d_atmpfile(handle,tmpfname,title);
+    return ;
+}
+
 
 
 /*-------------------------------------------------------------------------*/
@@ -808,6 +844,18 @@ void gnuplot_splot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, cha
         gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s", cmd, tmp_filename,title, handle->pstyle) ;
     else
         gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
+    handle->nplots++ ;
+    return ;
+}
+
+void gnuplot_splot4d_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char const* title)
+{
+    char const *    cmd    = (handle->nplots > 0) ? "replot" : "splot";
+    title                  = (title == NULL)      ? "(none)" : title;
+    if(handle->colSet==0)
+        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s lc palette", cmd, tmp_filename,title, handle->pstyle) ;
+    else
+        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s lc palette", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
     handle->nplots++ ;
     return ;
 }

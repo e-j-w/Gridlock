@@ -62,6 +62,19 @@ void getPlotDataNearMin(const data * d, const parameters * p, const fit_results 
       memset(pd->plotDataSize,0,sizeof(pd->plotDataSize));
       for(i=0;i<d->lines;i++)
         {
+          //copy over data to plot
+          for(j=0;j<=p->numVar;j++)//parameter index (x,y,z,value)
+            pd->data[0][j][pd->plotDataSize[0]]=((double)d->x[j][i]);
+          pd->plotDataSize[0]++;
+        }
+    }
+  else if((p->numVar==3)&&(strcmp(p->plotMode,"3d")==0))
+    {
+      pd->numPlots=1;
+      memset(pd->plotDataSize,0,sizeof(pd->plotDataSize));
+      for(i=0;i<d->lines;i++)
+        {
+          //copy over data to plot
           for(j=0;j<=p->numVar;j++)//parameter index (x,y,z,value)
             pd->data[0][j][pd->plotDataSize[0]]=((double)d->x[j][i]);
           pd->plotDataSize[0]++;
@@ -72,8 +85,10 @@ void getPlotDataNearMin(const data * d, const parameters * p, const fit_results 
       printf("ERROR: Plotting mode '%s' is not availiable for the fit type used (%s).\n",p->plotMode,p->fitType);
       if(p->numVar==1)
         printf("Available plot modes: 1d.\n");
-      else if(p->numVar>=2)
+      else if(p->numVar==2)
         printf("Available plot modes: 1d, 2d.\n");
+      else if(p->numVar==3)
+        printf("Available plot modes: 1d, 2d, 3d.\n");
       else
         printf("No plot modes available for this fit type.\n");
       exit(-1);
@@ -256,6 +271,35 @@ void plotData(const data * d, const parameters * p, const fit_results * fr, plot
           sprintf(str, "%Lf*(x**2) + %Lf*(y**2) + %Lf*x*y + %Lf*x + %Lf*y + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3],fr->a[4],fr->a[5]);
           gnuplot_plot_equation(handle, str, "Fit");
           printf("Showing surface plot.\n");
+          printf("%i data points available for plot.\n",pd->plotDataSize[0]);
+          printf("Press [ENTER] to exit.");
+          getc(stdin);
+          gnuplot_resetplot(handle);
+        }
+    }
+  else if(strcmp(p->plotMode,"3d")==0)
+    {
+      if(p->numVar==3)
+        {
+          gnuplot_setstyle(handle,"points"); //set style for grid points
+          gnuplot_plot_xyza(handle, pd->data[0][0], pd->data[0][1], pd->data[0][2], pd->data[0][p->numVar], pd->plotDataSize[0], "Data");
+          if(pd->axisLabelStyle[0][0]==1)
+            gnuplot_cmd(handle,"set format x '%%12.2E'");
+          if(pd->axisLabelStyle[0][1]==1)
+            gnuplot_cmd(handle,"set format y '%%12.2E'");
+          if(pd->axisLabelStyle[0][2]==1)
+            gnuplot_cmd(handle,"set format z '%%12.2E'");     
+          sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2'; set zlabel 'Parameter 3'");
+          gnuplot_cmd(handle,str);
+          if(strcmp(p->fitType,"par3")==0)
+            {
+              gnuplot_setcolor(handle,"black");
+              double xVert=(double)fr->fitVert[0];
+              double yVert=(double)fr->fitVert[1];
+              double zVert=(double)fr->fitVert[2];
+              gnuplot_plot_xyz(handle, &xVert, &yVert, &zVert, 1, "Fit Vertex");
+            }
+          printf("Showing heatmap plot.\n");
           printf("%i data points available for plot.\n",pd->plotDataSize[0]);
           printf("Press [ENTER] to exit.");
           getc(stdin);

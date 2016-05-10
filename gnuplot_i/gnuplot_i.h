@@ -292,7 +292,7 @@ void gnuplot_plot_xy(
         y[i] = x[i] * x[i] ;
         z[i] = x[i] * x[i] ;
     }
-    gnuplot_plot_xyz(h, x, y, z, 50, "parabola") ;
+    gnuplot_plot_xyz(h, x, y, z, 50, "3d") ;
     sleep(2) ;
     gnuplot_close(h) ;
   @endcode
@@ -303,6 +303,53 @@ void gnuplot_plot_xyz(
     double          *   x,
     double          *   y,
     double          *   z,
+    int                 n,
+    char            *   title
+) ;
+
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Plot a 4d (heatmap) graph from a list of points.
+  @param    handle      Gnuplot session control handle.
+  @param    x           Pointer to a list of x coordinates.
+  @param    y           Pointer to a list of y coordinates.
+  @param    z           Pointer to a list of z coordinates.
+  @param    a           Pointer to a list of a coordinates.
+  @param    n           Number of doubles in x (assumed the same as in y, z, and a).
+  @param    title       Title of the plot.
+  @return   void
+
+  Plots out a 3d graph from a list of points. Provide points through a list
+  of x and a list of y coordinates. Both provided arrays are assumed to
+  contain the same number of values.
+
+  @code
+    gnuplot_ctrl    *h ;
+    double          x[50] ;
+    double          y[50] ;
+    double          z[50] ;
+    int             i ;
+
+    h = gnuplot_init() ;
+    for (i=0 ; i<50 ; i++) {
+        x[i] = (double)(i)/10.0 ;
+        y[i] = x[i] * x[i] ;
+        z[i] = x[i] * x[i] ;
+        a[i] = y[i] * x[i] ;
+    }
+    gnuplot_plot_xyza(h, x, y, z, a, 50, "heatmap") ;
+    sleep(2) ;
+    gnuplot_close(h) ;
+  @endcode
+ */
+/*--------------------------------------------------------------------------*/
+void gnuplot_plot_xyza(
+    gnuplot_ctrl    *   handle,
+    double          *   x,
+    double          *   y,
+    double          *   z,
+    double          *   a,
     int                 n,
     char            *   title
 ) ;

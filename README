@@ -28,6 +28,7 @@ DATA_TYPE chisq - Tells the program that the data provided corresponds to reduce
 NONVERBOSE - If used, the program will only output the fit parameters (coordinates of the fit paraboloid vertex, or x and y intercept for a linear fit), which can be useful for interfacing the program with shell scripts.
 PLOT 1d - Shows plot(s) in one variable, using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
 PLOT 2d - Shows plot(s) in two variables (surface plot), using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
+PLOT 3d - Shows plot in three variables (colour-coded heatmap plot) for the data, with the vertex of the fit function marked on the map.
 WEIGHTED - Use weights for the data points, specified in a column after the data values.
 
 
