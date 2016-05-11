@@ -1,17 +1,16 @@
 //definitions
 #include "gridlock.h"
-//functions
-#include "import_data.c"
-#include "print_data_info.c"
-#include "generate_sums.c"
-#include "print_results.c"
-#include "plot_data.c"
 //fitting routines
 #include "linfit.c"
 #include "1parfit.c"
 #include "2parfit.c"
 #include "3parfit.c"
 #include "poly3fit.c"
+//functions
+#include "import_data.c"
+#include "print_data_info.c"
+#include "generate_sums.c"
+#include "plot_data.c"
 
 int main(int argc, char *argv[])
 {
@@ -60,34 +59,37 @@ int main(int argc, char *argv[])
       fit1Par(d,fr);
       if(strcmp(p->dataType,"chisq")==0)
         fit1ParChisqConf(fr);//generate confidence interval bounds for chisq data
+      print1Par(d,p,fr);
     }
   else if(strcmp(p->fitType,"par2")==0) //see 2parfit.c
     {
       fit2Par(d,fr);
       if(strcmp(p->dataType,"chisq")==0)
         fit2ParChisqConf(fr);//generate confidence interval bounds for chisq data
+      print2Par(d,p,fr);
     }
   else if(strcmp(p->fitType,"par3")==0) //see 3parfit.c
     {
       fit3Par(d,fr);
       if(strcmp(p->dataType,"chisq")==0)
         fit3ParChisqConf(fr);//generate confidence interval bounds for chisq data
+      print3Par(d,p,fr);
     }
   else if(strcmp(p->fitType,"lin")==0)
     {
       fitLin(d,fr);
+      printLin(d,p,fr);
     }
   else if(strcmp(p->fitType,"poly3")==0)
     {
       fitPoly3(d,fr);
+      printPoly3(d,p,fr);
     }
-  
-  printResults(d,p,fr); //see print_results.c
   
   if((p->plotData==1)&&(p->verbose<1))
     {
-      getPlotDataNearMin(d,p,fr,pd);
-      plotData(d,p,fr,pd);
+      preparePlotData(d,p,fr,pd);
+      plotData(p,fr,pd);
     }
   
   //free structures

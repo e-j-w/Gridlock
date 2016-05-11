@@ -48,3 +48,47 @@ void fitLin(const data * d, fit_results * fr)
   fr->fitVert[1]=fr->a[1];//y-intercept
   
 }
+
+//prints the results
+void printLin(const data * d, const parameters * p, const fit_results * fr)
+{
+
+  //simplified data printing depending on verbosity setting
+  if(p->verbose==1)
+    {
+      //print x and y intercept
+      printf("%LE %LE\n",fr->fitVert[0],fr->fitVert[1]);
+      return;
+    }
+  
+  printf("\nFIT RESULTS\n-----------\n");
+  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit function: f(x,y) = a1*x + a2\n\n");
+  printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+  printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
+  printf("                       a2 = %LE +/- %LE\n",fr->a[1],fr->aerr[1]);
+  printf("\n");
+  
+  printf("x-intercept = %LE\n",fr->fitVert[0]);
+  printf("y-intercept = %LE\n",fr->fitVert[1]);
+    
+}
+
+//generates the functional form of the fit function for plotting
+char * plotFormLin(const parameters * p, const fit_results * fr, plot_data * pd, int plotNum)
+{
+  char * str;
+  str=(char*)calloc(256,sizeof(char));
+  if(strcmp(p->plotMode,"1d")==0)
+    {
+      sprintf(str, "%Lf*x + %Lf",fr->a[0],fr->a[1]);
+    }
+  else
+    {
+      printf("ERROR: Invalid plot mode (%s), cannot get functional form.\n",p->plotMode);
+      exit(-1);
+    }
+    
+  return str;
+
+}

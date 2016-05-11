@@ -137,3 +137,89 @@ void fit2ParChisqConf(fit_results * fr)
       }
 
 }
+
+
+//prints fit data
+void print2Par(const data * d, const parameters * p, const fit_results * fr)
+{
+
+  int i;
+
+  //simplified data printing depending on verbosity setting
+  if(p->verbose==1)
+    {
+      //print vertex of paraboloid
+      for(i=0;i<p->numVar;i++)
+        printf("%LE ",fr->fitVert[i]);
+      printf("\n");
+      return;
+    }
+  
+  printf("\nFIT RESULTS\n-----------\n");
+  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit function: f(x,y) = a1*x^2 + a2*y^2 + a3*x*y\n                     + a4*x + a5*y + a6\n\n");
+  printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+  printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
+  for(i=1;i<6;i++)
+    printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
+  printf("\n");
+  
+  if(fr->a[0]>=0)
+    printf("Minimum in x direction, ");
+  else
+    printf("Maximum in x direction, ");
+  if(fr->vertBoundsFound==1)
+    {
+      //these values were calculated at long double precision, 
+      //check if they are the same to within float precision
+      if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
+        printf("x0 = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
+      else
+        printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+    }
+  else
+    printf("x0 = %LE\n",fr->fitVert[0]);
+  if(fr->a[1]>=0)
+    printf("Minimum in y direction, ");
+  else
+    printf("Maximum in y direction, ");
+  if(fr->vertBoundsFound==1)
+    {
+      if ((float)(fr->fitVert[1]-fr->vertLBound[1])==(float)(fr->vertUBound[1]-fr->fitVert[1]))
+        printf("y0 = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
+      else
+        printf("y0 = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[1]);
+    }
+  else
+    printf("y0 = %LE\n",fr->fitVert[1]);
+  
+  printf("\nf(x0,y0) = %LE\n",fr->vertVal);
+  
+}
+
+//generates the functional form of the fit function for plotting,
+//which varies depending on the plotting mode (parameters may be fixed)
+char * plotForm2Par(const parameters * p, const fit_results * fr, plot_data * pd, int plotNum)
+{
+  char * str;
+  str=(char*)calloc(256,sizeof(char));
+  if(strcmp(p->plotMode,"1d")==0)
+    {
+      if(plotNum==0)
+        sprintf(str, "%Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[0],fr->a[1],pd->fixedParVal[1],fr->a[2],pd->fixedParVal[1],fr->a[3],fr->a[4],pd->fixedParVal[1],fr->a[5]);
+      else if(plotNum==1)
+        sprintf(str, "%Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[1],fr->a[0],pd->fixedParVal[0],fr->a[2],pd->fixedParVal[0],fr->a[4],fr->a[3],pd->fixedParVal[0],fr->a[5]);
+    }
+  else if(strcmp(p->plotMode,"2d")==0)
+    {
+      sprintf(str, "%Lf*(x**2) + %Lf*(y**2) + %Lf*x*y + %Lf*x + %Lf*y + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3],fr->a[4],fr->a[5]);
+    }
+  else
+    {
+      printf("ERROR: Invalid plot mode (%s), cannot get functional form.\n",p->plotMode);
+      exit(-1);
+    }
+    
+  return str;
+
+}

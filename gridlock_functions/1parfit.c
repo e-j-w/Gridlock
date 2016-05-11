@@ -93,3 +93,67 @@ void fit1ParChisqConf(fit_results * fr)
     }
 
 }
+
+
+//prints fit data
+void print1Par(const data * d, const parameters * p, const fit_results * fr)
+{
+
+  int i;
+
+  //simplified data printing depending on verbosity setting
+  if(p->verbose==1)
+    {
+      //print vertex of paraboloid
+      for(i=0;i<p->numVar;i++)
+        printf("%LE ",fr->fitVert[i]);
+      printf("\n");
+      return;
+    }
+    
+  printf("\nFIT RESULTS\n-----------\n");
+  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit function: f(x,y) = a1*x^2 + a2*x + a3\n\n");
+  printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+  printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
+  for(i=1;i<3;i++)
+    printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
+  printf("\n");
+  
+  if(fr->a[0]>=0)
+    printf("Minimum in x direction, ");
+  else
+    printf("Maximum in x direction, ");
+  if(fr->vertBoundsFound==1)
+    {
+      //these values were calculated at long double precision, 
+      //check if they are the same to within float precision
+      if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
+        printf("x0 = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
+      else
+        printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+    }
+  else
+    printf("x0 = %LE\n",fr->fitVert[0]);
+  
+  printf("\nf(x0) = %LE\n",fr->vertVal);
+}
+
+//generates the functional form of the fit function for plotting
+char * plotForm1Par(const parameters * p, const fit_results * fr, plot_data * pd, int plotNum)
+{
+  char * str;
+  str=(char*)calloc(256,sizeof(char));
+  if(strcmp(p->plotMode,"1d")==0)
+    {
+      sprintf(str, "%Lf*(x**2) + %Lf*x + %Lf",fr->a[0],fr->a[1],fr->a[2]);
+    }
+  else
+    {
+      printf("ERROR: Invalid plot mode (%s), cannot get functional form.\n",p->plotMode);
+      exit(-1);
+    }
+    
+  return str;
+
+}

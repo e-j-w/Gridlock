@@ -66,3 +66,53 @@ void fitPoly3(const data * d, fit_results * fr)
 
   
 }
+
+//prints fit data
+void printPoly3(const data * d, const parameters * p, const fit_results * fr)
+{
+
+  int i;
+
+  //simplified data printing depending on verbosity setting
+  if(p->verbose==1)
+    {
+      //print critical points
+      printf("%LE %LE\n",fr->fitVert[0],fr->fitVert[1]);
+      return;
+    }
+  
+  printf("\nFIT RESULTS\n-----------\n");
+  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit function: f(x,y) = a1*x^3 + a2*x^2 + a3*x + a4\n\n");
+  printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+  printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
+  for(i=1;i<4;i++)
+    printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
+  printf("\n");
+  
+  //check for NaN
+  if((fr->fitVert[0]==fr->fitVert[0])&&(fr->fitVert[1]==fr->fitVert[1]))
+    printf("Critical points at x = [ %LE %LE ]\n",fr->fitVert[0],fr->fitVert[1]);
+  else
+    printf("Fit function is monotonic (no critical points).\n");
+  
+}
+
+//generates the functional form of the fit function for plotting
+char * plotFormPoly3(const parameters * p, const fit_results * fr, plot_data * pd, int plotNum)
+{
+  char * str;
+  str=(char*)calloc(256,sizeof(char));
+  if(strcmp(p->plotMode,"1d")==0)
+    {
+      sprintf(str, "%Lf*(x**3) + %Lf*(x**2) + %Lf*x + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3]);
+    }
+  else
+    {
+      printf("ERROR: Invalid plot mode (%s), cannot get functional form.\n",p->plotMode);
+      exit(-1);
+    }
+    
+  return str;
+
+}
