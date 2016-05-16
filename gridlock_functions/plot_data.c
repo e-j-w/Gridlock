@@ -174,9 +174,9 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
     }
   else if(strcmp(p->plotMode,"2d")==0)
     {
-      for(i=0;i<p->numVar;i++)
+      if(p->numVar==3)
         {
-          if(p->numVar==3)
+          for(i=0;i<p->numVar;i++)
             {
               gnuplot_setstyle(handle,"points"); //set style for grid points
               if(i==0)
@@ -232,36 +232,36 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
               getc(stdin);
               gnuplot_resetplot(handle);
             }
-          else if(p->numVar==2)
+        }
+      else if(p->numVar==2)
+        {
+          gnuplot_setstyle(handle,"points"); //set style for grid points
+          gnuplot_plot_xyz(handle, pd->data[0][0], pd->data[0][1], pd->data[0][p->numVar], pd->plotDataSize[0], "Data");
+          if(pd->axisLabelStyle[0][0]==1)
+            gnuplot_cmd(handle,"set format x '%%12.2E'");
+          if(pd->axisLabelStyle[0][1]==1)
+            gnuplot_cmd(handle,"set format y '%%12.2E'");
+          if(pd->axisLabelStyle[0][p->numVar]==1)
+            gnuplot_cmd(handle,"set format z '%%12.2E'"); 
+          if(strcmp(p->dataType,"chisq")==0)
+            gnuplot_cmd(handle,"set zlabel 'Chisq'");
+          else  
+            gnuplot_cmd(handle,"set zlabel 'Value'");
+          sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2'");
+          gnuplot_cmd(handle,str);
+          gnuplot_setstyle(handle,"lines");
+          gnuplot_cmd(handle,"set grid");//set style for fit data
+          //generate fit data functional forms
+          if(strcmp(p->fitType,"par2")==0)
             {
-              gnuplot_setstyle(handle,"points"); //set style for grid points
-              gnuplot_plot_xyz(handle, pd->data[0][0], pd->data[0][1], pd->data[0][p->numVar], pd->plotDataSize[0], "Data");
-              if(pd->axisLabelStyle[0][0]==1)
-                gnuplot_cmd(handle,"set format x '%%12.2E'");
-              if(pd->axisLabelStyle[0][1]==1)
-                gnuplot_cmd(handle,"set format y '%%12.2E'");
-              if(pd->axisLabelStyle[0][p->numVar]==1)
-                gnuplot_cmd(handle,"set format z '%%12.2E'"); 
-              if(strcmp(p->dataType,"chisq")==0)
-                gnuplot_cmd(handle,"set zlabel 'Chisq'");
-              else  
-                gnuplot_cmd(handle,"set zlabel 'Value'");
-              sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2'");
-              gnuplot_cmd(handle,str);
-              gnuplot_setstyle(handle,"lines");
-              gnuplot_cmd(handle,"set grid");//set style for fit data
-              //generate fit data functional forms
-              if(strcmp(p->fitType,"par2")==0)
-                {
-                  str=plotForm2Par(p,fr,pd,i);
-                }
-              gnuplot_plot_equation(handle, str, "Fit");
-              printf("Showing surface plot.\n");
-              printf("%i data points available for plot.\n",pd->plotDataSize[0]);
-              printf("Press [ENTER] to exit.");
-              getc(stdin);
-              gnuplot_resetplot(handle);
+              str=plotForm2Par(p,fr,pd,0);
             }
+          gnuplot_plot_equation(handle, str, "Fit");
+          printf("Showing surface plot.\n");
+          printf("%i data points available for plot.\n",pd->plotDataSize[0]);
+          printf("Press [ENTER] to exit.");
+          getc(stdin);
+          gnuplot_resetplot(handle);
         }
     }
   else if(strcmp(p->plotMode,"3d")==0)
