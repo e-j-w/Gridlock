@@ -141,7 +141,7 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
             str=plotForm2Par(p,fr,pd,i);
           else if(strcmp(p->fitType,"par1")==0)
             str=plotForm1Par(p,fr,pd,i);
-          else if(strcmp(p->fitType,"lin")==0)
+          else if((strcmp(p->fitType,"lin")==0)||(strcmp(p->fitType,"lin_slope_errors")==0))
             str=plotFormLin(p,fr,pd,i);
           else if(strcmp(p->fitType,"poly3")==0)
             str=plotFormPoly3(p,fr,pd,i);

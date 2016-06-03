@@ -1,5 +1,5 @@
 //fit data to a line of the form
-//f(x,y) = a1*x + a2
+//f(x) = a1*x + a2
 void fitLin(const data * d, fit_results * fr)
 {
   //construct equations
@@ -52,7 +52,6 @@ void fitLin(const data * d, fit_results * fr)
 //prints the results
 void printLin(const data * d, const parameters * p, const fit_results * fr)
 {
-
   //simplified data printing depending on verbosity setting
   if(p->verbose==1)
     {

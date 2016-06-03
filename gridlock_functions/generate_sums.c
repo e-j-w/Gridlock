@@ -1,8 +1,18 @@
 //generates the sums that will be used when fitting
 void generateSums(data * d,const parameters * p)
 {
-  long double powVal;
+  
+  long double powVal=0.;
   int i,j,k,l,m,n,o,q;
+  
+  //initialize sums (in case this function is called more than once)
+	d->msum=0.;
+  memset(d->xpowsum,0,POWSIZE*POWSIZE*sizeof(long double));
+  memset(d->mxpowsum,0,POWSIZE*POWSIZE*sizeof(long double));
+  memset(d->mxxpowsum,0,POWSIZE*POWSIZE*POWSIZE*POWSIZE*sizeof(long double));
+  memset(d->xxpowsum,0,POWSIZE*POWSIZE*POWSIZE*POWSIZE*sizeof(long double));
+  memset(d->xxxpowsum,0,POWSIZE*POWSIZE*POWSIZE*POWSIZE*POWSIZE*POWSIZE*sizeof(long double));
+  
   for(i=0;i<d->lines;i++)//loop over data points
     {
       d->msum+=d->x[p->numVar][i]/d->x[p->numVar+1][i];

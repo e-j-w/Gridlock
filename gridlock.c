@@ -11,6 +11,8 @@
 #include "print_data_info.c"
 #include "generate_sums.c"
 #include "plot_data.c"
+//iterative fitting routines
+#include "linfit_slope_errors.c"
 
 int main(int argc, char *argv[])
 {
@@ -78,6 +80,11 @@ int main(int argc, char *argv[])
   else if(strcmp(p->fitType,"lin")==0)
     {
       fitLin(d,fr);
+      printLin(d,p,fr);
+    }
+  else if(strcmp(p->fitType,"lin_slope_errors")==0)
+    {
+      fitLinSlopeErrors(d,fr);
       printLin(d,p,fr);
     }
   else if(strcmp(p->fitType,"poly3")==0)

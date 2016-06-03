@@ -35,12 +35,12 @@ void importData(data * d, parameters * p)
                   strcpy(p->fitType,str3);
                 }
             }
-          else if(strcmp(str,"NONVERBOSE\n")==0)
-            p->verbose=1;//only print the fit vertex data, unless an error occurs
-          else if(strcmp(str,"WEIGHTED\n")==0)
-            p->readWeights=1;//data has weights, in the last column
-          else if(strcmp(str,"UNWEIGHTED\n")==0)
-            p->readWeights=0;//data is unweighted
+					else if(strcmp(str,"NONVERBOSE\n")==0)
+						p->verbose=1;//only print the fit vertex data, unless an error occurs
+					else if(strcmp(str,"WEIGHTED\n")==0)
+						p->readWeights=1;//data has weights, in the last column
+					else if(strcmp(str,"UNWEIGHTED\n")==0)
+						p->readWeights=0;//data is unweighted
         }
     }
   //check the fit type
@@ -55,6 +55,8 @@ void importData(data * d, parameters * p)
   else if(strcmp(p->fitType,"par3")==0)
     p->numVar=3;
   else if(strcmp(p->fitType,"lin")==0)
+    p->numVar=1;
+  else if(strcmp(p->fitType,"lin_slope_errors")==0)
     p->numVar=1;
   else if(strcmp(p->fitType,"poly3")==0)
     p->numVar=1;
