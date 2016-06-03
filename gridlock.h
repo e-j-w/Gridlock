@@ -8,7 +8,7 @@
 #include "lin_eq_solver.h"
 
 #define POWSIZE         12
-#define MAXFILELENGTH   50000
+#define MAXFILELENGTH   100000
 #define BIG_NUMBER      1E10
 #define NUM_LIST        5
 

@@ -43,7 +43,11 @@ void importData(data * d, parameters * p)
             p->readWeights=0;//data is unweighted
         }
     }
-  //check the fit type  
+  //check the fit type
+  if(strcmp(p->fitType,"poly1")==0)
+  	strcpy(p->fitType,"lin");
+  else if(strcmp(p->fitType,"poly2")==0)
+  	strcpy(p->fitType,"par1");
   if(strcmp(p->fitType,"par1")==0)
     p->numVar=1;
   else if(strcmp(p->fitType,"par2")==0)
@@ -188,6 +192,12 @@ void importData(data * d, parameters * p)
                 }
             }
           linenum++;
+          if(linenum>MAXFILELENGTH)
+          	{
+          		printf("ERROR: Number of data points in input file exceeds MAXFILELENGTH (%i).\n",MAXFILELENGTH);
+          		printf("Please reduce the number of data points used, or modify MAXFILELENGTH in gridlock.h and recompile.\n");
+          		exit(-1);
+          	}
         }
     }
   fclose(inp);
