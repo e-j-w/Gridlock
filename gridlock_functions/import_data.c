@@ -28,12 +28,17 @@ void importData(data * d, parameters * p)
     {
       if(fgets(str,256,inp)!=NULL)
         {
-          if(sscanf(str,"%s %s",str2,str3)==2)
+        	if(sscanf(str,"%s %s %Lf",str2,str3,&p->fitOpt)==3)
             {
               if(strcmp(str2,"FIT")==0)
-                {
-                  strcpy(p->fitType,str3);
-                }
+                strcpy(p->fitType,str3);
+              else
+              	p->fitOpt=0.;
+            }
+          else if(sscanf(str,"%s %s",str2,str3)==2)
+            {
+              if(strcmp(str2,"FIT")==0)
+                strcpy(p->fitType,str3);
             }
 					else if(strcmp(str,"NONVERBOSE\n")==0)
 						p->verbose=1;//only print the fit vertex data, unless an error occurs
@@ -56,7 +61,7 @@ void importData(data * d, parameters * p)
     p->numVar=3;
   else if(strcmp(p->fitType,"lin")==0)
     p->numVar=1;
-  else if(strcmp(p->fitType,"lin_slope_errors")==0)
+  else if(strcmp(p->fitType,"lin_deming")==0)
     p->numVar=1;
   else if(strcmp(p->fitType,"poly3")==0)
     p->numVar=1;

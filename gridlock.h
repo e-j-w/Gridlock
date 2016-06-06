@@ -9,6 +9,7 @@
 
 #define POWSIZE         12
 #define MAXFILELENGTH   100000
+#define CI_EE_DIM				100
 #define BIG_NUMBER      1E10
 #define NUM_LIST        5
 
@@ -16,6 +17,7 @@ typedef struct
 {
   char filename[256];//name of the data file
   char fitType[256];//the type of fit (linear,parabola,etc)
+  long double fitOpt;//fit option value (eg. delta for Deming regression) 
   char dataType[256];//the type of data provided (regular, chisq values, etc.)
   int plotData;//0=don't plot, 1=plot
   char plotMode[256];//the plotting style to be used
@@ -54,6 +56,8 @@ typedef struct
   long double covar[MAX_DIM][MAX_DIM];//covariance between parameters (specified by the two indices)
   long double fitVert[POWSIZE]; //the vertex of the fit paraboloid
   long double vertUBound[POWSIZE],vertLBound[POWSIZE];//upper and lower bounds of the vertex
+  //int ciEEValues;//number of values on the error ellipse/ellipsoid used to get confidence interval
+  //long double ciEEVal[CI_EE_DIM][POWSIZE];//values on the error ellipse/ellipsoid used to get confidence interval
   long double vertVal; //value of the fit function at the vertex;
   long double chisq,ndf;
   int vertBoundsFound;

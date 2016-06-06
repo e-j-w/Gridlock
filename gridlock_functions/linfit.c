@@ -47,7 +47,58 @@ void fitLin(const data * d, fit_results * fr)
   fr->fitVert[0]=-1.0*fr->a[1]/fr->a[0];//x-intercept
   fr->fitVert[1]=fr->a[1];//y-intercept
   
+	/*//generate slope/intercept pairs for confidence interval
+	//calculates the value(s) of the confidence interval at the given point
+	//Ref: A. Chester master thesis
+  int gridSize=(int)(CI_EE_DIM/2.);
+	long double c=2.30;//confidence level for 1-sigma in 2 parameters
+	long double a0=sqrt((d->xpowsum[0][0]*c)/(d->xpowsum[0][0]*d->xpowsum[0][2] - d->xpowsum[0][1]*d->xpowsum[0][1]));
+	long double p0,p1,p2,a0b,a1b1,a1b2;
+  p0=d->xpowsum[0][0];
+  fr->ciEEValues=0;
+	for (i=0;i<=gridSize;i++)
+		{
+			a0b=fr->a[0]+((2*i - gridSize)/(double)gridSize)*a0;
+			//printf("a0b: %Lf\n",a0b);
+			p1=(2.*d->xpowsum[0][1]*(a0b - fr->a[0])) - 2.*d->xpowsum[0][0]*fr->a[1];
+			p2=d->xpowsum[0][0]*fr->a[1]*fr->a[1] - 2.*d->xpowsum[0][1]*fr->a[1]*(a0b - fr->a[0]) + d->xpowsum[0][2]*(a0b - fr->a[0])*(a0b - fr->a[0]) - c;
+			//printf("p1*p1 - 4.*p0*p2: %Lf\n",p1*p1 - 4.*p0*p2);
+			a1b1=(-1.*p1 + sqrt(p1*p1 - 4.*p0*p2))/(2.*p0);
+			a1b2=(-1.*p1 - sqrt(p1*p1 - 4.*p0*p2))/(2.*p0);
+			//printf("a1b1: %Lf, a1b2: %Lf\n",a1b1,a1b2);
+			//record pairs of slope/intercept values on error ellipse
+			fr->ciEEVal[fr->ciEEValues][0]=a0b;
+			fr->ciEEVal[fr->ciEEValues][1]=a1b1;
+			fr->ciEEValues++;
+			fr->ciEEVal[fr->ciEEValues][0]=a0b;
+			fr->ciEEVal[fr->ciEEValues][1]=a1b2;
+			fr->ciEEValues++;
+		}*/
+  
 }
+
+/*long double confIntVal(long double input, const fit_results * fr, const data * d, int upper)
+{
+	int i;	
+	long double cVal;
+	long double maxCVal=0.;
+	long double minCVal=BIG_NUMBER;
+	
+	for (i=0;i<fr->ciEEValues;i++)
+		{
+			cVal=fr->ciEEVal[i][0]*input + fr->ciEEVal[i][1];
+			//printf("cVal: %LE\n",cVal);
+			if(cVal>maxCVal)
+				maxCVal=cVal;
+			if(cVal<minCVal)
+				minCVal=cVal;
+		}
+	if(upper==1)
+		return maxCVal;
+	else
+		return minCVal;
+
+}*/
 
 //prints the results
 void printLin(const data * d, const parameters * p, const fit_results * fr)
@@ -70,6 +121,9 @@ void printLin(const data * d, const parameters * p, const fit_results * fr)
   
   printf("x-intercept = %LE\n",fr->fitVert[0]);
   printf("y-intercept = %LE\n",fr->fitVert[1]);
+  
+  //printf("value at x=90 = %LE\n",fr->a[0]*90. + fr->a[1]);
+  //printf("CI at x=90 = [%LE %LE]\n",confIntVal(90.,fr,d,1),confIntVal(90.,fr,d,0));
     
 }
 

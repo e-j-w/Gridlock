@@ -2,6 +2,7 @@
 #include "gridlock.h"
 //fitting routines
 #include "linfit.c"
+#include "linfit_deming.c"
 #include "1parfit.c"
 #include "2parfit.c"
 #include "3parfit.c"
@@ -11,8 +12,6 @@
 #include "print_data_info.c"
 #include "generate_sums.c"
 #include "plot_data.c"
-//iterative fitting routines
-#include "linfit_slope_errors.c"
 
 int main(int argc, char *argv[])
 {
@@ -82,10 +81,12 @@ int main(int argc, char *argv[])
       fitLin(d,fr);
       printLin(d,p,fr);
     }
-  else if(strcmp(p->fitType,"lin_slope_errors")==0)
+  else if(strcmp(p->fitType,"lin_deming")==0)
     {
-      fitLinSlopeErrors(d,fr);
-      printLin(d,p,fr);
+    	if(p->fitOpt==0.)//default value
+				p->fitOpt=1.;
+      fitLinDeming(d,fr,p->fitOpt);
+      printLinDeming(d,p,fr);
     }
   else if(strcmp(p->fitType,"poly3")==0)
     {
