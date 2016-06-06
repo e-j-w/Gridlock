@@ -13,6 +13,7 @@ FITTING FUNCTIONS AVAILABLE
 
 Functions with 1 free parameter:
 lin - f(x) = a1*x + a2
+lin_deming - f(x) = a1*x + a2 with errors in x 
 par1 - f(x) = a1*x^2 + a2*x + a3
 poly3 - f(x) = a1*x^3 + a2*x^2 + a3*x + a4
 Functions with 2 free parameters:
@@ -35,7 +36,7 @@ WEIGHTED - Use weights for the data points, specified in a column after the data
 INSTRUCTIONS
 
 Use 'make' to compile.  Optional data plotting requires gnuplot to be installed.
-To run the program from anywhere, move the resulting 'topspek' executable to any directory under your $PATH environment variable.
+To run the program from anywhere, move the resulting 'gridlock' executable to any directory under your $PATH environment variable.
 Tested using gcc and GNU make on Ubuntu 14.04 and Scientific Linux/CentOS 6.  Should work on more or less any Linux distro.
 
 
