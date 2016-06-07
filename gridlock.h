@@ -6,9 +6,10 @@
 
 #include "gnuplot_i.h"
 #include "lin_eq_solver.h"
+#include "tstat.h"
 
 #define POWSIZE         12
-#define MAXFILELENGTH   100000
+#define MAXFILELENGTH   200000
 #define CI_EE_DIM				100
 #define BIG_NUMBER      1E10
 #define NUM_LIST        5
@@ -21,6 +22,7 @@ typedef struct
   char dataType[256];//the type of data provided (regular, chisq values, etc.)
   int plotData;//0=don't plot, 1=plot
   char plotMode[256];//the plotting style to be used
+  int plotCI;//0=don't plot confidence interval, 1=plot it
   int numVar;
   long double ulimit[POWSIZE],llimit[POWSIZE];
   int verbose;//0=print everything,1=print vertex location only
@@ -61,6 +63,9 @@ typedef struct
   long double vertVal; //value of the fit function at the vertex;
   long double chisq,ndf;
   int vertBoundsFound;
+  char fitForm[POWSIZE][256];//string containing form of the fitted equation
+  char ciUForm[POWSIZE][256];//string containing form of the upper confidence interval
+  char ciLForm[POWSIZE][256];//string containing form of the lower confidence interval
 }fit_results;
 
 //evil global variables

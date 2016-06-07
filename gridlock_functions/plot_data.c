@@ -142,10 +142,18 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
           else if(strcmp(p->fitType,"par1")==0)
             str=plotForm1Par(p,fr,pd,i);
           else if((strcmp(p->fitType,"lin")==0)||(strcmp(p->fitType,"lin_deming")==0))
-            str=plotFormLin(p,fr,pd,i);
+            strcpy(str,fr->fitForm[0]);
           else if(strcmp(p->fitType,"poly3")==0)
             str=plotFormPoly3(p,fr,pd,i);
           gnuplot_plot_equation(handle, str, "Fit");
+          //plot confidence intervals
+          if(p->plotCI==1)
+          	{
+          		strcpy(str,fr->ciUForm[0]);
+          		gnuplot_plot_equation(handle, str, "Upper 95% confidence bound");
+          		strcpy(str,fr->ciLForm[0]);
+          		gnuplot_plot_equation(handle, str, "Lower 95% confidence bound");
+          	}
           printf("Showing plot for parameter %i.\n",i+1);
           if(p->numVar==3)
             {

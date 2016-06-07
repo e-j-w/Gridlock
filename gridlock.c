@@ -78,14 +78,14 @@ int main(int argc, char *argv[])
     }
   else if(strcmp(p->fitType,"lin")==0)
     {
-      fitLin(d,fr);
+      fitLin(p,d,fr);
       printLin(d,p,fr);
     }
   else if(strcmp(p->fitType,"lin_deming")==0)
     {
     	if(p->fitOpt==0.)//default value
 				p->fitOpt=1.;
-      fitLinDeming(d,fr,p->fitOpt);
+      fitLinDeming(p,d,fr,p->fitOpt);
       printLinDeming(d,p,fr);
     }
   else if(strcmp(p->fitType,"poly3")==0)

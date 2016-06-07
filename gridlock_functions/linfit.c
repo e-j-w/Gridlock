@@ -1,6 +1,6 @@
 //fit data to a line of the form
 //f(x) = a1*x + a2
-void fitLin(const data * d, fit_results * fr)
+void fitLin(const parameters * p, const data * d, fit_results * fr)
 {
   //construct equations
   int i,j;
@@ -46,6 +46,29 @@ void fitLin(const data * d, fit_results * fr)
   //now that the fit is performed, use the fit parameters to find the intercept(s)
   fr->fitVert[0]=-1.0*fr->a[1]/fr->a[0];//x-intercept
   fr->fitVert[1]=fr->a[1];//y-intercept
+  
+  //set up quantities to compute confidence interval
+  long double xb,yb,sxx,syx,tval;
+  tval=t_stat(d->lines-2,0.025);//t-statistic t(df,alpha/2)
+  xb=d->xpowsum[0][1]/d->lines;
+  yb=d->msum/d->lines;
+  sxx=0.;
+  syx=0.;
+  for(i=0;i<d->lines;i++)
+  	{
+  		sxx+=(d->x[0][i] - xb)*(d->x[0][i] - xb);
+  		syx+=(d->x[p->numVar][i] - yb)*(d->x[p->numVar][i] - yb);
+  	}
+ 	//printf("Confidence interval t-statistic: %LF",tval);
+  
+  //set up equation forms for plotting
+  if(strcmp(p->plotMode,"1d")==0)
+    {
+      sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
+      sprintf(fr->ciUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * ((1/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      sprintf(fr->ciLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * ((1/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+    }
+  
   
 	/*//generate slope/intercept pairs for confidence interval
 	//calculates the value(s) of the confidence interval at the given point
@@ -125,23 +148,4 @@ void printLin(const data * d, const parameters * p, const fit_results * fr)
   //printf("value at x=90 = %LE\n",fr->a[0]*90. + fr->a[1]);
   //printf("CI at x=90 = [%LE %LE]\n",confIntVal(90.,fr,d,1),confIntVal(90.,fr,d,0));
     
-}
-
-//generates the functional form of the fit function for plotting
-char * plotFormLin(const parameters * p, const fit_results * fr, plot_data * pd, int plotNum)
-{
-  char * str;
-  str=(char*)calloc(256,sizeof(char));
-  if(strcmp(p->plotMode,"1d")==0)
-    {
-      sprintf(str, "%Lf*x + %Lf",fr->a[0],fr->a[1]);
-    }
-  else
-    {
-      printf("ERROR: Invalid plot mode (%s), cannot get functional form.\n",p->plotMode);
-      exit(-1);
-    }
-    
-  return str;
-
 }

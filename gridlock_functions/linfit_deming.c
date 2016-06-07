@@ -3,7 +3,7 @@
 //assuming errors in both x and y (Deming regression)
 //see https://en.wikipedia.org/wiki/Deming_regression
 //delta = ratio of variance in y/variance in x (1=errors perpendicular to line)
-void fitLinDeming(const data * d, fit_results * fr, long double delta)
+void fitLinDeming(const parameters * p, const data * d, fit_results * fr, long double delta)
 {
 
   int i;
@@ -53,6 +53,12 @@ void fitLinDeming(const data * d, fit_results * fr, long double delta)
   //now that the fit is performed, use the fit parameters to find the intercept(s)
   fr->fitVert[0]=-1.0*fr->a[1]/fr->a[0];//x-intercept
   fr->fitVert[1]=fr->a[1];//y-intercept
+  
+  //set up equation forms for plotting
+  if(strcmp(p->plotMode,"1d")==0)
+    {
+      sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
+    }
     
 }
 

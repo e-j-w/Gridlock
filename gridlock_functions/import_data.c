@@ -60,7 +60,10 @@ void importData(data * d, parameters * p)
   else if(strcmp(p->fitType,"par3")==0)
     p->numVar=3;
   else if(strcmp(p->fitType,"lin")==0)
-    p->numVar=1;
+  	{
+    	p->numVar=1;
+    	p->plotCI=1;
+    }
   else if(strcmp(p->fitType,"lin_deming")==0)
     p->numVar=1;
   else if(strcmp(p->fitType,"poly3")==0)
