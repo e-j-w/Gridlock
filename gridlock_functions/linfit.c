@@ -74,10 +74,10 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
   if(strcmp(p->plotMode,"1d")==0)
     {
       sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
-      sprintf(fr->ciUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * ((1.0/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
-      sprintf(fr->ciLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * ((1.0/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
-      sprintf(fr->piUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * (1.0 + (1.0/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
-      sprintf(fr->piLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * (1.0 + (1.0/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      sprintf(fr->ciUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * sqrt((1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      sprintf(fr->ciLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * sqrt((1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      sprintf(fr->piUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * sqrt(1.0 + (1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      sprintf(fr->piLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * sqrt(1.0 + (1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
     }
   
   
