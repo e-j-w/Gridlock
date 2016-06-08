@@ -9,7 +9,7 @@
 #include "tstat.h"
 
 #define POWSIZE         12
-#define MAXFILELENGTH   200000
+#define MAXFILELENGTH   500000
 #define CI_EE_DIM				100
 #define BIG_NUMBER      1E10
 #define NUM_LIST        5
@@ -66,6 +66,8 @@ typedef struct
   char fitForm[POWSIZE][256];//string containing form of the fitted equation
   char ciUForm[POWSIZE][256];//string containing form of the upper confidence interval
   char ciLForm[POWSIZE][256];//string containing form of the lower confidence interval
+  char piUForm[POWSIZE][256];//string containing form of the upper prediction interval
+  char piLForm[POWSIZE][256];//string containing form of the lower prediction interval
 }fit_results;
 
 //evil global variables

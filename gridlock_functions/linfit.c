@@ -59,14 +59,25 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
   		sxx+=(d->x[0][i] - xb)*(d->x[0][i] - xb);
   		syx+=(d->x[p->numVar][i] - yb)*(d->x[p->numVar][i] - yb);
   	}
- 	//printf("Confidence interval t-statistic: %LF",tval);
+  
+  /*if(p->verbose>=2)
+  	{
+		 	printf("Confidence interval t-statistic: %LF\n",tval);
+		 	printf("xb: %LF\n",xb);
+		 	printf("yb: %LF\n",yb);
+		 	printf("sxx: %LF\n",sxx);
+		 	printf("syx: %LF\n",syx);
+		 	printf("1/n: %lF\n",1.0/d->lines);
+ 		}*/
   
   //set up equation forms for plotting
   if(strcmp(p->plotMode,"1d")==0)
     {
       sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
-      sprintf(fr->ciUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * ((1/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
-      sprintf(fr->ciLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * ((1/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      sprintf(fr->ciUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * ((1.0/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      sprintf(fr->ciLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * ((1.0/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      sprintf(fr->piUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * (1.0 + (1.0/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      sprintf(fr->piLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * (1.0 + (1.0/%i) + sqrt(((x - %LF)**2)/%LF)))",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
     }
   
   

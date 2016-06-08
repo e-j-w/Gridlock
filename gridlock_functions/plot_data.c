@@ -150,9 +150,13 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
           if(p->plotCI==1)
           	{
           		strcpy(str,fr->ciUForm[0]);
-          		gnuplot_plot_equation(handle, str, "Upper 95% confidence bound");
+          		gnuplot_plot_equation(handle, str, "Upper 95% confidence band");
           		strcpy(str,fr->ciLForm[0]);
-          		gnuplot_plot_equation(handle, str, "Lower 95% confidence bound");
+          		gnuplot_plot_equation(handle, str, "Lower 95% confidence band");
+          		strcpy(str,fr->piUForm[0]);
+          		gnuplot_plot_equation(handle, str, "Upper 95% prediction band");
+          		strcpy(str,fr->piLForm[0]);
+          		gnuplot_plot_equation(handle, str, "Lower 95% prediction band");
           	}
           printf("Showing plot for parameter %i.\n",i+1);
           if(p->numVar==3)
