@@ -3,6 +3,7 @@
 //assuming errors in both x and y (Deming regression)
 //see https://en.wikipedia.org/wiki/Deming_regression
 //delta = ratio of variance in y/variance in x (1=errors perpendicular to line)
+//reduces to regular linear fit for large delta
 void fitLinDeming(const parameters * p, const data * d, fit_results * fr, long double delta)
 {
 
@@ -38,7 +39,7 @@ void fitLinDeming(const parameters * p, const data * d, fit_results * fr, long d
     {
     	x=d->x[0][i] + (fr->a[0]/(fr->a[0]*fr->a[0] + delta))*(d->x[1][i] - fr->a[1] - fr->a[0]*d->x[0][i]);
     	y=fr->a[0]*x + fr->a[1];
-      fr->chisq+=(d->x[1][i] - y + delta*(d->x[0][i] - x))*(d->x[1][i] - y + delta*(d->x[0][i] - x))
+      fr->chisq+=((d->x[1][i] - y)*(d->x[1][i] - y) + delta*(d->x[0][i] - x)*(d->x[0][i] - x))
                   /(d->x[1+1][i]*d->x[1+1][i]);
     }
   

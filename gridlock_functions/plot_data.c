@@ -108,6 +108,30 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
 
 }
 
+//handles the gnuplot prompt
+void plotPrompt(int cont)
+{
+	int c;
+	char inp[256];
+	if(cont==0)
+ 		printf("Enter 'g' for a gnuplot prompt or press [ENTER] to exit. ");
+	else
+		printf("Enter 'g' for a gnuplot prompt or press [ENTER] to continue. ");
+	c=getc(stdin);
+	if(c=='g')
+		{
+			printf("Enter 'exit' to return from the gnuplot prompt.\n");
+			fgets(inp,256,stdin);
+			while(strcmp(inp,"exit\n")!=0)
+				{
+					gnuplot_cmd(handle,inp);
+					printf("gnuplot > ");
+					fgets(inp,256,stdin);
+				}
+		}
+	return;
+}
+
 void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
 {
   int i;
@@ -115,7 +139,7 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
   plotOpen=1; 
   handle=gnuplot_init();
     
-  printf("\nDATA PLOTS\n----------\nUse 'l' in the plotting window to switch between linear and logarithmic scale.\n");
+  printf("\nDATA PLOTS\n----------\nEnter 'l' in the plotting window to switch between linear and logarithmic scale.\n");
   
   if(strcmp(p->plotMode,"1d")==0)
     {
@@ -177,10 +201,9 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
             }
           printf("%i data points available for plot.\n",pd->plotDataSize[i]);
           if(i<(p->numVar-1))
-            printf("Press [ENTER] to continue.");
+            plotPrompt(1);
           else
-            printf("Press [ENTER] to exit.");
-          getc(stdin);
+            plotPrompt(0);
           gnuplot_resetplot(handle);
         }
     }
@@ -238,10 +261,9 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
               printf("Showing surface plot with parameter %i fixed to %Lf\n",i+1,pd->fixedParVal[i]);
               printf("%i data points available for plot.\n",pd->plotDataSize[i]);
               if(i<(p->numVar-1))
-                printf("Press [ENTER] to continue.");
+                plotPrompt(1);
               else
-                printf("Press [ENTER] to exit.");
-              getc(stdin);
+                plotPrompt(0);
               gnuplot_resetplot(handle);
             }
         }
@@ -271,8 +293,7 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
           gnuplot_plot_equation(handle, str, "Fit");
           printf("Showing surface plot.\n");
           printf("%i data points available for plot.\n",pd->plotDataSize[0]);
-          printf("Press [ENTER] to exit.");
-          getc(stdin);
+          plotPrompt(0);
           gnuplot_resetplot(handle);
         }
     }
@@ -301,8 +322,7 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
             }
           printf("Showing heatmap plot.\n");
           printf("%i data points available for plot.\n",pd->plotDataSize[0]);
-          printf("Press [ENTER] to exit.");
-          getc(stdin);
+          plotPrompt(0);
           gnuplot_resetplot(handle);
         }
     }
