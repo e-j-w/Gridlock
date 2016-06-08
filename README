@@ -13,13 +13,17 @@ FITTING FUNCTIONS AVAILABLE
 
 Functions with 1 free parameter:
 lin - f(x) = a1*x + a2
-lin_deming - f(x) = a1*x + a2 with errors in x 
+lin_deming - f(x) = a1*x + a2 with errors in x (see note below) 
 par1 - f(x) = a1*x^2 + a2*x + a3
 poly3 - f(x) = a1*x^3 + a2*x^2 + a3*x + a4
+
 Functions with 2 free parameters:
 par2 - f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
+
 Functions with 3 free parameters:
 par3 - f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2 + a4*x*y + a5*x*z + a6*y*z + a7*x + a8*y + a9*z + a10
+
+NOTE: The lin_deming function can take an optional parameter specifying the ratio of variances in y and x data.  Default value is 1 (errors perpendicular to line).  The parameter is specified on the fit fucntion line (eg. 'FIT lin_deming 3' for variance in y data 3x that of x data). 
 
 
 OPTIONS
