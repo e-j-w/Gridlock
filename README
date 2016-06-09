@@ -35,6 +35,7 @@ PLOT 1d - Shows plot(s) in one variable, using fixed values for any other variab
 PLOT 2d - Shows plot(s) in two variables (surface plot), using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
 PLOT 3d - Shows plot in three variables (colour-coded heatmap plot) for the data, with the vertex of the fit function marked on the map.
 WEIGHTED - Use weights for the data points, specified in a column after the data values.
+UNIFORM_WEIGHT value - Use a single weight value for all data points, without the need to put an extra column in the data file. 
 
 
 INSTRUCTIONS

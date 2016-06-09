@@ -50,7 +50,6 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
   //set up quantities to compute confidence interval
   long double xb,yb,sxx,syx,tval;
   tval=t_stat(d->lines-2,0.025);//t-statistic t(df,alpha/2)
-  tval=1.96;
   xb=d->xpowsum[0][1]/d->lines;
   yb=d->msum/d->lines;
   sxx=0.;
