@@ -139,7 +139,7 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
   plotOpen=1; 
   handle=gnuplot_init();
     
-  printf("\nDATA PLOTS\n----------\nEnter 'l' in the plotting window to switch between linear and logarithmic scale.\n");
+  printf("\nDATA PLOTS\n----------\n");
   
   if(strcmp(p->plotMode,"1d")==0)
     {

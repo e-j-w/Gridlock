@@ -50,6 +50,7 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
   //set up quantities to compute confidence interval
   long double xb,yb,sxx,syx,tval;
   tval=t_stat(d->lines-2,0.025);//t-statistic t(df,alpha/2)
+  tval=1.96;
   xb=d->xpowsum[0][1]/d->lines;
   yb=d->msum/d->lines;
   sxx=0.;
@@ -85,27 +86,28 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
 	//calculates the value(s) of the confidence interval at the given point
 	//Ref: A. Chester master thesis
   int gridSize=(int)(CI_EE_DIM/2.);
-	long double c=2.30;//confidence level for 1-sigma in 2 parameters
-	long double a0=sqrt((d->xpowsum[0][0]*c)/(d->xpowsum[0][0]*d->xpowsum[0][2] - d->xpowsum[0][1]*d->xpowsum[0][1]));
+	long double c=6.71;//confidence level for 2-sigma in 2 parameters
+	long double da0=sqrt((d->xpowsum[0][0]*c)/(d->xpowsum[0][0]*d->xpowsum[0][2] - d->xpowsum[0][1]*d->xpowsum[0][1]));
+	printf("sum: %LF\n",d->xpowsum[0][0]*d->xpowsum[0][2] - d->xpowsum[0][1]*d->xpowsum[0][1]);
 	long double p0,p1,p2,a0b,a1b1,a1b2;
   p0=d->xpowsum[0][0];
   fr->ciEEValues=0;
-	for (i=0;i<=gridSize;i++)
+	for (i=0;i<gridSize;i++)
 		{
-			a0b=fr->a[0]+((2*i - gridSize)/(double)gridSize)*a0;
+			a0b=fr->a[0]+((2.0*i - gridSize)/(double)gridSize)*da0;
 			//printf("a0b: %Lf\n",a0b);
 			p1=(2.*d->xpowsum[0][1]*(a0b - fr->a[0])) - 2.*d->xpowsum[0][0]*fr->a[1];
 			p2=d->xpowsum[0][0]*fr->a[1]*fr->a[1] - 2.*d->xpowsum[0][1]*fr->a[1]*(a0b - fr->a[0]) + d->xpowsum[0][2]*(a0b - fr->a[0])*(a0b - fr->a[0]) - c;
 			//printf("p1*p1 - 4.*p0*p2: %Lf\n",p1*p1 - 4.*p0*p2);
 			a1b1=(-1.*p1 + sqrt(p1*p1 - 4.*p0*p2))/(2.*p0);
 			a1b2=(-1.*p1 - sqrt(p1*p1 - 4.*p0*p2))/(2.*p0);
-			//printf("a1b1: %Lf, a1b2: %Lf\n",a1b1,a1b2);
+			//printf("i: %i, a0b: %LF, a1b1: %Lf, a1b2: %Lf\n",i,a0b,a1b1,a1b2);
 			//record pairs of slope/intercept values on error ellipse
-			fr->ciEEVal[fr->ciEEValues][0]=a0b;
-			fr->ciEEVal[fr->ciEEValues][1]=a1b1;
+			fr->ciEEVal[0][fr->ciEEValues]=a0b;
+			fr->ciEEVal[1][fr->ciEEValues]=a1b1;
 			fr->ciEEValues++;
-			fr->ciEEVal[fr->ciEEValues][0]=a0b;
-			fr->ciEEVal[fr->ciEEValues][1]=a1b2;
+			fr->ciEEVal[0][fr->ciEEValues]=a0b;
+			fr->ciEEVal[1][fr->ciEEValues]=a1b2;
 			fr->ciEEValues++;
 		}*/
   
@@ -120,8 +122,9 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
 	
 	for (i=0;i<fr->ciEEValues;i++)
 		{
-			cVal=fr->ciEEVal[i][0]*input + fr->ciEEVal[i][1];
-			//printf("cVal: %LE\n",cVal);
+			cVal=fr->ciEEVal[0][i]*input + fr->ciEEVal[1][i];
+			//printf("i: %i, cVal: %LE\n",i,cVal);
+			//printf("ciEEVals[%i]: %LE %LE\n",i,fr->ciEEVal[0][i],fr->ciEEVal[1][i]);
 			if(cVal>maxCVal)
 				maxCVal=cVal;
 			if(cVal<minCVal)
@@ -135,7 +138,7 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
 }*/
 
 //prints the results
-void printLin(const data * d, const parameters * p, const fit_results * fr)
+void printLin(const data * d, const parameters * p, fit_results * fr)
 {
   //simplified data printing depending on verbosity setting
   if(p->verbose==1)
@@ -156,7 +159,10 @@ void printLin(const data * d, const parameters * p, const fit_results * fr)
   printf("x-intercept = %LE\n",fr->fitVert[0]);
   printf("y-intercept = %LE\n",fr->fitVert[1]);
   
-  //printf("value at x=90 = %LE\n",fr->a[0]*90. + fr->a[1]);
-  //printf("CI at x=90 = [%LE %LE]\n",confIntVal(90.,fr,d,1),confIntVal(90.,fr,d,0));
+  /*printf("value at x=0 = %LE\n",fr->a[0]*0. + fr->a[1]);
+  printf("CI at x=0 = [%LE %LE]\n",confIntVal(0.0,fr,d,1),confIntVal(0.0,fr,d,0));
+  handle=gnuplot_init();
+  gnuplot_plot_xy(handle, fr->ciEEVal[0], fr->ciEEVal[1], fr->ciEEValues, "Data");
+  getc(stdin);*/
     
 }

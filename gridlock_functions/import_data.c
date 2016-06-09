@@ -39,6 +39,12 @@ void importData(data * d, parameters * p)
             {
               if(strcmp(str2,"FIT")==0)
                 strcpy(p->fitType,str3);
+              if(strcmp(str2,"UNIFORM_WEIGHT")==0)
+              	{
+              		p->uniWeight=1;
+              		p->uniWeightVal=(long double)atof(str3);
+              		p->fitOpt=0.;
+              	}
             }
 					else if(strcmp(str,"NONVERBOSE\n")==0)
 						p->verbose=1;//only print the fit vertex data, unless an error occurs
@@ -87,9 +93,11 @@ void importData(data * d, parameters * p)
         printf("Will fit a paraboloid with %i free parameters.\n",p->numVar);
       if(strcmp(p->fitType,"par3")==0)
         printf("Will fit a paraboloid with %i free parameters.\n",p->numVar);
-      if(p->readWeights==0)
+      if(p->uniWeight==1)
+      	printf("Uniform weights of value %0.3Lf will be taken.\n",p->uniWeightVal);
+      else if(p->readWeights==0)
         printf("No weights will be taken for data points.\n");
-      if(p->readWeights==1)
+      else if(p->readWeights==1)
         printf("Weights for data points will be taken from the last column of the data file.\n");
     }
   fclose(inp);
@@ -122,7 +130,9 @@ void importData(data * d, parameters * p)
                     lineValid=0;
                     
               //deal with weights
-              if(p->readWeights==0)
+              if(p->uniWeight==1)
+              	d->x[p->numVar+1][d->lines]=p->uniWeightVal;
+              else if(p->readWeights==0)
                 d->x[p->numVar+1][d->lines]=1.;//set weights to 1
               if(d->x[p->numVar+1][d->lines]<=0)
                 lineValid=0;//invalidate data points with bad weights (can't divide by 0 weight)

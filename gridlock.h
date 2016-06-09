@@ -10,7 +10,7 @@
 
 #define POWSIZE         12
 #define MAXFILELENGTH   500000
-#define CI_EE_DIM				100
+#define CI_EE_DIM				500
 #define BIG_NUMBER      1E10
 #define NUM_LIST        5
 
@@ -26,7 +26,9 @@ typedef struct
   int numVar;
   long double ulimit[POWSIZE],llimit[POWSIZE];
   int verbose;//0=print everything,1=print vertex location only
-  int readWeights;//0=don't read data weights from file,1=read weights
+  int readWeights;//0=don't read data weights from file,1=read weights from file
+  int uniWeight;//0=uniform weight not specified,1=uniform weight specified
+  long double uniWeightVal;//value specified for uniform weights
 }parameters;
 
 typedef struct
@@ -59,7 +61,7 @@ typedef struct
   long double fitVert[POWSIZE]; //the vertex of the fit paraboloid
   long double vertUBound[POWSIZE],vertLBound[POWSIZE];//upper and lower bounds of the vertex
   //int ciEEValues;//number of values on the error ellipse/ellipsoid used to get confidence interval
-  //long double ciEEVal[CI_EE_DIM][POWSIZE];//values on the error ellipse/ellipsoid used to get confidence interval
+  //double ciEEVal[POWSIZE][CI_EE_DIM];//values on the error ellipse/ellipsoid used to get confidence interval
   long double vertVal; //value of the fit function at the vertex;
   long double chisq,ndf;
   int vertBoundsFound;
