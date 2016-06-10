@@ -15,7 +15,11 @@ void importData(data * d, parameters * p)
     {
       p->llimit[i]=-1*BIG_NUMBER;
       p->ulimit[i]=BIG_NUMBER;
+      d->max_x[i]=-1*BIG_NUMBER;
+      d->min_x[i]=BIG_NUMBER;
     }
+  d->max_m=-1*BIG_NUMBER;
+  d->min_m=BIG_NUMBER;
     
   if((inp=fopen(p->filename,"r"))==NULL)
     {
@@ -137,7 +141,23 @@ void importData(data * d, parameters * p)
               if(d->x[p->numVar+1][d->lines]<=0)
                 lineValid=0;//invalidate data points with bad weights (can't divide by 0 weight)
               if(lineValid==1)
-                d->lines++;
+              	{
+              		//determine maximum and minimum values
+              		if(d->x[p->numVar][d->lines] > d->max_m)
+              			d->max_m=d->x[p->numVar][d->lines];
+              		if(d->x[p->numVar][d->lines] < d->min_m)
+              			d->min_m=d->x[p->numVar][d->lines];
+              		for(i=0;i<p->numVar;i++)
+              			{
+              				if(d->x[i][d->lines] > d->max_x[i])
+				          			d->max_x[i]=d->x[i][d->lines];
+				          		if(d->x[i][d->lines] < d->min_x[i])
+				          			d->min_x[i]=d->x[i][d->lines];
+              			}
+              		
+              		//got to the next data point
+                	d->lines++;
+                }
               else
                 invalidLines++;
             }

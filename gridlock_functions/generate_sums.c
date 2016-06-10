@@ -3,6 +3,7 @@ void generateSums(data * d,const parameters * p)
 {
   
   long double powVal=0.;
+  long double w=1.;
   int i,j,k,l,m,n,o,q;
   
   //initialize sums (in case this function is called more than once)
@@ -15,14 +16,15 @@ void generateSums(data * d,const parameters * p)
   
   for(i=0;i<d->lines;i++)//loop over data points
     {
-      d->msum+=d->x[p->numVar][i]/d->x[p->numVar+1][i];
+    	w=d->x[p->numVar+1][i]*d->x[p->numVar+1][i];
+      d->msum+=d->x[p->numVar][i]/w;
       for(j=0;j<p->numVar;j++)//loop over free parameters
         {
           powVal=1.;
           for(k=0;k<5;k++)//loop over powers
             {
-              d->xpowsum[j][k] += powVal/d->x[p->numVar+1][i];
-              d->mxpowsum[j][k] += d->x[p->numVar][i]*powVal/d->x[p->numVar+1][i];
+              d->xpowsum[j][k] += powVal/w;
+              d->mxpowsum[j][k] += d->x[p->numVar][i]*powVal/w;
               powVal=powVal*d->x[j][i];
             }
             
@@ -35,8 +37,8 @@ void generateSums(data * d,const parameters * p)
                     powVal=powVal*d->x[j][i];
                   for(q=0;q<m;q++)
                     powVal=powVal*d->x[k][i];
-                  d->xxpowsum[j][l][k][m] += powVal/d->x[p->numVar+1][i];
-                  d->mxxpowsum[j][l][k][m] += d->x[p->numVar][i]*powVal/d->x[p->numVar+1][i];
+                  d->xxpowsum[j][l][k][m] += powVal/w;
+                  d->mxxpowsum[j][l][k][m] += d->x[p->numVar][i]*powVal/w;
                 }
           
           for(k=0;k<p->numVar;k++)//loop over free parameters
@@ -52,7 +54,7 @@ void generateSums(data * d,const parameters * p)
                         powVal=powVal*d->x[k][i];
                       for(q=0;q<o;q++)
                         powVal=powVal*d->x[l][i];
-                      d->xxxpowsum[j][m][k][n][l][o] += powVal/d->x[p->numVar+1][i];         
+                      d->xxxpowsum[j][m][k][n][l][o] += powVal/w;         
                     }
         }
     }

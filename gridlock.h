@@ -10,7 +10,8 @@
 
 #define POWSIZE         12
 #define MAXFILELENGTH   500000
-#define CI_EE_DIM				500
+#define CI_EE_DIM				100 //# of data points to evaluate confidence interval error ellipse on
+#define CI_DIM					100 //# of data points to use when plotting confidence interval
 #define BIG_NUMBER      1E10
 #define NUM_LIST        5
 
@@ -34,7 +35,8 @@ typedef struct
 typedef struct
 {
   int lines;//number of data points
-  long double x[POWSIZE][MAXFILELENGTH];//array containing data points from the file, indexed by variable # then data point # 
+  long double x[POWSIZE][MAXFILELENGTH];//array containing data points from the file, indexed by variable # then data point #
+  long double max_x[POWSIZE],min_x[POWSIZE],max_m,min_m;//maximum and minimum values
   long double msum;//sum of measurements
   long double xpowsum[POWSIZE][POWSIZE];//sums of (x1)^0, (x1)^1, (x1)^2, etc. indexed first by variable # then by power #
   long double mxpowsum[POWSIZE][POWSIZE];//sums of m*(x1)^0, m*(x1)^1, m*(x1)^2, etc. indexed first by variable # then by power #
@@ -47,6 +49,7 @@ typedef struct
 {
   long double fixedParVal[POWSIZE];//values to fix parameters at when plotting in less dimensions than the data provides
   double data[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing data points to be plotted, indexed by plot # then variable # then data point #
+  double ciData[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing confidence interval data points to be plotted, indexed by plot # then variable # then data point #
   double fit[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing fit data to be plotted, indexed by plot # then variable # then data point #
   int plotDataSize[POWSIZE];
   int numPlots;
@@ -60,16 +63,21 @@ typedef struct
   long double covar[MAX_DIM][MAX_DIM];//covariance between parameters (specified by the two indices)
   long double fitVert[POWSIZE]; //the vertex of the fit paraboloid
   long double vertUBound[POWSIZE],vertLBound[POWSIZE];//upper and lower bounds of the vertex
-  //int ciEEValues;//number of values on the error ellipse/ellipsoid used to get confidence interval
-  //double ciEEVal[POWSIZE][CI_EE_DIM];//values on the error ellipse/ellipsoid used to get confidence interval
   long double vertVal; //value of the fit function at the vertex;
   long double chisq,ndf;
   int vertBoundsFound;
+  //confidence interval data
+  int ciEEValues;//number of values on the error ellipse/ellipsoid used to get confidence interval
+  double ciEEVal[POWSIZE][CI_EE_DIM];//values on the error ellipse/ellipsoid used to get confidence interval
+  double ciUVal[POWSIZE][CI_DIM];//values on the upper confidence interval curve
+  double ciLVal[POWSIZE][CI_DIM];//values on the lower confidence interval curve
+  double ciXVal[POWSIZE][CI_DIM];//x values on the confidence interval curve
+  //fit forms
   char fitForm[POWSIZE][256];//string containing form of the fitted equation
-  char ciUForm[POWSIZE][256];//string containing form of the upper confidence interval
+  /*char ciUForm[POWSIZE][256];//string containing form of the upper confidence interval
   char ciLForm[POWSIZE][256];//string containing form of the lower confidence interval
   char piUForm[POWSIZE][256];//string containing form of the upper prediction interval
-  char piLForm[POWSIZE][256];//string containing form of the lower prediction interval
+  char piLForm[POWSIZE][256];//string containing form of the lower prediction interval*/
 }fit_results;
 
 //evil global variables

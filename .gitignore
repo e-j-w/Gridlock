@@ -1,4 +1,5 @@
 gridlock
+*tmpdatafile*
 *.o
 *.out
 *.txt

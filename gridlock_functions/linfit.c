@@ -1,3 +1,6 @@
+//forward declarations
+long double confIntVal(long double,const fit_results*,const data*,int);
+
 //fit data to a line of the form
 //f(x) = a1*x + a2
 void fitLin(const parameters * p, const data * d, fit_results * fr)
@@ -47,45 +50,40 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
   fr->fitVert[0]=-1.0*fr->a[1]/fr->a[0];//x-intercept
   fr->fitVert[1]=fr->a[1];//y-intercept
   
-  //set up quantities to compute confidence interval
+  /*//set up quantities to compute confidence interval (analytical form)
   long double xb,yb,sxx,syx,tval;
   tval=t_stat(d->lines-2,0.025);//t-statistic t(df,alpha/2)
-  xb=d->xpowsum[0][1]/d->lines;
-  yb=d->msum/d->lines;
+  xb=0.;  yb=0.;
+  for(i=0;i<d->lines;i++)
+  	{
+  		xb+=d->x[0][i];
+  		yb+=d->x[p->numVar][i];
+  	}
+  xb/=d->lines;//average x value
+  yb/=d->lines;//average y value
   sxx=0.;
   syx=0.;
   for(i=0;i<d->lines;i++)
   	{
   		sxx+=(d->x[0][i] - xb)*(d->x[0][i] - xb);
   		syx+=(d->x[p->numVar][i] - yb)*(d->x[p->numVar][i] - yb);
-  	}
-  
-  /*if(p->verbose>=2)
-  	{
-		 	printf("Confidence interval t-statistic: %LF\n",tval);
-		 	printf("xb: %LF\n",xb);
-		 	printf("yb: %LF\n",yb);
-		 	printf("sxx: %LF\n",sxx);
-		 	printf("syx: %LF\n",syx);
-		 	printf("1/n: %lF\n",1.0/d->lines);
- 		}*/
+  	}*/
   
   //set up equation forms for plotting
   if(strcmp(p->plotMode,"1d")==0)
     {
       sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
-      sprintf(fr->ciUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * sqrt((1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      /*sprintf(fr->ciUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * sqrt((1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
       sprintf(fr->ciLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * sqrt((1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
       sprintf(fr->piUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * sqrt(1.0 + (1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
-      sprintf(fr->piLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * sqrt(1.0 + (1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
+      sprintf(fr->piLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * sqrt(1.0 + (1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);*/
     }
   
   
-	/*//generate slope/intercept pairs for confidence interval
-	//calculates the value(s) of the confidence interval at the given point
+	//generate slope/intercept pairs for confidence interval
 	//Ref: A. Chester master thesis
   int gridSize=(int)(CI_EE_DIM/2.);
-	long double c=6.71;//confidence level for 2-sigma in 2 parameters
+	long double c=2.30*fr->chisq/fr->ndf;//confidence level for 1-sigma in 2 parameters
 	long double da0=sqrt((d->xpowsum[0][0]*c)/(d->xpowsum[0][0]*d->xpowsum[0][2] - d->xpowsum[0][1]*d->xpowsum[0][1]));
 	printf("sum: %LF\n",d->xpowsum[0][0]*d->xpowsum[0][2] - d->xpowsum[0][1]*d->xpowsum[0][1]);
 	long double p0,p1,p2,a0b,a1b1,a1b2;
@@ -108,15 +106,24 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
 			fr->ciEEVal[0][fr->ciEEValues]=a0b;
 			fr->ciEEVal[1][fr->ciEEValues]=a1b2;
 			fr->ciEEValues++;
-		}*/
+		}
+	
+	//construct the confidence interval
+	for(i=0;i<CI_DIM;i++)
+		{
+			fr->ciXVal[0][i]=d->min_x[0] - (d->max_x[0]-d->min_x[0]) + (d->max_x[0]-d->min_x[0])*((3.0*i)/(CI_DIM-1.0));
+			fr->ciUVal[0][i]=confIntVal(fr->ciXVal[0][i],fr,d,1);
+			fr->ciLVal[0][i]=confIntVal(fr->ciXVal[0][i],fr,d,0);
+			//printf("point %i, upper val: %lf, lower val: %lf\n",i,fr->ciUVal[0][i],fr->ciLVal[0][i]);
+		}
   
 }
 
-/*long double confIntVal(long double input, const fit_results * fr, const data * d, int upper)
+long double confIntVal(long double input, const fit_results * fr, const data * d, int upper)
 {
 	int i;	
 	long double cVal;
-	long double maxCVal=0.;
+	long double maxCVal=-1.*BIG_NUMBER;
 	long double minCVal=BIG_NUMBER;
 	
 	for (i=0;i<fr->ciEEValues;i++)
@@ -134,7 +141,7 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
 	else
 		return minCVal;
 
-}*/
+}
 
 //prints the results
 void printLin(const data * d, const parameters * p, fit_results * fr)
@@ -156,10 +163,12 @@ void printLin(const data * d, const parameters * p, fit_results * fr)
   printf("\n");
   
   printf("x-intercept = %LE\n",fr->fitVert[0]);
-  printf("y-intercept = %LE\n",fr->fitVert[1]);
+  if ((float)(fr->fitVert[1]-confIntVal(0.0,fr,d,0))==(float)(confIntVal(0.0,fr,d,1)-fr->fitVert[1]))
+    printf("y-intercept = %LE +/- %LE (from confidence interval)\n",fr->fitVert[1],fr->fitVert[1]-confIntVal(0.0,fr,d,0));
+  else
+    printf("y-intercept = %LE + %LE - %LE  (from confidence interval)\n",fr->fitVert[1],fr->fitVert[1]-confIntVal(0.0,fr,d,0),confIntVal(0.0,fr,d,1)-fr->fitVert[1]);
   
-  /*printf("value at x=0 = %LE\n",fr->a[0]*0. + fr->a[1]);
-  printf("CI at x=0 = [%LE %LE]\n",confIntVal(0.0,fr,d,1),confIntVal(0.0,fr,d,0));
+  /*//draw confidence interval ellipse
   handle=gnuplot_init();
   gnuplot_plot_xy(handle, fr->ciEEVal[0], fr->ciEEVal[1], fr->ciEEValues, "Data");
   getc(stdin);*/

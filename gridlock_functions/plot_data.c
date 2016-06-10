@@ -132,7 +132,7 @@ void plotPrompt(int cont)
 	return;
 }
 
-void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
+void plotData(const parameters * p, fit_results * fr, plot_data * pd)
 {
   int i;
   char * str=(char*)calloc(256,sizeof(char));
@@ -173,14 +173,16 @@ void plotData(const parameters * p, const fit_results * fr, plot_data * pd)
           //plot confidence intervals
           if(p->plotCI==1)
           	{
-          		strcpy(str,fr->ciUForm[0]);
+          		gnuplot_plot_xy(handle,fr->ciXVal[i],fr->ciUVal[i],CI_DIM,"Upper 1-sigma confidence band");
+          		gnuplot_plot_xy(handle,fr->ciXVal[i],fr->ciLVal[i],CI_DIM,"Lower 1-sigma confidence band");
+          		/*strcpy(str,fr->ciUForm[0]);
           		gnuplot_plot_equation(handle, str, "Upper 95% confidence band");
           		strcpy(str,fr->ciLForm[0]);
           		gnuplot_plot_equation(handle, str, "Lower 95% confidence band");
           		strcpy(str,fr->piUForm[0]);
           		gnuplot_plot_equation(handle, str, "Upper 95% prediction band");
           		strcpy(str,fr->piLForm[0]);
-          		gnuplot_plot_equation(handle, str, "Lower 95% prediction band");
+          		gnuplot_plot_equation(handle, str, "Lower 95% prediction band");*/
           	}
           printf("Showing plot for parameter %i.\n",i+1);
           if(p->numVar==3)
