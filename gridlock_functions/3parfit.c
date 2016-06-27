@@ -150,6 +150,7 @@ void fit3ParChisqConf(fit_results * fr)
   
   long double a,b,c;
   long double delta=3.53;//confidence level for 1-sigma in 3 parameters
+  delta*=fr->vertVal;
   fr->vertBoundsFound=1;
   
   a=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[0]*fr->a[2] - fr->a[4]*fr->a[4]) - 16.*(fr->a[2]*fr->a[2]*fr->a[3]*fr->a[3] - fr->a[2]*fr->a[3]*fr->a[4]*fr->a[5]) - 4.*fr->a[4]*fr->a[4]*fr->a[5]*fr->a[5];

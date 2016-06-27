@@ -97,6 +97,7 @@ void fit2ParChisqConf(fit_results * fr)
   
   long double a,b,c;
   long double delta=2.30;//confidence level for 1-sigma in 2 parameters
+  delta*=fr->vertVal;
   fr->vertBoundsFound=1;
   
   a=4.*fr->a[1]*fr->a[0] - fr->a[2]*fr->a[2];

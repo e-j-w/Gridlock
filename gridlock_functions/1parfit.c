@@ -69,6 +69,7 @@ void fit1ParChisqConf(fit_results * fr)
   
   long double a,b,c;
   long double delta=1.00;//confidence level for 1-sigma in 1 parameter
+  delta*=fr->vertVal;
   fr->vertBoundsFound=1;
   
   a=fr->a[0];
