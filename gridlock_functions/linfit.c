@@ -85,7 +85,7 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
   int gridSize=(int)(CI_EE_DIM/2.);
 	long double c=2.30*fr->chisq/fr->ndf;//confidence level for 1-sigma in 2 parameters
 	long double da0=sqrt((d->xpowsum[0][0]*c)/(d->xpowsum[0][0]*d->xpowsum[0][2] - d->xpowsum[0][1]*d->xpowsum[0][1]));
-	printf("sum: %LF\n",d->xpowsum[0][0]*d->xpowsum[0][2] - d->xpowsum[0][1]*d->xpowsum[0][1]);
+	//printf("sum: %LF\n",d->xpowsum[0][0]*d->xpowsum[0][2] - d->xpowsum[0][1]*d->xpowsum[0][1]);
 	long double p0,p1,p2,a0b,a1b1,a1b2;
   p0=d->xpowsum[0][0];
   fr->ciEEValues=0;
