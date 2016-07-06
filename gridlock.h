@@ -14,6 +14,7 @@
 #define CI_DIM					100 //# of data points to use when plotting confidence interval
 #define BIG_NUMBER      1E10
 #define NUM_LIST        5
+#define PI        			3.1415926535897932384626433832795028841971693993751
 
 typedef struct
 {

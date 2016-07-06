@@ -67,6 +67,75 @@ void fitPoly3(const data * d, fit_results * fr)
   
 }
 
+
+//determine uncertainty bounds for the critical point by intersection of fit function with line defining values at min + delta
+//done by shifting the function by the value at the minimum + a confidence level, and finding the roots around that minimum
+void fitPoly3ChisqConf(fit_results * fr, long double pt)
+{
+  
+  long double vertVal = fr->a[0]*pt*pt*pt + fr->a[1]*pt*pt + fr->a[2]*pt + fr->a[3];
+  //printf("vertval: %LF\n",vertVal);
+  long double a,b,c,d;
+  long double discr;//discriminant
+  long double delta=1.00;//confidence level for 1-sigma in 1 parameter
+  long double roots[3];
+  //delta*=fr->vertVal;
+  fr->vertBoundsFound=1;
+  
+  a=fr->a[0];
+  b=fr->a[1];
+  c=fr->a[2];
+  d=fr->a[3] - delta - vertVal;
+  
+  discr=18.0*a*b*c*d - 4.0*b*b*b*d + b*b*c*c - 4.0*a*c*c*c - 27.0*a*a*d*d;
+  if(discr>0.0)//3 real roots
+  	{
+  		int i;
+  		long double p,q;
+  		p=(3.0*a*c - b*b)/(3.0*a*a);
+  		q=(2.0*b*b*b - 9.0*a*b*c + 27.0*a*a*d)/(27.0*a*a*a);
+  		for(i=0;i<3;i++)
+  			{
+  				roots[i]=2*sqrt(-1.0*p/3.0)*cos( (1.0/3.0) * acos( (3.0*q/(2.0*p)) * sqrt(-3.0/p) ) - ((2.0*PI*i)/3.0) );
+  				roots[i]-=b/(3.0*a);
+  			}
+  	}
+  else if(discr==0.0)//triple root
+  	{
+  		fr->vertBoundsFound=0;
+  	}
+  else//one real, 2 complex roots
+  	{
+  		fr->vertBoundsFound=0;
+  	}
+  
+  if(fr->vertBoundsFound==1)
+  	{
+  		//printf("Bounds around point at x=%LE are [%LE %LE %LE]\n",pt,roots[0],roots[1],roots[2]);
+  		int i;
+  		long double uInterval=BIG_NUMBER;
+  		long double lInterval=BIG_NUMBER;
+  		for(i=0;i<3;i++)
+  			{
+					if(roots[i]-pt > 0.0)
+						if(roots[i]-pt < uInterval)
+							uInterval=roots[i]-pt;
+					if(pt-roots[i] > 0.0)
+						if(pt-roots[i] < lInterval)
+							lInterval=pt-roots[i];
+				}
+			fr->vertUBound[0]=pt+uInterval;
+			fr->vertLBound[0]=pt+lInterval;
+			
+			if(uInterval==lInterval)
+				printf("1-sigma confidence interval about critical point at x=%LE: (+/- %LE)\n",pt,uInterval);
+			else
+				printf("1-sigma confidence interval about critical point at x=%LE: (+ %LE - %LE)\n",pt,uInterval,lInterval);
+  	}
+
+}
+
+
 //prints fit data
 void printPoly3(const data * d, const parameters * p, const fit_results * fr)
 {
@@ -92,7 +161,10 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
   
   //check for NaN
   if((fr->fitVert[0]==fr->fitVert[0])&&(fr->fitVert[1]==fr->fitVert[1]))
-    printf("Critical points at x = [ %LE %LE ]\n",fr->fitVert[0],fr->fitVert[1]);
+  	{
+    	printf("Critical points at x = [ %LE %LE ]\n",fr->fitVert[0],fr->fitVert[1]);
+    	printf("At critical ponts, y = [ %LE %LE ]\n",fr->a[0]*fr->fitVert[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[0]*fr->fitVert[0] + fr->a[2]*fr->fitVert[0] + fr->a[3],fr->a[0]*fr->fitVert[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[2]*fr->fitVert[1] + fr->a[3]);
+    }
   else
     printf("Fit function is monotonic (no critical points).\n");
   

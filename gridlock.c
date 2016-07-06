@@ -92,6 +92,11 @@ int main(int argc, char *argv[])
     {
       fitPoly3(d,fr);
       printPoly3(d,p,fr);
+      if(strcmp(p->dataType,"chisq")==0)
+      	{
+      		fitPoly3ChisqConf(fr,fr->fitVert[0]);
+      		fitPoly3ChisqConf(fr,fr->fitVert[1]);
+      	}
     }
   
   if((p->plotData==1)&&(p->verbose<1))
