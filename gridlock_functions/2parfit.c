@@ -63,7 +63,7 @@ void fit2Par(const data * d, fit_results * fr)
   for(i=0;i<d->lines;i++)//loop over data points to get chisq
     {
       f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[1][i]*d->x[1][i] + fr->a[2]*d->x[0][i]*d->x[1][i] + fr->a[3]*d->x[0][i] + fr->a[4]*d->x[1][i] + fr->a[5];
-      fr->chisq+=(d->x[2][i] - f)*(d->x[2][i] - f)/(d->x[2+1][i]*d->x[2+1][i]);;
+      fr->chisq+=(d->x[2][i] - f)*(d->x[2][i] - f)/(d->x[2+1][i]*d->x[2+1][i]);
     }
   //Calculate covariances and uncertainties, see J. Wolberg 
   //'Data Analysis Using the Method of Least Squares' sec 2.5

@@ -169,6 +169,8 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
             strcpy(str,fr->fitForm[0]);
           else if(strcmp(p->fitType,"poly3")==0)
             str=plotFormPoly3(p,fr,pd,i);
+          else if(strcmp(p->fitType,"2parpoly3")==0)
+            str=plotForm2ParPoly3(p,fr,pd,i);
           gnuplot_plot_equation(handle, str, "Fit");
           //plot confidence intervals
           if(p->plotCI==1)
@@ -289,9 +291,9 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
           gnuplot_cmd(handle,"set grid");//set style for fit data
           //generate fit data functional forms
           if(strcmp(p->fitType,"par2")==0)
-            {
-              str=plotForm2Par(p,fr,pd,0);
-            }
+            str=plotForm2Par(p,fr,pd,0);
+          else if(strcmp(p->fitType,"2parpoly3")==0)
+            str=plotForm2ParPoly3(p,fr,pd,0);
           gnuplot_plot_equation(handle, str, "Fit");
           printf("Showing surface plot.\n");
           printf("%i data points available for plot.\n",pd->plotDataSize[0]);

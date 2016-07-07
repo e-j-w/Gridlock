@@ -7,6 +7,7 @@
 #include "2parfit.c"
 #include "3parfit.c"
 #include "poly3fit.c"
+#include "2parpoly3fit.c"
 //functions
 #include "import_data.c"
 #include "print_data_info.c"
@@ -97,6 +98,16 @@ int main(int argc, char *argv[])
       		fitPoly3ChisqConf(fr,fr->fitVert[0]);
       		fitPoly3ChisqConf(fr,fr->fitVert[1]);
       	}
+    }
+  else if(strcmp(p->fitType,"2parpoly3")==0)
+    {
+      fit2ParPoly3(d,fr);
+      print2ParPoly3(d,p,fr);
+      /*if(strcmp(p->dataType,"chisq")==0)
+      	{
+      		fitPoly3ChisqConf(fr,fr->fitVert[0]);
+      		fitPoly3ChisqConf(fr,fr->fitVert[1]);
+      	}*/
     }
   
   if((p->plotData==1)&&(p->verbose<1))

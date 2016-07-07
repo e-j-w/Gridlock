@@ -163,7 +163,7 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
   if((fr->fitVert[0]==fr->fitVert[0])&&(fr->fitVert[1]==fr->fitVert[1]))
   	{
     	printf("Critical points at x = [ %LE %LE ]\n",fr->fitVert[0],fr->fitVert[1]);
-    	printf("At critical ponts, y = [ %LE %LE ]\n",fr->a[0]*fr->fitVert[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[0]*fr->fitVert[0] + fr->a[2]*fr->fitVert[0] + fr->a[3],fr->a[0]*fr->fitVert[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[2]*fr->fitVert[1] + fr->a[3]);
+    	printf("At critical points, y = [ %LE %LE ]\n",fr->a[0]*fr->fitVert[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[0]*fr->fitVert[0] + fr->a[2]*fr->fitVert[0] + fr->a[3],fr->a[0]*fr->fitVert[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[2]*fr->fitVert[1] + fr->a[3]);
     }
   else
     printf("Fit function is monotonic (no critical points).\n");

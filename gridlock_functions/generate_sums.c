@@ -21,7 +21,7 @@ void generateSums(data * d,const parameters * p)
       for(j=0;j<p->numVar;j++)//loop over free parameters
         {
           powVal=1.;
-          for(k=0;k<5;k++)//loop over powers
+          for(k=0;k<6;k++)//loop over powers
             {
               d->xpowsum[j][k] += powVal/w;
               d->mxpowsum[j][k] += d->x[p->numVar][i]*powVal/w;
@@ -29,8 +29,8 @@ void generateSums(data * d,const parameters * p)
             }
             
           for(k=0;k<p->numVar;k++)//loop over free parameters
-            for(l=0;l<5;l++)//loop over powers (corresponding to parameter indexed by j)
-              for(m=0;m<5;m++)//loop over powers (corresponding to parameter indexed by k)
+            for(l=0;l<6;l++)//loop over powers (corresponding to parameter indexed by j)
+              for(m=0;m<6;m++)//loop over powers (corresponding to parameter indexed by k)
                 {
                   powVal=1.;
                   for(q=0;q<l;q++)
