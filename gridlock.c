@@ -89,20 +89,10 @@ int main(int argc, char *argv[])
       fitLinDeming(p,d,fr,p->fitOpt);
       printLinDeming(d,p,fr);
     }
-  else if(strcmp(p->fitType,"poly3")==0)
-    {
-      fitPoly3(p,d,fr,1);      
-    }
-  else if(strcmp(p->fitType,"2parpoly3")==0)
-    {
-      fit2ParPoly3(p,d,fr);
-      print2ParPoly3(d,p,fr);
-      /*if(strcmp(p->dataType,"chisq")==0)
-      	{
-      		fitPoly3ChisqConf(fr,fr->fitVert[0]);
-      		fitPoly3ChisqConf(fr,fr->fitVert[1]);
-      	}*/
-    }
+	else if(strcmp(p->fitType,"poly3")==0)
+		fitPoly3(p,d,fr,1);      
+	else if(strcmp(p->fitType,"2parpoly3")==0)
+		fit2ParPoly3(p,d,fr,1);
   
   if((p->plotData==1)&&(p->verbose<1))
     {

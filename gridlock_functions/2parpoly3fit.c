@@ -10,9 +10,66 @@ long double eval2ParPoly3(long double x,long double y, const fit_results * fr)
 					+ fr->a[6]*x*y + fr->a[7]*x + fr->a[8]*y + fr->a[9];
 }
 
+
+//determine uncertainty bounds for the local minimum by intersection of fit function with line defining values at min + delta
+//done by shifting the function by the value at the minimum + a confidence level, and finding the roots around that minimum
+void fit2ParPoly3ChisqConf(fit_results * fr, long double pt)
+{
+  printf("Searching for confidence interval bounds in fit region...");
+  	//for(i=0;i<100;i++)//x-coordinate
+  		//for(j=0;j<100;j++)//y-coordinate
+  
+
+}
+
+//prints fit data
+void print2ParPoly3(const data * d, const parameters * p, const fit_results * fr)
+{
+
+  int i;
+
+  //simplified data printing depending on verbosity setting
+  if(p->verbose==1)
+    { 
+      //print vertex of paraboloid
+      for(i=0;i<p->numVar;i++)
+        printf("%LE ",fr->fitVert[i]);
+      printf("\n");
+      return;
+    }
+  
+  printf("\nFIT RESULTS\n-----------\n");
+  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit function: f(x,y,z) = a1*x^3 + a2*y^3 + a3*x^2*y\n                       + a4*x*y^2 + a5*x^2 + a6*y^2\n                       + a7*x*y + a8*x + a9*y + a10\n\n");
+  //printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+  printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
+  for(i=1;i<10;i++)
+    printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
+  printf("\n");
+  
+  //print local minimum and confidence bounds (if necessary)
+  printf("Local minimum:\n");
+	if((strcmp(p->dataType,"chisq")==0)&&(fr->vertBoundsFound==1))
+		{
+			if((float)(fr->vertUBound[0]-fr->fitVert[0])==(float)(fr->fitVert[0]-fr->vertLBound[0]))
+				printf("x = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
+			else
+				printf("x = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+			if((float)(fr->vertUBound[1]-fr->fitVert[1])==(float)(fr->fitVert[1]-fr->vertLBound[1]))
+				printf("y = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
+			else
+				printf("y = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[1]);
+		}
+	else
+		printf("x = %LE, y = %LE\n",fr->fitVert[0],fr->fitVert[1]);
+    
+}
+
+
+
 //fit data to a paraboloid of the form
 //f(x,y) = a1*x^3 + a2*y^3 + a3*x^2*y + a4*x*y^2 + a5*x^2 + a6*y^2 +a7*x*y + a8*x + a9*y + a10
-void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr)
+void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, int print)
 {
   //construct equations
   int i,j;
@@ -206,27 +263,20 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr)
 				//fit and find critical points of this data
 				generateSums(svard,svarp);
 				fitPoly3(svarp,svard,svarfr,0);//fit but don't print data
-				printf("For parameter %i:\n",i);
-				printf("Critical points at x = [ %LE %LE ]\n",svarfr->fitVert[0],svarfr->fitVert[1]);
-				
-				//print confidence bounds
+				//save critical point corresponding to minimum
+				if(evalPoly3(svarfr->fitVert[0],svarfr)<evalPoly3(svarfr->fitVert[1],svarfr))
+					fr->fitVert[i]=svarfr->fitVert[0];
+				else
+					fr->fitVert[i]=svarfr->fitVert[1];
+				//save confidence bounds, if applicable
 				if((strcmp(p->dataType,"chisq")==0)&&(svarfr->vertBoundsFound==1))
 					{
-						if(evalPoly3(svarfr->fitVert[0],svarfr)<evalPoly3(svarfr->fitVert[1],svarfr))
-							{
-								if((float)(svarfr->vertUBound[0]-svarfr->fitVert[0])==(float)(svarfr->fitVert[0]-svarfr->vertLBound[0]))
-									printf("Local minimum with confidence interval: x = %LE +/- %LE\n",svarfr->fitVert[0],svarfr->vertUBound[0]-svarfr->fitVert[0]);
-								else
-									printf("Local minimum with confidence interval: x = %LE + %LE - %LE\n",svarfr->fitVert[0],svarfr->vertUBound[0]-svarfr->fitVert[0],svarfr->fitVert[0]-svarfr->vertLBound[0]);
-							}
-						else
-							{
-								if((float)(svarfr->vertUBound[0]-svarfr->fitVert[1])==(float)(svarfr->fitVert[1]-svarfr->vertLBound[0]))
-									printf("Local minimum with confidence interval: x = %LE +/- %LE\n",svarfr->fitVert[1],svarfr->vertUBound[0]-svarfr->fitVert[1]);
-								else
-									printf("Local minimum with confidence interval: x = %LE + %LE - %LE\n",svarfr->fitVert[1],svarfr->vertUBound[0]-svarfr->fitVert[1],svarfr->fitVert[1]-svarfr->vertLBound[0]);
-							}
+						fr->vertBoundsFound=1;
+						fr->vertLBound[i]=svarfr->vertLBound[0];
+						fr->vertUBound[i]=svarfr->vertUBound[0];
 					}
+				else
+					fr->vertBoundsFound=0;
 				
 					
 			}
@@ -235,94 +285,14 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr)
 	free(svarp);
 	free(svard);
 	free(svarfr);
+	
+	//print results
+  if(print==1)
+		print2ParPoly3(d,p,fr);
 
 }
 
-//determine uncertainty bounds for the local minimum by intersection of fit function with line defining values at min + delta
-//done by shifting the function by the value at the minimum + a confidence level, and finding the roots around that minimum
-void fit2ParPoly3ChisqConf(fit_results * fr, long double pt)
-{
-  printf("Searching for confidence interval bounds in fit region...");
-  	//for(i=0;i<100;i++)//x-coordinate
-  		//for(j=0;j<100;j++)//y-coordinate
-  
 
-}
-
-//prints fit data
-void print2ParPoly3(const data * d, const parameters * p, const fit_results * fr)
-{
-
-  int i;
-
-  //simplified data printing depending on verbosity setting
-  if(p->verbose==1)
-    { 
-      //print vertex of paraboloid
-      for(i=0;i<p->numVar;i++)
-        printf("%LE ",fr->fitVert[i]);
-      printf("\n");
-      return;
-    }
-  
-  printf("\nFIT RESULTS\n-----------\n");
-  printf("Uncertainties reported at 1-sigma.\n");
-  printf("Fit function: f(x,y,z) = a1*x^3 + a2*y^3 + a3*x^2*y\n                       + a4*x*y^2 + a5*x^2 + a6*y^2\n                       + a7*x*y + a8*x + a9*y + a10\n\n");
-  //printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
-  printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
-  for(i=1;i<10;i++)
-    printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
-  printf("\n");
-  
-  /*printf("Local minimum in fit function found using iterative search.\n");
-  printf("%i iterations total.\n",(int)fr->fitVert[2]);
-  printf("x = %LE, y = %LE\n",fr->fitVert[0],fr->fitVert[1]);*/
-  
-  /*if(fr->a[0]>=0)
-    printf("Minimum in x direction, ");
-  else
-    printf("Maximum in x direction, ");
-  if(fr->vertBoundsFound==1)
-    {
-      //these values were calculated at long double precision, 
-      //check if they are the same to within float precision
-      if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
-        printf("x0 = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
-      else
-        printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
-    }
-  else
-    printf("x0 = %LE\n",fr->fitVert[0]);
-  if(fr->a[1]>=0)
-    printf("Minimum in y direction, ");
-  else
-    printf("Maximum in y direction, ");
-  if(fr->vertBoundsFound==1)
-    {
-      if ((float)(fr->fitVert[1]-fr->vertLBound[1])==(float)(fr->vertUBound[1]-fr->fitVert[1]))
-        printf("y0 = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
-      else
-        printf("y0 = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[1]);
-    }
-  else
-    printf("y0 = %LE\n",fr->fitVert[1]);
-  if(fr->a[2]>=0)
-    printf("Minimum in z direction, ");
-  else
-    printf("Maximum in z direction, ");
-  if(fr->vertBoundsFound==1)
-    {
-      if ((float)(fr->fitVert[2]-fr->vertLBound[2])==(float)(fr->vertUBound[2]-fr->fitVert[2]))
-        printf("z0 = %LE +/- %LE\n",fr->fitVert[2],fr->vertUBound[2]-fr->fitVert[2]);
-      else
-        printf("z0 = %LE + %LE - %LE\n",fr->fitVert[2],fr->vertUBound[2]-fr->fitVert[2],fr->fitVert[2]-fr->vertLBound[2]);
-    }
-  else
-    printf("z0 = %LE\n",fr->fitVert[2]);
-  
-  printf("\nf(x0,y0,z0) = %LE\n",fr->vertVal); */
-    
-}
 
 //generates the functional form of the fit function for plotting,
 //which varies depending on the plotting mode (parameters may be fixed)
