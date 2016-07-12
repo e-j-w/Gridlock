@@ -1,6 +1,18 @@
+//forward declarations
+void generateSums(data *,const parameters *);
+
+//evaluates the fit function at the specified point
+long double eval2ParPoly3(long double x,long double y, const fit_results * fr)
+{
+	return fr->a[0]*x*x*x + fr->a[1]*y*y*y
+					+ fr->a[2]*x*x*y + fr->a[3]*x*y*y
+					+ fr->a[4]*x*x + fr->a[5]*y*y
+					+ fr->a[6]*x*y + fr->a[7]*x + fr->a[8]*y + fr->a[9];
+}
+
 //fit data to a paraboloid of the form
 //f(x,y) = a1*x^3 + a2*y^3 + a3*x^2*y + a4*x*y^2 + a5*x^2 + a6*y^2 +a7*x*y + a8*x + a9*y + a10
-void fit2ParPoly3(const data * d, fit_results * fr)
+void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr)
 {
   //construct equations
   int i,j;
@@ -117,101 +129,125 @@ void fit2ParPoly3(const data * d, fit_results * fr)
       fr->covar[i][j]=linEq.inv_matrix[i][j]*(fr->chisq/fr->ndf);
   for(i=0;i<linEq.dim;i++)
     fr->aerr[i]=(long double)sqrt((double)(fr->covar[i][i]));
-    
-  /*//now that the fit is performed, use the fit parameters (and the derivative of the fitting function) to find the critical points
-  linEq.dim=3;
-  linEq.matrix[0][0]=2*fr->a[0];
-  linEq.matrix[0][1]=fr->a[3];
-  linEq.matrix[0][2]=fr->a[4];
-  linEq.matrix[1][1]=2*fr->a[1];
-  linEq.matrix[1][2]=fr->a[5];
-  linEq.matrix[2][2]=2*fr->a[2];
-  //mirror the matrix (top right half mirrored to bottom left half)
-  for(i=1;i<linEq.dim;i++)
-    for(j=0;j<i;j++)
-      linEq.matrix[i][j]=linEq.matrix[j][i];
-      
-  linEq.vector[0]=-1*fr->a[6];
-  linEq.vector[1]=-1*fr->a[7];
-  linEq.vector[2]=-1*fr->a[8];
-  
-  //solve system of equations and assign values
-  if(!(solve_lin_eq(&linEq)==1))
-    {
-      printf("ERROR: Could not determine paraboloid center point.\n");
-      exit(-1);
-    }
-  
-  for(i=0;i<linEq.dim;i++)
-    fr->fitVert[i]=linEq.solution[i];
-    
-  
-  //find the value of the fit function at the vertex
-  fr->vertVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[2]*fr->fitVert[2]*fr->fitVert[2] + fr->a[3]*fr->fitVert[0]*fr->fitVert[1] + fr->a[4]*fr->fitVert[0]*fr->fitVert[2] + fr->a[5]*fr->fitVert[1]*fr->fitVert[2] + fr->a[6]*fr->fitVert[0] + fr->a[7]*fr->fitVert[1] + fr->a[8]*fr->fitVert[2] + fr->a[9];*/
-  
+	
+	
+	
+	//determine the minimum and bounds in each variable by generating 2 
+	//polynomials, one in each variable
+	//done by taking the minimum value of the fit function available 
+	//for various values of the variable of interest (projecting the 
+	//minimum values on the variable axis)
+	
+	//allocate fit structures
+	parameters *svarp=(parameters*)calloc(1,sizeof(parameters));
+	data *svard=(data*)calloc(1,sizeof(data));
+  fit_results *svarfr=(fit_results*)calloc(1,sizeof(fit_results));
+  //setup fit
+  svarp->numVar=1;
+  svarp->ciDelta=2.30;//1-sigma, 2 parameters
+  strcpy(svarp->plotMode,"1d");
+  if(strcmp(p->dataType,"chisq")==0)
+  	strcpy(svarp->dataType,"chisq");
+  	
+	long double val,a,b,c,sqrtval;
+	for(i=0;i<2;i++)//variable #
+		{
+			svard->lines=0;
+			for(j=0;j<=100;j++)//number of data points to compute
+				{
+					val=d->min_x[i] + (j/100.)*(d->max_x[i] - d->min_x[i]);
+					if(i==0)
+						{
+							a=3.*fr->a[1];
+							b=2.*fr->a[3]*val + 2.*fr->a[5];
+							c=fr->a[2]*val*val + fr->a[6]*val + fr->a[8];
+						}
+					else
+						{
+							a=3.*fr->a[0];
+							b=2.*fr->a[2]*val + 2.*fr->a[4];
+							c=fr->a[3]*val*val + fr->a[6]*val + fr->a[7];
+						}
+					sqrtval=b*b - 4.*a*c;			
+					if(sqrtval==0)
+						{
+							if(i==0)
+								svard->x[1][svard->lines]=eval2ParPoly3(val,-1.*b/(2.*a),fr);
+							else
+								svard->x[1][svard->lines]=eval2ParPoly3(-1.*b/(2.*a),val,fr);
+						}
+					else if(sqrtval>0)
+						{
+							if(i==0)
+								{
+									if(eval2ParPoly3(val,(-1.*b - sqrt(sqrtval))/(2.*a),fr)>eval2ParPoly3(val,(-1.*b + sqrt(sqrtval))/(2.*a),fr))
+										svard->x[1][svard->lines]=eval2ParPoly3(val,(-1.*b + sqrt(sqrtval))/(2.*a),fr);
+									else
+										svard->x[1][svard->lines]=eval2ParPoly3(val,(-1.*b - sqrt(sqrtval))/(2.*a),fr);
+								}
+							else
+								{
+									if(eval2ParPoly3((-1.*b - sqrt(sqrtval))/(2.*a),val,fr)>eval2ParPoly3((-1.*b + sqrt(sqrtval))/(2.*a),val,fr))
+										svard->x[1][svard->lines]=eval2ParPoly3((-1.*b + sqrt(sqrtval))/(2.*a),val,fr);
+									else
+										svard->x[1][svard->lines]=eval2ParPoly3((-1.*b - sqrt(sqrtval))/(2.*a),val,fr);
+								}
+						}//don't take any action (skip data point) if the roots are not real
+					
+					if(sqrtval>=0)
+						{
+							svard->x[0][svard->lines]=val;
+							svard->x[2][svard->lines]=1.;//set weight
+							svard->lines++;
+						}
+					
+					
+				}
+				//fit and find critical points of this data
+				generateSums(svard,svarp);
+				fitPoly3(svarp,svard,svarfr,0);//fit but don't print data
+				printf("For parameter %i:\n",i);
+				printf("Critical points at x = [ %LE %LE ]\n",svarfr->fitVert[0],svarfr->fitVert[1]);
+				
+				//print confidence bounds
+				if((strcmp(p->dataType,"chisq")==0)&&(svarfr->vertBoundsFound==1))
+					{
+						if(evalPoly3(svarfr->fitVert[0],svarfr)<evalPoly3(svarfr->fitVert[1],svarfr))
+							{
+								if((float)(svarfr->vertUBound[0]-svarfr->fitVert[0])==(float)(svarfr->fitVert[0]-svarfr->vertLBound[0]))
+									printf("Local minimum with confidence interval: x = %LE +/- %LE\n",svarfr->fitVert[0],svarfr->vertUBound[0]-svarfr->fitVert[0]);
+								else
+									printf("Local minimum with confidence interval: x = %LE + %LE - %LE\n",svarfr->fitVert[0],svarfr->vertUBound[0]-svarfr->fitVert[0],svarfr->fitVert[0]-svarfr->vertLBound[0]);
+							}
+						else
+							{
+								if((float)(svarfr->vertUBound[0]-svarfr->fitVert[1])==(float)(svarfr->fitVert[1]-svarfr->vertLBound[0]))
+									printf("Local minimum with confidence interval: x = %LE +/- %LE\n",svarfr->fitVert[1],svarfr->vertUBound[0]-svarfr->fitVert[1]);
+								else
+									printf("Local minimum with confidence interval: x = %LE + %LE - %LE\n",svarfr->fitVert[1],svarfr->vertUBound[0]-svarfr->fitVert[1],svarfr->fitVert[1]-svarfr->vertLBound[0]);
+							}
+					}
+				
+					
+			}
+	
+	//free fit structures
+	free(svarp);
+	free(svard);
+	free(svarfr);
+
 }
 
-//determine uncertainty ellipsoid bounds for the vertex by from fit function values fixed at min + delta
-//derived using the same procedure as for 2 free variables (see 2parfit.c), with an extra step solving the quadratic formula in between
-/*void fit3ParChisqConf(fit_results * fr)
+//determine uncertainty bounds for the local minimum by intersection of fit function with line defining values at min + delta
+//done by shifting the function by the value at the minimum + a confidence level, and finding the roots around that minimum
+void fit2ParPoly3ChisqConf(fit_results * fr, long double pt)
 {
+  printf("Searching for confidence interval bounds in fit region...");
+  	//for(i=0;i<100;i++)//x-coordinate
+  		//for(j=0;j<100;j++)//y-coordinate
   
-  long double a,b,c;
-  long double delta=3.53;//confidence level for 1-sigma in 3 parameters
-  //delta*=fr->vertVal;
-  fr->vertBoundsFound=1;
-  
-  a=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[0]*fr->a[2] - fr->a[4]*fr->a[4]) - 16.*(fr->a[2]*fr->a[2]*fr->a[3]*fr->a[3] - fr->a[2]*fr->a[3]*fr->a[4]*fr->a[5]) - 4.*fr->a[4]*fr->a[4]*fr->a[5]*fr->a[5];
-  b=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[2]*fr->a[6] - 2.*fr->a[4]*fr->a[8]) - 16.*(2.*fr->a[2]*fr->a[2]*fr->a[3]*fr->a[7] - fr->a[2]*fr->a[5]*(fr->a[3]*fr->a[8] + fr->a[7]*fr->a[4])) - 8.*fr->a[5]*fr->a[5]*fr->a[4]*fr->a[8];
-  c=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[2]*(fr->a[9] - delta - fr->vertVal) - fr->a[8]*fr->a[8]) - 16.*(fr->a[2]*fr->a[2]*fr->a[7]*fr->a[7] - fr->a[2]*fr->a[5]*fr->a[7]*fr->a[8]) - 4.*fr->a[5]*fr->a[5]*fr->a[8]*fr->a[8]; 
-  if((b*b - 4*a*c)<0.)
-    c=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[2]*(fr->a[9] + delta - fr->vertVal) - fr->a[8]*fr->a[8]) - 16.*(fr->a[2]*fr->a[2]*fr->a[7]*fr->a[7] - fr->a[2]*fr->a[5]*fr->a[7]*fr->a[8]) - 4.*fr->a[5]*fr->a[5]*fr->a[8]*fr->a[8];//try flipping delta
-  if((b*b - 4*a*c)<0.)
-    fr->vertBoundsFound=0;
-  else
-    {
-      fr->vertUBound[0]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
-      fr->vertLBound[0]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
-    }
 
-  a=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*fr->a[1] - fr->a[3]*fr->a[3]) - 16.*(fr->a[0]*fr->a[0]*fr->a[5]*fr->a[5] - fr->a[0]*fr->a[3]*fr->a[4]*fr->a[5]) - 4.*fr->a[3]*fr->a[3]*fr->a[4]*fr->a[4];  
-  b=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*fr->a[7] - 2.*fr->a[3]*fr->a[6]) - 16.*(2.*fr->a[5]*fr->a[8]*fr->a[0]*fr->a[0] - fr->a[0]*fr->a[4]*(fr->a[5]*fr->a[6] + fr->a[8]*fr->a[3])) - 8.*fr->a[4]*fr->a[4]*fr->a[3]*fr->a[6];  
-  c=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*(fr->a[9] - delta - fr->vertVal) - fr->a[6]*fr->a[6]) - 16.*(fr->a[0]*fr->a[0]*fr->a[8]*fr->a[8] - fr->a[0]*fr->a[4]*fr->a[6]*fr->a[8]) - 4.*fr->a[4]*fr->a[4]*fr->a[6]*fr->a[6];
-  if((b*b - 4*a*c)<0.) 
-    c=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*(fr->a[9] + delta - fr->vertVal) - fr->a[6]*fr->a[6]) - 16.*(fr->a[0]*fr->a[0]*fr->a[8]*fr->a[8] - fr->a[0]*fr->a[4]*fr->a[6]*fr->a[8]) - 4.*fr->a[4]*fr->a[4]*fr->a[6]*fr->a[6];//try flipping delta
-  if((b*b - 4*a*c)<0.)  
-    fr->vertBoundsFound=0;
-  else
-    {
-      fr->vertUBound[1]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
-      fr->vertLBound[1]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
-    }
-  
-  a=(16.*fr->a[0]*fr->a[1] - 4.*fr->a[3]*fr->a[3])*(4.*fr->a[0]*fr->a[2] - fr->a[4]*fr->a[4]) - 16.*(fr->a[0]*fr->a[0]*fr->a[5]*fr->a[5] - fr->a[0]*fr->a[3]*fr->a[4]*fr->a[5]) - 4.*fr->a[3]*fr->a[3]*fr->a[4]*fr->a[4];
-  b=(16.*fr->a[0]*fr->a[1] - 4.*fr->a[3]*fr->a[3])*(4.*fr->a[0]*fr->a[8] - 2.*fr->a[4]*fr->a[6]) - 16.*(2.*fr->a[5]*fr->a[7]*fr->a[0]*fr->a[0] - fr->a[0]*fr->a[3]*(fr->a[5]*fr->a[6] + fr->a[7]*fr->a[4])) - 8.*fr->a[3]*fr->a[3]*fr->a[4]*fr->a[6];
-  c=(16.*fr->a[0]*fr->a[1] - 4.*fr->a[3]*fr->a[3])*(4.*fr->a[0]*(fr->a[9] - delta - fr->vertVal) - fr->a[6]*fr->a[6]) - 16.*(fr->a[0]*fr->a[0]*fr->a[7]*fr->a[7] - fr->a[0]*fr->a[3]*fr->a[6]*fr->a[7]) - 4.*fr->a[3]*fr->a[3]*fr->a[6]*fr->a[6];  
-  if((b*b - 4*a*c)<0.) 
-    c=(16.*fr->a[0]*fr->a[1] - 4.*fr->a[3]*fr->a[3])*(4.*fr->a[0]*(fr->a[9] + delta - fr->vertVal) - fr->a[6]*fr->a[6]) - 16.*(fr->a[0]*fr->a[0]*fr->a[7]*fr->a[7] - fr->a[0]*fr->a[3]*fr->a[6]*fr->a[7]) - 4.*fr->a[3]*fr->a[3]*fr->a[6]*fr->a[6];//try flipping delta
-  if((b*b - 4*a*c)<0.)  
-    fr->vertBoundsFound=0;
-  else
-    {
-      fr->vertUBound[2]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
-      fr->vertLBound[2]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
-    }
-  
-  //swap bounds if needed
-  int i;
-  for(i=0;i<3;i++)
-    if(fr->vertLBound[i]>fr->vertUBound[i])
-      {
-        a=fr->vertUBound[i];
-        fr->vertUBound[i]=fr->vertLBound[i];
-        fr->vertLBound[i]=a;
-      }
-    
-
-}*/
+}
 
 //prints fit data
 void print2ParPoly3(const data * d, const parameters * p, const fit_results * fr)
@@ -237,6 +273,10 @@ void print2ParPoly3(const data * d, const parameters * p, const fit_results * fr
   for(i=1;i<10;i++)
     printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
   printf("\n");
+  
+  /*printf("Local minimum in fit function found using iterative search.\n");
+  printf("%i iterations total.\n",(int)fr->fitVert[2]);
+  printf("x = %LE, y = %LE\n",fr->fitVert[0],fr->fitVert[1]);*/
   
   /*if(fr->a[0]>=0)
     printf("Minimum in x direction, ");

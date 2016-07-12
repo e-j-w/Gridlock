@@ -50,34 +50,9 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
   fr->fitVert[0]=-1.0*fr->a[1]/fr->a[0];//x-intercept
   fr->fitVert[1]=fr->a[1];//y-intercept
   
-  /*//set up quantities to compute confidence interval (analytical form)
-  long double xb,yb,sxx,syx,tval;
-  tval=t_stat(d->lines-2,0.025);//t-statistic t(df,alpha/2)
-  xb=0.;  yb=0.;
-  for(i=0;i<d->lines;i++)
-  	{
-  		xb+=d->x[0][i];
-  		yb+=d->x[p->numVar][i];
-  	}
-  xb/=d->lines;//average x value
-  yb/=d->lines;//average y value
-  sxx=0.;
-  syx=0.;
-  for(i=0;i<d->lines;i++)
-  	{
-  		sxx+=(d->x[0][i] - xb)*(d->x[0][i] - xb);
-  		syx+=(d->x[p->numVar][i] - yb)*(d->x[p->numVar][i] - yb);
-  	}*/
-  
-  //set up equation forms for plotting
-  if(strcmp(p->plotMode,"1d")==0)
-    {
-      sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
-      /*sprintf(fr->ciUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * sqrt((1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
-      sprintf(fr->ciLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * sqrt((1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
-      sprintf(fr->piUForm[0], "%Lf*x + %Lf + (%LF * sqrt(%LF/%i) * sqrt(1.0 + (1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);
-      sprintf(fr->piLForm[0], "%Lf*x + %Lf - (%LF * sqrt(%LF/%i) * sqrt(1.0 + (1.0/%i) + ((x - %LF)**2)/%LF) )",fr->a[0],fr->a[1],tval,syx,d->lines-2,d->lines,xb,sxx);*/
-    }
+	//set up equation forms for plotting
+	if(strcmp(p->plotMode,"1d")==0)
+		sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
   
   
 	//generate slope/intercept pairs for confidence interval

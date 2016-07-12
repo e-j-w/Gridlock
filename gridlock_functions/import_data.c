@@ -108,6 +108,16 @@ void importData(data * d, parameters * p)
     }
   fclose(inp);
   
+  //generate the appropriate 1-sigma confidence level
+  if(p->numVar==1)
+  	p->ciDelta=1.00;
+  else if(p->numVar==2)
+  	p->ciDelta=2.30;
+  else if(p->numVar==3)
+  	p->ciDelta=3.53;
+  else
+  	p->ciDelta=0.00;
+  
   //import data from file
   if((inp=fopen(p->filename,"r"))==NULL)
     exit(-1);

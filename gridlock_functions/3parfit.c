@@ -145,12 +145,12 @@ void fit3Par(const data * d, fit_results * fr)
 
 //determine uncertainty ellipsoid bounds for the vertex by from fit function values fixed at min + delta
 //derived using the same procedure as for 2 free variables (see 2parfit.c), with an extra step solving the quadratic formula in between
-void fit3ParChisqConf(fit_results * fr)
+//delta is the desired confidence level (3.53 for 1-sigma in 3 parameters)
+void fit3ParChisqConf(const parameters * p, fit_results * fr)
 {
   
   long double a,b,c;
-  long double delta=3.53;//confidence level for 1-sigma in 3 parameters
-  //delta*=fr->vertVal;
+  long double delta=p->ciDelta;
   fr->vertBoundsFound=1;
   
   a=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[0]*fr->a[2] - fr->a[4]*fr->a[4]) - 16.*(fr->a[2]*fr->a[2]*fr->a[3]*fr->a[3] - fr->a[2]*fr->a[3]*fr->a[4]*fr->a[5]) - 4.*fr->a[4]*fr->a[4]*fr->a[5]*fr->a[5];

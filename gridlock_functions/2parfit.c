@@ -87,17 +87,17 @@ void fit2Par(const data * d, fit_results * fr)
 
 
 //determine uncertainty ellipse bounds for the vertex by intersection of fit function with plane defining values at min + delta
+//delta is the desired confidence level (2.30 for 1-sigma in 2 parameters)
 //derived by: 
 //1) setting f(x,y)=delta+min
 //2) deriving x values as a function of y and vice versa via the quadratic formula
 //3) setting the expression under the sqrts obtained to 0 to define bounds for x,y
 //4) solving for upper and lower x,y bounds using the quadratic formula (calculated below)
-void fit2ParChisqConf(fit_results * fr)
+void fit2ParChisqConf(const parameters * p, fit_results * fr)
 {
   
   long double a,b,c;
-  long double delta=2.30;//confidence level for 1-sigma in 2 parameters
-  //delta*=fr->vertVal;
+  long double delta=p->ciDelta;
   fr->vertBoundsFound=1;
   
   a=4.*fr->a[1]*fr->a[0] - fr->a[2]*fr->a[2];

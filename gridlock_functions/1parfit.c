@@ -61,15 +61,15 @@ void fit1Par(const data * d, fit_results * fr)
 }
 
 //determine uncertainty bounds for the vertex by intersection of fit function with line defining values at min + delta
+//delta is the desired confidence level (1.00 for 1-sigma in 1 parameter)
 //derived by: 
 //1) setting f(x,y)=delta+min
 //2) solving for x bounds using the quadratic formula (calculated below)
-void fit1ParChisqConf(fit_results * fr)
+void fit1ParChisqConf(const parameters * p, fit_results * fr)
 {
   
   long double a,b,c;
-  long double delta=1.00;//confidence level for 1-sigma in 1 parameter
-  //delta*=fr->vertVal;
+  long double delta=p->ciDelta;
   fr->vertBoundsFound=1;
   
   a=fr->a[0];

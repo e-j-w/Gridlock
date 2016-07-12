@@ -60,21 +60,21 @@ int main(int argc, char *argv[])
     {
       fit1Par(d,fr);
       if(strcmp(p->dataType,"chisq")==0)
-        fit1ParChisqConf(fr);//generate confidence interval bounds for chisq data
+        fit1ParChisqConf(p,fr);//generate confidence interval bounds for chisq data
       print1Par(d,p,fr);
     }
   else if(strcmp(p->fitType,"par2")==0) //see 2parfit.c
     {
       fit2Par(d,fr);
       if(strcmp(p->dataType,"chisq")==0)
-        fit2ParChisqConf(fr);//generate confidence interval bounds for chisq data
+        fit2ParChisqConf(p,fr);//generate confidence interval bounds for chisq data
       print2Par(d,p,fr);
     }
   else if(strcmp(p->fitType,"par3")==0) //see 3parfit.c
     {
       fit3Par(d,fr);
       if(strcmp(p->dataType,"chisq")==0)
-        fit3ParChisqConf(fr);//generate confidence interval bounds for chisq data
+        fit3ParChisqConf(p,fr);//generate confidence interval bounds for chisq data
       print3Par(d,p,fr);
     }
   else if(strcmp(p->fitType,"lin")==0)
@@ -91,17 +91,11 @@ int main(int argc, char *argv[])
     }
   else if(strcmp(p->fitType,"poly3")==0)
     {
-      fitPoly3(d,fr);
-      printPoly3(d,p,fr);
-      if(strcmp(p->dataType,"chisq")==0)
-      	{
-      		fitPoly3ChisqConf(fr,fr->fitVert[0]);
-      		fitPoly3ChisqConf(fr,fr->fitVert[1]);
-      	}
+      fitPoly3(p,d,fr,1);      
     }
   else if(strcmp(p->fitType,"2parpoly3")==0)
     {
-      fit2ParPoly3(d,fr);
+      fit2ParPoly3(p,d,fr);
       print2ParPoly3(d,p,fr);
       /*if(strcmp(p->dataType,"chisq")==0)
       	{
