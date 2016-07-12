@@ -77,18 +77,15 @@ int main(int argc, char *argv[])
         fit3ParChisqConf(p,fr);//generate confidence interval bounds for chisq data
       print3Par(d,p,fr);
     }
-  else if(strcmp(p->fitType,"lin")==0)
-    {
-      fitLin(p,d,fr);
-      printLin(d,p,fr);
-    }
-  else if(strcmp(p->fitType,"lin_deming")==0)
-    {
-    	if(p->fitOpt==0.)//default value
+	else if(strcmp(p->fitType,"lin")==0)
+		fitLin(p,d,fr,1);
+	else if(strcmp(p->fitType,"lin_deming")==0)
+		{
+			if(p->fitOpt==0.)//default value
 				p->fitOpt=1.;
-      fitLinDeming(p,d,fr,p->fitOpt);
-      printLinDeming(d,p,fr);
-    }
+			fitLinDeming(p,d,fr,p->fitOpt);
+			printLinDeming(d,p,fr);
+		}
 	else if(strcmp(p->fitType,"poly3")==0)
 		fitPoly3(p,d,fr,1);      
 	else if(strcmp(p->fitType,"2parpoly3")==0)

@@ -1,9 +1,62 @@
-//forward declarations
-long double confIntVal(long double,const fit_results*,const data*,int);
+long double confIntVal(long double input, const fit_results * fr, const data * d, int upper)
+{
+	int i;	
+	long double cVal;
+	long double maxCVal=-1.*BIG_NUMBER;
+	long double minCVal=BIG_NUMBER;
+	
+	for (i=0;i<fr->ciEEValues;i++)
+		{
+			cVal=fr->ciEEVal[0][i]*input + fr->ciEEVal[1][i];
+			//printf("i: %i, cVal: %LE\n",i,cVal);
+			//printf("ciEEVals[%i]: %LE %LE\n",i,fr->ciEEVal[0][i],fr->ciEEVal[1][i]);
+			if(cVal>maxCVal)
+				maxCVal=cVal;
+			if(cVal<minCVal)
+				minCVal=cVal;
+		}
+	if(upper==1)
+		return maxCVal;
+	else
+		return minCVal;
+
+}
+
+//prints the results
+void printLin(const data * d, const parameters * p, fit_results * fr)
+{
+  //simplified data printing depending on verbosity setting
+  if(p->verbose==1)
+    {
+      //print x and y intercept
+      printf("%LE %LE\n",fr->fitVert[0],fr->fitVert[1]);
+      return;
+    }
+  
+  printf("\nFIT RESULTS\n-----------\n");
+  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit function: f(x,y) = a1*x + a2\n\n");
+  printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+  printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
+  printf("                       a2 = %LE +/- %LE\n",fr->a[1],fr->aerr[1]);
+  printf("\n");
+  
+  printf("x-intercept = %LE\n",fr->fitVert[0]);
+  if ((float)(fr->fitVert[1]-confIntVal(0.0,fr,d,0))==(float)(confIntVal(0.0,fr,d,1)-fr->fitVert[1]))
+    printf("y-intercept = %LE +/- %LE (from confidence interval)\n",fr->fitVert[1],fr->fitVert[1]-confIntVal(0.0,fr,d,0));
+  else
+    printf("y-intercept = %LE + %LE - %LE  (from confidence interval)\n",fr->fitVert[1],fr->fitVert[1]-confIntVal(0.0,fr,d,0),confIntVal(0.0,fr,d,1)-fr->fitVert[1]);
+  
+  /*//draw confidence interval ellipse
+  handle=gnuplot_init();
+  gnuplot_plot_xy(handle, fr->ciEEVal[0], fr->ciEEVal[1], fr->ciEEValues, "Data");
+  getc(stdin);*/
+    
+}
 
 //fit data to a line of the form
 //f(x) = a1*x + a2
-void fitLin(const parameters * p, const data * d, fit_results * fr)
+void fitLin(const parameters * p, const data * d, fit_results * fr, int print)
 {
   //construct equations
   int i,j;
@@ -91,61 +144,9 @@ void fitLin(const parameters * p, const data * d, fit_results * fr)
 			fr->ciLVal[0][i]=confIntVal(fr->ciXVal[0][i],fr,d,0);
 			//printf("point %i, upper val: %lf, lower val: %lf\n",i,fr->ciUVal[0][i],fr->ciLVal[0][i]);
 		}
-  
-}
-
-long double confIntVal(long double input, const fit_results * fr, const data * d, int upper)
-{
-	int i;	
-	long double cVal;
-	long double maxCVal=-1.*BIG_NUMBER;
-	long double minCVal=BIG_NUMBER;
 	
-	for (i=0;i<fr->ciEEValues;i++)
-		{
-			cVal=fr->ciEEVal[0][i]*input + fr->ciEEVal[1][i];
-			//printf("i: %i, cVal: %LE\n",i,cVal);
-			//printf("ciEEVals[%i]: %LE %LE\n",i,fr->ciEEVal[0][i],fr->ciEEVal[1][i]);
-			if(cVal>maxCVal)
-				maxCVal=cVal;
-			if(cVal<minCVal)
-				minCVal=cVal;
-		}
-	if(upper==1)
-		return maxCVal;
-	else
-		return minCVal;
-
-}
-
-//prints the results
-void printLin(const data * d, const parameters * p, fit_results * fr)
-{
-  //simplified data printing depending on verbosity setting
-  if(p->verbose==1)
-    {
-      //print x and y intercept
-      printf("%LE %LE\n",fr->fitVert[0],fr->fitVert[1]);
-      return;
-    }
+	//print results
+  if(print==1)
+		printLin(d,p,fr);
   
-  printf("\nFIT RESULTS\n-----------\n");
-  printf("Uncertainties reported at 1-sigma.\n");
-  printf("Fit function: f(x,y) = a1*x + a2\n\n");
-  printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
-  printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
-  printf("                       a2 = %LE +/- %LE\n",fr->a[1],fr->aerr[1]);
-  printf("\n");
-  
-  printf("x-intercept = %LE\n",fr->fitVert[0]);
-  if ((float)(fr->fitVert[1]-confIntVal(0.0,fr,d,0))==(float)(confIntVal(0.0,fr,d,1)-fr->fitVert[1]))
-    printf("y-intercept = %LE +/- %LE (from confidence interval)\n",fr->fitVert[1],fr->fitVert[1]-confIntVal(0.0,fr,d,0));
-  else
-    printf("y-intercept = %LE + %LE - %LE  (from confidence interval)\n",fr->fitVert[1],fr->fitVert[1]-confIntVal(0.0,fr,d,0),confIntVal(0.0,fr,d,1)-fr->fitVert[1]);
-  
-  /*//draw confidence interval ellipse
-  handle=gnuplot_init();
-  gnuplot_plot_xy(handle, fr->ciEEVal[0], fr->ciEEVal[1], fr->ciEEValues, "Data");
-  getc(stdin);*/
-    
 }
