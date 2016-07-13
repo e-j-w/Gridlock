@@ -54,9 +54,16 @@ void printLin(const data * d, const parameters * p, fit_results * fr)
     
 }
 
+void plotFormLin(const parameters * p, fit_results * fr)
+{
+	//set up equation forms for plotting
+	if(strcmp(p->plotMode,"1d")==0)
+		sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
+}
+
 //fit data to a line of the form
 //f(x) = a1*x + a2
-void fitLin(const parameters * p, const data * d, fit_results * fr, int print)
+void fitLin(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
 {
   //construct equations
   int i,j;
@@ -103,10 +110,6 @@ void fitLin(const parameters * p, const data * d, fit_results * fr, int print)
   fr->fitVert[0]=-1.0*fr->a[1]/fr->a[0];//x-intercept
   fr->fitVert[1]=fr->a[1];//y-intercept
   
-	//set up equation forms for plotting
-	if(strcmp(p->plotMode,"1d")==0)
-		sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
-  
   
 	//generate slope/intercept pairs for confidence interval
 	//Ref: A. Chester master thesis
@@ -148,5 +151,12 @@ void fitLin(const parameters * p, const data * d, fit_results * fr, int print)
 	//print results
   if(print==1)
 		printLin(d,p,fr);
+	
+	if((p->plotData==1)&&(p->verbose<1))
+		{
+			preparePlotData(d,p,fr,pd);
+			plotFormLin(p,fr);
+			plotData(p,fr,pd);
+		}
   
 }

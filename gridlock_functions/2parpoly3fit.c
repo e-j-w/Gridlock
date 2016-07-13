@@ -65,11 +65,23 @@ void print2ParPoly3(const data * d, const parameters * p, const fit_results * fr
     
 }
 
-
+void plotForm2ParPoly3(const parameters * p, fit_results * fr, const plot_data * pd)
+{
+	//set up equation forms for plotting
+	if(strcmp(p->plotMode,"1d")==0)
+		{
+			sprintf(fr->fitForm[0], "%Lf*(x**3) + %Lf*(%Lf**3) + %Lf*(x**2)*%Lf + %Lf*x*(%Lf**2) + %Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[0],fr->a[1],pd->fixedParVal[1],fr->a[2],pd->fixedParVal[1],fr->a[3],pd->fixedParVal[1],fr->a[4],fr->a[5],pd->fixedParVal[1],fr->a[6],pd->fixedParVal[1],fr->a[7],fr->a[8],pd->fixedParVal[1],fr->a[9]);//y fixed
+			sprintf(fr->fitForm[1], "%Lf*(x**3) + %Lf*(%Lf**3) + %Lf*(x**2)*%Lf + %Lf*x*(%Lf**2) + %Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[1],fr->a[0],pd->fixedParVal[0],fr->a[3],pd->fixedParVal[0],fr->a[2],pd->fixedParVal[0],fr->a[5],fr->a[4],pd->fixedParVal[0],fr->a[6],pd->fixedParVal[0],fr->a[8],fr->a[7],pd->fixedParVal[0],fr->a[9]);//x fixed
+    }
+  else if(strcmp(p->plotMode,"2d")==0)
+    {
+      sprintf(fr->fitForm[0], "%Lf*(x**3) + %Lf*(y**3) + %Lf*(x**2)*y + %Lf*(y**2)*x + %Lf*(x**2) + %Lf*(y**2) + %Lf*x*y + %Lf*x + %Lf*y + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3],fr->a[4],fr->a[5],fr->a[6],fr->a[7],fr->a[8],fr->a[9]);
+    }
+}
 
 //fit data to a paraboloid of the form
 //f(x,y) = a1*x^3 + a2*y^3 + a3*x^2*y + a4*x*y^2 + a5*x^2 + a6*y^2 +a7*x*y + a8*x + a9*y + a10
-void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, int print)
+void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
 {
   //construct equations
   int i,j;
@@ -199,6 +211,7 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, int pr
 	parameters *svarp=(parameters*)calloc(1,sizeof(parameters));
 	data *svard=(data*)calloc(1,sizeof(data));
   fit_results *svarfr=(fit_results*)calloc(1,sizeof(fit_results));
+  plot_data *svarpd=(plot_data*)calloc(1,sizeof(plot_data));
   //setup fit
   svarp->numVar=1;
   svarp->ciDelta=2.30;//1-sigma, 2 parameters
@@ -262,7 +275,7 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, int pr
 				}
 				//fit and find critical points of this data
 				generateSums(svard,svarp);
-				fitPoly3(svarp,svard,svarfr,0);//fit but don't print data
+				fitPoly3(svarp,svard,svarfr,svarpd,0);//fit but don't print data
 				//save critical point corresponding to minimum
 				if(evalPoly3(svarfr->fitVert[0],svarfr)<evalPoly3(svarfr->fitVert[1],svarfr))
 					fr->fitVert[i]=svarfr->fitVert[0];
@@ -285,38 +298,18 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, int pr
 	free(svarp);
 	free(svard);
 	free(svarfr);
-	
+	free(svarpd);
+
 	//print results
   if(print==1)
 		print2ParPoly3(d,p,fr);
 
-}
-
-
-
-//generates the functional form of the fit function for plotting,
-//which varies depending on the plotting mode (parameters may be fixed)
-char * plotForm2ParPoly3(const parameters * p, const fit_results * fr, plot_data * pd, int plotNum)
-{
-  char * str;
-  str=(char*)calloc(256,sizeof(char));
-  if(strcmp(p->plotMode,"1d")==0)
-    {
-      if(plotNum==0)//y fixed
-        sprintf(str, "%Lf*(x**3) + %Lf*(%Lf**3) + %Lf*(x**2)*%Lf + %Lf*x*(%Lf**2) + %Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[0],fr->a[1],pd->fixedParVal[1],fr->a[2],pd->fixedParVal[1],fr->a[3],pd->fixedParVal[1],fr->a[4],fr->a[5],pd->fixedParVal[1],fr->a[6],pd->fixedParVal[1],fr->a[7],fr->a[8],pd->fixedParVal[1],fr->a[9]);
-      else if(plotNum==1)//x fixed
-        sprintf(str, "%Lf*(x**3) + %Lf*(%Lf**3) + %Lf*(x**2)*%Lf + %Lf*x*(%Lf**2) + %Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[1],fr->a[0],pd->fixedParVal[0],fr->a[3],pd->fixedParVal[0],fr->a[2],pd->fixedParVal[0],fr->a[5],fr->a[4],pd->fixedParVal[0],fr->a[6],pd->fixedParVal[0],fr->a[8],fr->a[7],pd->fixedParVal[0],fr->a[9]);
-    }
-  else if(strcmp(p->plotMode,"2d")==0)
-    {
-      sprintf(str, "%Lf*(x**3) + %Lf*(y**3) + %Lf*(x**2)*y + %Lf*(y**2)*x + %Lf*(x**2) + %Lf*(y**2) + %Lf*x*y + %Lf*x + %Lf*y + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3],fr->a[4],fr->a[5],fr->a[6],fr->a[7],fr->a[8],fr->a[9]);
-    }
-  else
-    {
-      printf("ERROR: Invalid plot mode (%s), cannot get functional form.\n",p->plotMode);
-      exit(-1);
-    }
-    
-  return str;
+	
+	if((p->plotData==1)&&(p->verbose<1))
+		{
+			preparePlotData(d,p,fr,pd);
+			plotForm2ParPoly3(p,fr,pd);
+			plotData(p,fr,pd);
+		}
 
 }

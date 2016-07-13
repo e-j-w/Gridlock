@@ -12,8 +12,8 @@ Data files must contain a line specifying the fit function, formatted 'FIT type'
 
 ## Features
 
-* Fits data on a grid up to 3 free variables
-* Uses least-squares method (fast & non-iterative, solution found via linear algebra)
+* Fits data on a grid of up to 3 free variables
+* Uses least-squares method (fast & non-iterative, solution found using glorious linear algebra)
 * Various polynomial type fitting functions implemented.
 * Simple ASCII data file format (compatible with gnuplot, excel, etc.)
 * Plotting of fits is available via a built-in interface to gnuplot (program will still compile and run if gnuplot is not present, but plotting will be unavailable)

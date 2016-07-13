@@ -26,13 +26,21 @@ void printLinDeming(const data * d, const parameters * p, const fit_results * fr
 }
 
 
+void plotFormLinDeming(const parameters * p, fit_results * fr)
+{
+	//set up equation forms for plotting
+	if(strcmp(p->plotMode,"1d")==0)
+		sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
+}
+
+
 //fit data to a line of the form
 //f(x) = a1*x + a2
 //assuming errors in both x and y (Deming regression)
 //see https://en.wikipedia.org/wiki/Deming_regression
 //delta = ratio of variance in y/variance in x (1=errors perpendicular to line)
 //reduces to regular linear fit for large delta
-void fitLinDeming(const parameters * p, const data * d, fit_results * fr, int print)
+void fitLinDeming(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
 {
 
   int i;
@@ -84,14 +92,16 @@ void fitLinDeming(const parameters * p, const data * d, fit_results * fr, int pr
   fr->fitVert[0]=-1.0*fr->a[1]/fr->a[0];//x-intercept
   fr->fitVert[1]=fr->a[1];//y-intercept
   
-  //set up equation forms for plotting
-  if(strcmp(p->plotMode,"1d")==0)
-    {
-      sprintf(fr->fitForm[0], "%Lf*x + %Lf",fr->a[0],fr->a[1]);
-    }
 	
 	if(print==1)
 		printLinDeming(d,p,fr);
+	
+	if((p->plotData==1)&&(p->verbose<1))
+		{
+			preparePlotData(d,p,fr,pd);
+			plotFormLinDeming(p,fr);
+			plotData(p,fr,pd);
+		}
 	
 	  
 }

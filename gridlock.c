@@ -1,5 +1,10 @@
 //definitions
 #include "gridlock.h"
+//common functions
+#include "import_data.c"
+#include "print_data_info.c"
+#include "generate_sums.c"
+#include "plot_data.c"
 //fitting routines
 #include "linfit.c"
 #include "linfit_deming.c"
@@ -8,11 +13,6 @@
 #include "3parfit.c"
 #include "poly3fit.c"
 #include "2parpoly3fit.c"
-//functions
-#include "import_data.c"
-#include "print_data_info.c"
-#include "generate_sums.c"
-#include "plot_data.c"
 
 int main(int argc, char *argv[])
 {
@@ -56,29 +56,23 @@ int main(int argc, char *argv[])
 		
 	//Call specific fitting routines depending on the fit type specified
 	if(strcmp(p->fitType,"par1")==0) //see 1parfit.c
-		fit1Par(p,d,fr,1);
+		fit1Par(p,d,fr,pd,1);
 	else if(strcmp(p->fitType,"par2")==0) //see 2parfit.c
-		fit2Par(p,d,fr,1);
+		fit2Par(p,d,fr,pd,1);
 	else if(strcmp(p->fitType,"par3")==0) //see 3parfit.c
-		fit3Par(p,d,fr,1);
+		fit3Par(p,d,fr,pd,1);
 	else if(strcmp(p->fitType,"lin")==0)
-		fitLin(p,d,fr,1);
+		fitLin(p,d,fr,pd,1);
 	else if(strcmp(p->fitType,"lin_deming")==0)
 		{
 			if(p->fitOpt==0.)//default value
 				p->fitOpt=1.;
-			fitLinDeming(p,d,fr,1);
+			fitLinDeming(p,d,fr,pd,1);
 		}
 	else if(strcmp(p->fitType,"poly3")==0)
-		fitPoly3(p,d,fr,1);      
+		fitPoly3(p,d,fr,pd,1);      
 	else if(strcmp(p->fitType,"2parpoly3")==0)
-		fit2ParPoly3(p,d,fr,1);
-  
-	if((p->plotData==1)&&(p->verbose<1))
-		{
-			preparePlotData(d,p,fr,pd);
-			plotData(p,fr,pd);
-		}
+		fit2ParPoly3(p,d,fr,pd,1);
 	
 	//free structures
 	free(d);

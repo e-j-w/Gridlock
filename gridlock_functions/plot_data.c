@@ -158,19 +158,7 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
           if(pd->axisLabelStyle[i][p->numVar]==1)
             gnuplot_cmd(handle,"set format y '%%12.2E'");
           gnuplot_setstyle(handle,"lines");//set style for fit data
-          //generate fit data functional forms
-          if(strcmp(p->fitType,"par3")==0)
-            str=plotForm3Par(p,fr,pd,i);
-          else if(strcmp(p->fitType,"par2")==0)
-            str=plotForm2Par(p,fr,pd,i);
-          else if(strcmp(p->fitType,"par1")==0)
-            str=plotForm1Par(p,fr,pd,i);
-          else if((strcmp(p->fitType,"lin")==0)||(strcmp(p->fitType,"lin_deming")==0))
-            strcpy(str,fr->fitForm[0]);
-          else if(strcmp(p->fitType,"poly3")==0)
-            str=plotFormPoly3(p,fr,pd,i);
-          else if(strcmp(p->fitType,"2parpoly3")==0)
-            str=plotForm2ParPoly3(p,fr,pd,i);
+          strcpy(str,fr->fitForm[i]);//retrieve fit data functional form
           gnuplot_plot_equation(handle, str, "Fit");
           //plot confidence intervals
           if(p->plotCI==1)
@@ -258,9 +246,7 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
               gnuplot_cmd(handle,str);
               gnuplot_setstyle(handle,"lines");
               gnuplot_cmd(handle,"set grid");//set style for fit data
-              //generate fit data functional forms
-              if(strcmp(p->fitType,"par3")==0)
-                str=plotForm3Par(p,fr,pd,i);
+              strcpy(str,fr->fitForm[i]);//retrieve fit data functional form
               gnuplot_plot_equation(handle, str, "Fit");
               printf("Showing surface plot with parameter %i fixed to %Lf\n",i+1,pd->fixedParVal[i]);
               printf("%i data points available for plot.\n",pd->plotDataSize[i]);
@@ -289,11 +275,7 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
           gnuplot_cmd(handle,str);
           gnuplot_setstyle(handle,"lines");
           gnuplot_cmd(handle,"set grid");//set style for fit data
-          //generate fit data functional forms
-          if(strcmp(p->fitType,"par2")==0)
-            str=plotForm2Par(p,fr,pd,0);
-          else if(strcmp(p->fitType,"2parpoly3")==0)
-            str=plotForm2ParPoly3(p,fr,pd,0);
+          strcpy(str,fr->fitForm[0]);//retrieve fit data functional form
           gnuplot_plot_equation(handle, str, "Fit");
           printf("Showing surface plot.\n");
           printf("%i data points available for plot.\n",pd->plotDataSize[0]);

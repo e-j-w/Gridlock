@@ -77,28 +77,18 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
   printf("\nf(x0) = %LE\n",fr->vertVal);
 }
 
-//generates the functional form of the fit function for plotting
-char * plotForm1Par(const parameters * p, const fit_results * fr, plot_data * pd, int plotNum)
+void plotForm1Par(const parameters * p, fit_results * fr)
 {
-  char * str;
-  str=(char*)calloc(256,sizeof(char));
-  if(strcmp(p->plotMode,"1d")==0)
-    {
-      sprintf(str, "%Lf*(x**2) + %Lf*x + %Lf",fr->a[0],fr->a[1],fr->a[2]);
-    }
-  else
-    {
-      printf("ERROR: Invalid plot mode (%s), cannot get functional form.\n",p->plotMode);
-      exit(-1);
-    }
-    
-  return str;
-
+	//set up equation forms for plotting
+	if(strcmp(p->plotMode,"1d")==0)
+		sprintf(fr->fitForm[0], "%Lf*(x**2) + %Lf*x + %Lf",fr->a[0],fr->a[1],fr->a[2]);
 }
+
+
 
 //fit data to a paraboloid of the form
 //f(x,y) = a1*x^2 + a2*x + a3
-void fit1Par(const parameters * p, const data * d, fit_results * fr, int print)
+void fit1Par(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
 {
   //construct equations (n=1 specific case)
   int i,j;
@@ -156,11 +146,19 @@ void fit1Par(const parameters * p, const data * d, fit_results * fr, int print)
   //find the value of the fit function at the vertex
   fr->vertVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[0] + fr->a[2];
   
+  
   if(strcmp(p->dataType,"chisq")==0)
   	fit1ParChisqConf(p,fr);//generate confidence interval bounds for chisq data
   
   //print results
   if(print==1)
 		print1Par(d,p,fr);
+	
+	if((p->plotData==1)&&(p->verbose<1))
+		{
+			preparePlotData(d,p,fr,pd);
+			plotForm1Par(p,fr);
+			plotData(p,fr,pd);
+		}
   
 }

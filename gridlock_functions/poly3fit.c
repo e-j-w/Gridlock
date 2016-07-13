@@ -118,36 +118,22 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
     }
   else
     printf("Fit function is monotonic (no critical points).\n");
-  
-  
-  
-  
-  
 }
 
-//generates the functional form of the fit function for plotting
-char * plotFormPoly3(const parameters * p, const fit_results * fr, plot_data * pd, int plotNum)
-{
-  char * str;
-  str=(char*)calloc(256,sizeof(char));
-  if(strcmp(p->plotMode,"1d")==0)
-    {
-      sprintf(str, "%Lf*(x**3) + %Lf*(x**2) + %Lf*x + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3]);
-    }
-  else
-    {
-      printf("ERROR: Invalid plot mode (%s), cannot get functional form.\n",p->plotMode);
-      exit(-1);
-    }
-    
-  return str;
 
+void plotFormPoly3(const parameters * p, fit_results * fr)
+{
+	//set up equation forms for plotting
+	if(strcmp(p->plotMode,"1d")==0)
+		{
+			sprintf(fr->fitForm[0], "%Lf*(x**3) + %Lf*(x**2) + %Lf*x + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3]);
+		}
 }
 
 
 //fit data to a 3rd order polynomial of the form
 //f(x,y) = a1*x^3 + a2*x^2 + a3*x + a4
-void fitPoly3(const parameters * p, const data * d, fit_results * fr, int print)
+void fitPoly3(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
 {
   //construct equations (n=1 specific case)
   int i,j;
@@ -211,6 +197,7 @@ void fitPoly3(const parameters * p, const data * d, fit_results * fr, int print)
   fr->fitVert[1]=-1.0*fr->a[1] + sqrt(fr->a[1]*fr->a[1] - 3.*fr->a[0]*fr->a[2]);
   fr->fitVert[1]/=3.*fr->a[0];
   
+  
   //find confidence bounds if neccessary
   if(strcmp(p->dataType,"chisq")==0)
   	{
@@ -222,11 +209,12 @@ void fitPoly3(const parameters * p, const data * d, fit_results * fr, int print)
   //print results
   if(print==1)
 		printPoly3(d,p,fr);
+	
+	if((p->plotData==1)&&(p->verbose<1))
+		{
+			preparePlotData(d,p,fr,pd);
+			plotFormPoly3(p,fr);
+			plotData(p,fr,pd);
+		}
   
 }
-
-
-
-
-
-

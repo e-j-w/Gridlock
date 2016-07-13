@@ -51,7 +51,6 @@ void fit2ParChisqConf(const parameters * p, fit_results * fr)
 
 }
 
-
 //prints fit data
 void print2Par(const data * d, const parameters * p, const fit_results * fr)
 {
@@ -110,36 +109,24 @@ void print2Par(const data * d, const parameters * p, const fit_results * fr)
   
 }
 
-//generates the functional form of the fit function for plotting,
-//which varies depending on the plotting mode (parameters may be fixed)
-char * plotForm2Par(const parameters * p, const fit_results * fr, plot_data * pd, int plotNum)
+
+void plotForm2Par(const parameters * p, fit_results * fr, const plot_data * pd)
 {
-  char * str;
-  str=(char*)calloc(256,sizeof(char));
-  if(strcmp(p->plotMode,"1d")==0)
-    {
-      if(plotNum==0)
-        sprintf(str, "%Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[0],fr->a[1],pd->fixedParVal[1],fr->a[2],pd->fixedParVal[1],fr->a[3],fr->a[4],pd->fixedParVal[1],fr->a[5]);
-      else if(plotNum==1)
-        sprintf(str, "%Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[1],fr->a[0],pd->fixedParVal[0],fr->a[2],pd->fixedParVal[0],fr->a[4],fr->a[3],pd->fixedParVal[0],fr->a[5]);
-    }
+	//set up equation forms for plotting
+	if(strcmp(p->plotMode,"1d")==0)
+		{
+			sprintf(fr->fitForm[0], "%Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[0],fr->a[1],pd->fixedParVal[1],fr->a[2],pd->fixedParVal[1],fr->a[3],fr->a[4],pd->fixedParVal[1],fr->a[5]);
+			sprintf(fr->fitForm[1], "%Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[1],fr->a[0],pd->fixedParVal[0],fr->a[2],pd->fixedParVal[0],fr->a[4],fr->a[3],pd->fixedParVal[0],fr->a[5]);
+		}
   else if(strcmp(p->plotMode,"2d")==0)
     {
-      sprintf(str, "%Lf*(x**2) + %Lf*(y**2) + %Lf*x*y + %Lf*x + %Lf*y + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3],fr->a[4],fr->a[5]);
+      sprintf(fr->fitForm[0], "%Lf*(x**2) + %Lf*(y**2) + %Lf*x*y + %Lf*x + %Lf*y + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3],fr->a[4],fr->a[5]);
     }
-  else
-    {
-      printf("ERROR: Invalid plot mode (%s), cannot get functional form.\n",p->plotMode);
-      exit(-1);
-    }
-    
-  return str;
-
 }
 
 //fit data to a paraboloid of the form
 //f(x,y) = a1*x^2 + a2*y^2 + a3*x*y + a4*x + a5*y + a6
-void fit2Par(const parameters * p, const data * d, fit_results * fr, int print)
+void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
 {
   //construct equations (n=2 specific case)
   int i,j;
@@ -220,7 +207,7 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, int print)
 
   //find the value of the fit function at the vertex
   fr->vertVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[2]*fr->fitVert[0]*fr->fitVert[1] + fr->a[3]*fr->fitVert[0] + fr->a[4]*fr->fitVert[1] + fr->a[5];
-
+  
   
   if(strcmp(p->dataType,"chisq")==0)
   	fit2ParChisqConf(p,fr);//generate confidence interval bounds for chisq data
@@ -228,5 +215,12 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, int print)
   //print results
   if(print==1)
 		print2Par(d,p,fr);
+		
+	if((p->plotData==1)&&(p->verbose<1))
+		{
+			preparePlotData(d,p,fr,pd);
+			plotForm2Par(p,fr,pd);
+			plotData(p,fr,pd);
+		}
   
 }
