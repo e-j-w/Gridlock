@@ -103,16 +103,16 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
 					if(evalPoly3(fr->fitVert[0],fr)<evalPoly3(fr->fitVert[1],fr))
 						{
 							if((float)(fr->vertUBound[0]-fr->fitVert[0])==(float)(fr->fitVert[0]-fr->vertLBound[0]))
-								printf("Local minimum with confidence interval: x = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
+								printf("Local minimum with 1-sigma confidence interval: x = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
 							else
-								printf("Local minimum with confidence interval: x = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+								printf("Local minimum with 1-sigma confidence interval: x = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
 						}
 					else
 						{
 							if((float)(fr->vertUBound[0]-fr->fitVert[1])==(float)(fr->fitVert[1]-fr->vertLBound[0]))
-								printf("Local minimum with confidence interval: x = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1]);
+								printf("Local minimum with 1-sigma confidence interval: x = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1]);
 							else
-								printf("Local minimum with confidence interval: x = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[0]);
+								printf("Local minimum with 1-sigma confidence interval: x = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[0]);
 						}
 				}
     }
