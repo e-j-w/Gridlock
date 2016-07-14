@@ -207,9 +207,9 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
 	//for various values of the variable of interest (projecting the 
 	//minimum values on the variable axis)
 	
-	//allocate fit structures
-	parameters *svarp=(parameters*)calloc(1,sizeof(parameters));
-	data *svard=(data*)calloc(1,sizeof(data));
+  //allocate fit structures
+  parameters *svarp=(parameters*)calloc(1,sizeof(parameters));
+  data *svard=(data*)calloc(1,sizeof(data));
   fit_results *svarfr=(fit_results*)calloc(1,sizeof(fit_results));
   plot_data *svarpd=(plot_data*)calloc(1,sizeof(plot_data));
   //setup fit
@@ -217,7 +217,7 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
   svarp->ciDelta=2.30;//1-sigma, 2 parameters
   strcpy(svarp->plotMode,"1d");
   if(strcmp(p->dataType,"chisq")==0)
-  	strcpy(svarp->dataType,"chisq");
+    strcpy(svarp->dataType,"chisq");
   	
 	long double val,a,b,c,sqrtval;
 	for(i=0;i<2;i++)//variable #
