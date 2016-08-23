@@ -7,7 +7,7 @@ Maintainer: Jonathan Williams
 
 Gridlock is a code to fit grids of data points with various functions and find fit properties (eg. vertex of fit paraboloid, confidence intervals).  Fitting routines are available for data with up to 3 free parameters.  Example data is included in the 'sample\_\*.txt' files.
 
-Data files must contain a line specifying the fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Fitting Functions Availiable* section below).  It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.  It is also possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style, see the options section below.
+Data files must contain a line specifying the fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Fitting Functions Available* section below).  It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.  It is also possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style, see the options section below.
 
 
 ## Features
@@ -19,7 +19,7 @@ Data files must contain a line specifying the fit function, formatted 'FIT type'
 * Plotting of fits is available via a built-in interface to gnuplot (program will still compile and run if gnuplot is not present, but plotting will be unavailable)
 
 
-## Fitting Functions Availiable
+## Fitting Functions Available
 
 ### Functions with 1 free parameter:
 
