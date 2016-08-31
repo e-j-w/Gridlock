@@ -78,12 +78,13 @@ void fitLin(const parameters * p, const data * d, fit_results * fr, plot_data * 
   linEq.vector[0]=d->mxpowsum[0][1];
   linEq.vector[1]=d->mxpowsum[0][0];
     
-  //solve system of equations and assign values
-  if(!(solve_lin_eq(&linEq)==1))
-    {
-      printf("ERROR: Could not determine fit parameters.\n");
-      exit(-1);
-    }
+	//solve system of equations and assign values
+	if(!(solve_lin_eq(&linEq)==1))
+		{
+			printf("ERROR: Could not determine fit parameters.\n");
+			printf("Perhaps there are not enough data points to perform a fit?\n");
+			exit(-1);
+		}
   
   //save fit parameters  
   for(i=0;i<linEq.dim;i++)

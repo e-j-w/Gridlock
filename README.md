@@ -5,15 +5,16 @@ Maintainer: Jonathan Williams
 
 ## Description
 
-Gridlock is a code to fit grids of data points with various functions and find fit properties (eg. vertex of fit paraboloid, confidence intervals).  Fitting routines are available for data with up to 3 free parameters.  Example data is included in the 'sample\_\*.txt' files.
+Gridlock is a code to fit grids of data points with various functions and find fit properties (eg. confidence intervals, intercepts, vertexes).  Fitting routines are available for data with up to 3 free parameters.  Example data is included in the 'sample\_\*.txt' files.
 
 Data files must contain a line specifying the fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Fitting Functions Available* section below).  It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.  It is also possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style, see the options section below.
-
+ 
 
 ## Features
 
 * Fits data on a grid of up to 3 free variables
 * Uses least-squares method (fast & non-iterative, solution found using glorious linear algebra)
+* Automatically calculates certain properties of fits (confidence intervals, intercepts, vertexes)
 * Various polynomial type fitting functions implemented.
 * Simple ASCII data file format (compatible with gnuplot, excel, etc.)
 * Plotting of fits is available via a built-in interface to gnuplot (program will still compile and run if gnuplot is not present, but plotting will be unavailable)
@@ -53,11 +54,11 @@ DATA_TYPE chisq - Tells the program that the data provided corresponds to reduce
 
 NONVERBOSE - If used, the program will only output the fit parameters (coordinates of the fit paraboloid vertex, or x and y intercept for a linear fit), which can be useful for interfacing the program with shell scripts.
 
-PLOT 1d - Shows plot(s) in one variable, using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
+PLOT 1d - Shows plot(s) in one variable, using fixed values for any other variables corresponding to the closest data points to the local minimum/maximum of the fit function.
 
-PLOT 2d - Shows plot(s) in two variables (surface plot), using fixed values for any other variables corresponding to the closest data points to the vertex of the fit function.
+PLOT 2d - Shows plot(s) in two variables (surface plot), using fixed values for any other variables corresponding to the closest data points to the local minimum/maximum of the fit function.
 
-PLOT 3d - Shows plot in three variables (colour-coded heatmap plot) for the data, with the vertex of the fit function marked on the map.
+PLOT 3d - Shows plot in three variables (colour-coded heatmap plot) for the data, with the local minimum/maximum of the fit function marked on the map.
 
 WEIGHTED - Use weights for the data points, specified in a column after the data values.
 
@@ -70,7 +71,7 @@ Use 'make' to compile.  Optional data plotting requires gnuplot to be installed.
 
 To run the program from anywhere, move the resulting 'gridlock' executable to any directory under your $PATH environment variable.
 
-Tested using gcc and GNU make on Ubuntu 14.04, Scientific Linux/CentOS 6, and Arch Linux (as of July 2016).  Should work on more or less any Linux distro.
+Tested using gcc and GNU make on Ubuntu 14.04, Scientific Linux/CentOS 6, and Arch Linux (as of July 2016).  The code is self-contained and should work on more or less any Linux distro.
 
 
 ## Acknowledgments

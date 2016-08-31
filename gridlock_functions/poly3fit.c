@@ -164,12 +164,13 @@ void fitPoly3(const parameters * p, const data * d, fit_results * fr, plot_data 
   linEq.vector[2]=d->mxpowsum[0][1];
   linEq.vector[3]=d->mxpowsum[0][0];
     
-  //solve system of equations and assign values
-  if(!(solve_lin_eq(&linEq)==1))
-    {
-      printf("ERROR: Could not determine fit parameters.\n");
-      exit(-1);
-    }
+	//solve system of equations and assign values
+	if(!(solve_lin_eq(&linEq)==1))
+		{
+			printf("ERROR: Could not determine fit parameters.\n");
+			printf("Perhaps there are not enough data points to perform a fit?\n");
+			exit(-1);
+		}
   
   //save fit parameters  
   for(i=0;i<linEq.dim;i++)

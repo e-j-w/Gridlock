@@ -1,3 +1,10 @@
+//evaluates the fit function at the specified point
+long double eval1Par(long double x, const fit_results * fr)
+{
+	return fr->a[0]*x*x+ fr->a[1]*x
+					+ fr->a[2];
+}
+
 //determine uncertainty bounds for the vertex by intersection of fit function with line defining values at min + delta
 //delta is the desired confidence level (1.00 for 1-sigma in 1 parameter)
 //derived by: 
@@ -113,12 +120,13 @@ void fit1Par(const parameters * p, const data * d, fit_results * fr, plot_data *
   linEq.vector[1]=d->mxpowsum[0][1];
   linEq.vector[2]=d->mxpowsum[0][0];
     
-  //solve system of equations and assign values
-  if(!(solve_lin_eq(&linEq)==1))
-    {
-      printf("ERROR: Could not determine fit parameters.\n");
-      exit(-1);
-    }
+	//solve system of equations and assign values
+	if(!(solve_lin_eq(&linEq)==1))
+		{
+			printf("ERROR: Could not determine fit parameters.\n");
+			printf("Perhaps there are not enough data points to perform a fit?\n");
+			exit(-1);
+		}
   
   //save fit parameters  
   for(i=0;i<linEq.dim;i++)

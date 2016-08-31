@@ -1,3 +1,11 @@
+//evaluates the fit function at the specified point
+long double eval2Par(long double x,long double y, const fit_results * fr)
+{
+	return fr->a[0]*x*x + fr->a[1]*y*y
+	+ fr->a[2]*x*y + fr->a[3]*x
+	+ fr->a[4]*y + fr->a[5];
+}
+
 //determine uncertainty ellipse bounds for the vertex by intersection of fit function with plane defining values at min + delta
 //delta is the desired confidence level (2.30 for 1-sigma in 2 parameters)
 //derived by: 
@@ -12,6 +20,7 @@ void fit2ParChisqConf(const parameters * p, fit_results * fr)
   long double delta=p->ciDelta;
   fr->vertBoundsFound=1;
   
+  //find x bounds
   a=4.*fr->a[1]*fr->a[0] - fr->a[2]*fr->a[2];
   b=4.*fr->a[1]*fr->a[3] - 2.*fr->a[2]*fr->a[4];
   c=4.*fr->a[1]*(fr->a[5] - delta - fr->vertVal) - fr->a[4]*fr->a[4];
@@ -21,25 +30,25 @@ void fit2ParChisqConf(const parameters * p, fit_results * fr)
     fr->vertBoundsFound=0;
   else
     {
-      fr->vertUBound[0]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
-      fr->vertLBound[0]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
+      fr->vertUBound[0]=(-1.*b + (long double)sqrt((double)(b*b - 4.*a*c)))/(2.*a);
+      fr->vertLBound[0]=(-1.*b - (long double)sqrt((double)(b*b - 4.*a*c)))/(2.*a);
     }
   
+  //find y bounds
   a=4.*fr->a[0]*fr->a[1] - fr->a[2]*fr->a[2];
   b=4.*fr->a[0]*fr->a[4] - 2.*fr->a[2]*fr->a[3];
   c=4.*fr->a[0]*(fr->a[5] - delta - fr->vertVal) - fr->a[3]*fr->a[3];
-  
   if((b*b - 4*a*c)<0.) 
     c=4.*fr->a[0]*(fr->a[5] + delta - fr->vertVal) - fr->a[3]*fr->a[3];//try flipping delta
   if((b*b - 4*a*c)<0.)  
     fr->vertBoundsFound=0;
   else
     {
-      fr->vertUBound[1]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
-      fr->vertLBound[1]=(-1.*b - (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
+      fr->vertUBound[1]=(-1.*b + (long double)sqrt((double)(b*b - 4.*a*c)))/(2.*a);
+      fr->vertLBound[1]=(-1.*b - (long double)sqrt((double)(b*b - 4.*a*c)))/(2.*a);
     }
 
-  //swap bounds if needed
+  //swap bound order if needed
   int i;
   for(i=0;i<2;i++)
     if(fr->vertLBound[i]>fr->vertUBound[i])
@@ -173,12 +182,13 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
     linEq.vector[i]=d->mxpowsum[i-3][1];
   linEq.vector[5]=d->msum;
     
-  //solve system of equations and assign values
-  if(!(solve_lin_eq(&linEq)==1))
-    {
-      printf("ERROR: Could not determine fit parameters.\n");
-      exit(-1);
-    }
+	//solve system of equations and assign values
+	if(!(solve_lin_eq(&linEq)==1))
+		{
+			printf("ERROR: Could not determine fit parameters.\n");
+			printf("Perhaps there are not enough data points to perform a fit?\n");
+			exit(-1);
+		}
   
   //save fit parameters  
   for(i=0;i<linEq.dim;i++)
@@ -198,15 +208,29 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
       fr->covar[i][j]=linEq.inv_matrix[i][j]*(fr->chisq/fr->ndf);
   for(i=0;i<linEq.dim;i++)
     fr->aerr[i]=(long double)sqrt((double)(fr->covar[i][i]));
-    
-  //now that the fit is performed, use the fit parameters (and the derivative of the fitting function) to find the vertex
-  fr->fitVert[0]=4*fr->a[0]*fr->a[1]*fr->a[3] - 2*fr->a[0]*fr->a[2]*fr->a[4];
-  fr->fitVert[0]/=2*fr->a[0]*fr->a[2]*fr->a[2] - 8*fr->a[0]*fr->a[0]*fr->a[1];
-  fr->fitVert[1]=-1.*fr->a[2]*fr->fitVert[0] - fr->a[4];
-  fr->fitVert[1]/=2*fr->a[1];
+  
+  //now that the fit is performed, use the fit parameters (and the derivative of the fitting function) to find the minimum
+  linEq.dim=2;
+  linEq.matrix[0][0]=2*fr->a[0];
+  linEq.matrix[0][1]=fr->a[2];
+  linEq.matrix[1][1]=2*fr->a[1];
+  //mirror the matrix (top right half mirrored to bottom left half)
+  for(i=1;i<linEq.dim;i++)
+    for(j=0;j<i;j++)
+      linEq.matrix[i][j]=linEq.matrix[j][i];     
+  linEq.vector[0]=-1*fr->a[3];
+  linEq.vector[1]=-1*fr->a[4];
+  //solve system of equations and assign values
+  if(!(solve_lin_eq(&linEq)==1))
+    {
+      printf("ERROR: Could not determine paraboloid center point.\n");
+      exit(-1);
+    }
+  for(i=0;i<linEq.dim;i++)
+    fr->fitVert[i]=linEq.solution[i];
 
-  //find the value of the fit function at the vertex
-  fr->vertVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[1]*fr->fitVert[1] + fr->a[2]*fr->fitVert[0]*fr->fitVert[1] + fr->a[3]*fr->fitVert[0] + fr->a[4]*fr->fitVert[1] + fr->a[5];
+	//find the value of the fit function at the vertex
+	fr->vertVal=eval2Par(fr->fitVert[0],fr->fitVert[1],fr);
   
   
   if(strcmp(p->dataType,"chisq")==0)
