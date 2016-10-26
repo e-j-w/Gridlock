@@ -124,12 +124,12 @@ void plotForm2Par(const parameters * p, fit_results * fr, const plot_data * pd)
 	//set up equation forms for plotting
 	if(strcmp(p->plotMode,"1d")==0)
 		{
-			sprintf(fr->fitForm[0], "%Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[0],fr->a[1],pd->fixedParVal[1],fr->a[2],pd->fixedParVal[1],fr->a[3],fr->a[4],pd->fixedParVal[1],fr->a[5]);
-			sprintf(fr->fitForm[1], "%Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[1],fr->a[0],pd->fixedParVal[0],fr->a[2],pd->fixedParVal[0],fr->a[4],fr->a[3],pd->fixedParVal[0],fr->a[5]);
+			sprintf(fr->fitForm[0], "%LE*(x**2) + %LE*(%LE**2) + %LE*x*%LE + %LE*x + %LE*%LE + %LE",fr->a[0],fr->a[1],pd->fixedParVal[1],fr->a[2],pd->fixedParVal[1],fr->a[3],fr->a[4],pd->fixedParVal[1],fr->a[5]);
+			sprintf(fr->fitForm[1], "%LE*(x**2) + %LE*(%Lf**2) + %LE*x*%LE + %LE*x + %LE*%Lf + %LE",fr->a[1],fr->a[0],pd->fixedParVal[0],fr->a[2],pd->fixedParVal[0],fr->a[4],fr->a[3],pd->fixedParVal[0],fr->a[5]);
 		}
   else if(strcmp(p->plotMode,"2d")==0)
     {
-      sprintf(fr->fitForm[0], "%Lf*(x**2) + %Lf*(y**2) + %Lf*x*y + %Lf*x + %Lf*y + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3],fr->a[4],fr->a[5]);
+      sprintf(fr->fitForm[0], "%LE*(x**2) + %LE*(y**2) + %LE*x*y + %LE*x + %LE*y + %LE",fr->a[0],fr->a[1],fr->a[2],fr->a[3],fr->a[4],fr->a[5]);
     }
 }
 

@@ -15,7 +15,7 @@ void print2ParPoly3(const data * d, const parameters * p, const fit_results * fr
 {
 
   int i;
-
+  
   //simplified data printing depending on verbosity setting
   if(p->verbose==1)
     { 
@@ -58,12 +58,12 @@ void plotForm2ParPoly3(const parameters * p, fit_results * fr, const plot_data *
 	//set up equation forms for plotting
 	if(strcmp(p->plotMode,"1d")==0)
 		{
-			sprintf(fr->fitForm[0], "%Lf*(x**3) + %Lf*(%Lf**3) + %Lf*(x**2)*%Lf + %Lf*x*(%Lf**2) + %Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[0],fr->a[1],pd->fixedParVal[1],fr->a[2],pd->fixedParVal[1],fr->a[3],pd->fixedParVal[1],fr->a[4],fr->a[5],pd->fixedParVal[1],fr->a[6],pd->fixedParVal[1],fr->a[7],fr->a[8],pd->fixedParVal[1],fr->a[9]);//y fixed
-			sprintf(fr->fitForm[1], "%Lf*(x**3) + %Lf*(%Lf**3) + %Lf*(x**2)*%Lf + %Lf*x*(%Lf**2) + %Lf*(x**2) + %Lf*(%Lf**2) + %Lf*x*%Lf + %Lf*x + %Lf*%Lf + %Lf",fr->a[1],fr->a[0],pd->fixedParVal[0],fr->a[3],pd->fixedParVal[0],fr->a[2],pd->fixedParVal[0],fr->a[5],fr->a[4],pd->fixedParVal[0],fr->a[6],pd->fixedParVal[0],fr->a[8],fr->a[7],pd->fixedParVal[0],fr->a[9]);//x fixed
+			sprintf(fr->fitForm[0], "%LE*(x**3) + %LE*(%LE**3) + %LE*(x**2)*%LE + %LE*x*(%LE**2) + %LE*(x**2) + %LE*(%LE**2) + %LE*x*%LE + %LE*x + %LE*%Lf + %LE",fr->a[0],fr->a[1],pd->fixedParVal[1],fr->a[2],pd->fixedParVal[1],fr->a[3],pd->fixedParVal[1],fr->a[4],fr->a[5],pd->fixedParVal[1],fr->a[6],pd->fixedParVal[1],fr->a[7],fr->a[8],pd->fixedParVal[1],fr->a[9]);//y fixed
+			sprintf(fr->fitForm[1], "%LE*(x**3) + %LE*(%LE**3) + %LE*(x**2)*%LE + %LE*x*(%LE**2) + %LE*(x**2) + %LE*(%LE**2) + %LE*x*%LE + %LE*x + %LE*%LE + %LE",fr->a[1],fr->a[0],pd->fixedParVal[0],fr->a[3],pd->fixedParVal[0],fr->a[2],pd->fixedParVal[0],fr->a[5],fr->a[4],pd->fixedParVal[0],fr->a[6],pd->fixedParVal[0],fr->a[8],fr->a[7],pd->fixedParVal[0],fr->a[9]);//x fixed
     }
   else if(strcmp(p->plotMode,"2d")==0)
     {
-      sprintf(fr->fitForm[0], "%Lf*(x**3) + %Lf*(y**3) + %Lf*(x**2)*y + %Lf*(y**2)*x + %Lf*(x**2) + %Lf*(y**2) + %Lf*x*y + %Lf*x + %Lf*y + %Lf",fr->a[0],fr->a[1],fr->a[2],fr->a[3],fr->a[4],fr->a[5],fr->a[6],fr->a[7],fr->a[8],fr->a[9]);
+      sprintf(fr->fitForm[0], "%LE*(x**3) + %LE*(y**3) + %LE*(x**2)*y + %LE*(y**2)*x + %LE*(x**2) + %LE*(y**2) + %LE*x*y + %LE*x + %LE*y + %LE",fr->a[0],fr->a[1],fr->a[2],fr->a[3],fr->a[4],fr->a[5],fr->a[6],fr->a[7],fr->a[8],fr->a[9]);
     }
 }
 

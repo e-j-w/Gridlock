@@ -98,7 +98,7 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
   for(i=0;i<pd->numPlots;i++)
     for(j=0;j<p->numVar;j++)
       for(k=0;k<pd->plotDataSize[i];k++)
-        if((abs(pd->data[i][j][k])<0.001)&&(pd->data[i][j][k]!=0.))
+        if((fabs(pd->data[i][j][k])<0.001)&&(pd->data[i][j][k]!=0.))
           pd->axisLabelStyle[i][j]=1;
         else
         	{

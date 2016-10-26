@@ -5,7 +5,7 @@ Maintainer: Jonathan Williams
 
 ## Description
 
-Gridlock is a code to fit grids of data points with various functions and find fit properties (eg. confidence intervals, intercepts, vertexes).  Fitting routines are available for data with up to 3 free parameters.  Example data is included in the 'sample\_\*.txt' files.
+Gridlock is a code to fit grids of data points with various functions and find fit properties (eg. confidence intervals, intercepts, vertices).  Fitting routines are available for data with up to 3 free parameters.  Example data is included in the 'sample\_\*.txt' files.
 
 Data files must contain a line specifying the fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Fitting Functions Available* section below).  It is possible to specify grid fitting limits for each parameter in data files, see the 'sample_3par.txt' file for an example.  It is also possible to plot data (using gnuplot) by including a line in the data file specifying a plotting style, see the options section below.
  
@@ -14,7 +14,7 @@ Data files must contain a line specifying the fit function, formatted 'FIT type'
 
 * Fits data on a grid of up to 3 free variables
 * Uses least-squares method (fast & non-iterative, solution found using glorious linear algebra)
-* Automatically calculates certain properties of fits (confidence intervals, intercepts, vertexes)
+* Automatically calculates and displays certain properties of fits (confidence intervals, intercepts, vertices)
 * Various polynomial type fitting functions implemented.
 * Simple ASCII data file format (compatible with gnuplot, excel, etc.)
 * Plotting of fits is available via a built-in interface to gnuplot (program will still compile and run if gnuplot is not present, but plotting will be unavailable)
@@ -32,6 +32,7 @@ Data files must contain a line specifying the fit function, formatted 'FIT type'
 
 **poly3** - cubic polynomial- f(x) = a1\*x^3 + a2\*x^2 + a3\*x + a4
 
+NOTE: The lin\_deming function can take an optional parameter specifying the ratio of variances in y and x data.  Default value is 1 (errors perpendicular to line).  The parameter is specified on the fit fucntion line (eg. 'FIT lin\_deming 3' for variance in y data 3x that of x data). 
 
 ### Functions with 2 free parameters:
 
@@ -43,7 +44,6 @@ Data files must contain a line specifying the fit function, formatted 'FIT type'
 
 **par3** - trivariate parabola - f(x,y,z) = a1\*x^2 + a2\*y^2 + a3\*z^2 + a4\*x\*y + a5\*x\*z + a6\*y\*z + a7\*x + a8\*y + a9\*z + a10
 
-NOTE: The lin\_deming function can take an optional parameter specifying the ratio of variances in y and x data.  Default value is 1 (errors perpendicular to line).  The parameter is specified on the fit fucntion line (eg. 'FIT lin\_deming 3' for variance in y data 3x that of x data). 
 
 
 ## Options
