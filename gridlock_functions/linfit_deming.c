@@ -8,6 +8,15 @@ void printLinDeming(const data * d, const parameters * p, const fit_results * fr
       printf("%LE %LE\n",fr->fitVert[0],fr->fitVert[1]);
       return;
     }
+  else if(p->verbose==2)
+    {
+      //print coefficient values
+      int i;
+      for(i=0;i<2;i++)
+        printf("%LE ",fr->a[i]);
+      printf("\n");
+      return;
+    }
   
   printf("\nFIT RESULTS\n-----------\n");
   //printf("Uncertainties reported at 1-sigma.\n");

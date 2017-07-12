@@ -50,8 +50,10 @@ void importData(data * d, parameters * p)
               		p->fitOpt=0.;
               	}
             }
-					else if(strcmp(str,"NONVERBOSE\n")==0)
+					else if(strcmp(str,"PARAMETERS\n")==0)
 						p->verbose=1;//only print the fit vertex data, unless an error occurs
+					else if(strcmp(str,"COEFFICIENTS\n")==0)
+						p->verbose=2;//only print the fit coefficients, unless an error occurs
 					else if(strcmp(str,"WEIGHTED\n")==0)
 						p->readWeights=1;//data has weights, in the last column
 					else if(strcmp(str,"UNWEIGHTED\n")==0)

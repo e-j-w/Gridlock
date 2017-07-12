@@ -52,7 +52,9 @@ Add these commands (eg. 'PLOT 1d') as a single line anywhere in the data file to
 
 DATA_TYPE chisq - Tells the program that the data provided corresponds to reduced chi-square goodness of fit statistic values computed on a grid for each of the free parameters.
 
-NONVERBOSE - If used, the program will only output the fit parameters (coordinates of the fit paraboloid vertex, or x and y intercept for a linear fit), which can be useful for interfacing the program with shell scripts.
+PARAMETERS - If used, the program will only output the fit parameters (coordinates of the fit paraboloid vertex, or x and y intercept for a linear fit), which can be useful for interfacing the program with shell scripts.
+
+COEFFICIENTS - If used, the program will only output the fit coefficients (a1, a2, ... ), which can be useful for interfacing the program with shell scripts.
 
 PLOT 1d - Shows plot(s) in one variable, using fixed values for any other variables corresponding to the closest data points to the local minimum/maximum of the fit function.
 
