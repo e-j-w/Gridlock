@@ -5,6 +5,8 @@
 #include "print_data_info.c"
 #include "generate_sums.c"
 #include "plot_data.c"
+//data filters
+#include "lin_filter.c"
 //fitting routines
 #include "linfit.c"
 #include "linfit_deming.c"
@@ -48,6 +50,9 @@ int main(int argc, char *argv[])
 			printf("ERROR: the number of free parameters is greater than POWSIZE - 2 (%i).\nPlease edit the value of POWSIZE in gridlock.h and recompile.\n",POWSIZE-2);
 			exit(-1);
 		}
+  
+  if(p->filter==1)
+  	linearFilter(d,p);
   
 	if(p->verbose<1)
 		printDataInfo(d,p); //see print_data_info.c

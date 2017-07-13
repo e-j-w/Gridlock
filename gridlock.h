@@ -31,6 +31,8 @@ typedef struct
   int readWeights;//0=don't read data weights from file,1=read weights from file
   int uniWeight;//0=uniform weight not specified,1=uniform weight specified
   long double uniWeightVal;//value specified for uniform weights
+  int filter;//0=no filter,1=linear filter
+  double filterSigma;//sigma value to be used for filter
 }parameters;
 
 typedef struct

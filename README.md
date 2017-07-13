@@ -64,7 +64,9 @@ PLOT 3d - Shows plot in three variables (colour-coded heatmap plot) for the data
 
 WEIGHTED - Use weights for the data points, specified in a column after the data values.
 
-UNIFORM_WEIGHT value - Use a single weight value for all data points, without the need to put an extra column in the data file. 
+UNIFORM_WEIGHT value - Use a single weight value for all data points, without the need to put an extra column in the data file.
+
+LINEAR_FILTER sigma - Before fitting, filter the data to emphasize prominent linear features, by only keeping data falling within sigma standard deviations of the mean x/y value.  Only applicable to data with one free parameter.
 
 
 ## How to Install

@@ -43,11 +43,16 @@ void importData(data * d, parameters * p)
             {
               if(strcmp(str2,"FIT")==0)
                 strcpy(p->fitType,str3);
-              if(strcmp(str2,"UNIFORM_WEIGHT")==0)
+              else if(strcmp(str2,"UNIFORM_WEIGHT")==0)
               	{
               		p->uniWeight=1;
               		p->uniWeightVal=(long double)atof(str3);
               		p->fitOpt=0.;
+              	}
+              else if(strcmp(str2,"LINEAR_FILTER")==0)
+              	{
+              		p->filter=1;//use linear filter on data
+              		p->filterSigma=atof(str3);
               	}
             }
 					else if(strcmp(str,"PARAMETERS\n")==0)
