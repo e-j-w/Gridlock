@@ -224,7 +224,6 @@ void importData(data * d, parameters * p)
                 }
               if(strcmp(str2,"DATA_TYPE")==0)
                 {
-                  p->plotData=1;
                   strcpy(p->dataType,str3);
                   if(p->verbose<1)
                     if(strcmp(p->dataType,"chisq")==0)
