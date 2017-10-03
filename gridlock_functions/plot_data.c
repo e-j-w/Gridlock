@@ -105,6 +105,13 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
         		pd->axisLabelStyle[i][j]=0;
         		break;//if any data point is not small, use regular labels
         	}
+  
+  //copy over minimum/maximum values (for determining plotting ranges)
+  for(i=0;i<p->numVar;i++)
+  	{
+  		pd->min_m=(double)d->min_m;
+  		pd->max_m=(double)d->max_m;
+  	}
 
 }
 
@@ -296,6 +303,8 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
           if(pd->axisLabelStyle[0][2]==1)
             gnuplot_cmd(handle,"set format z '%%12.2E'");
           sprintf(str,"set xlabel 'Parameter 1'; set ylabel 'Parameter 2'; set zlabel 'Parameter 3'");
+          gnuplot_cmd(handle,str);
+          sprintf(str,"set cbrange [%f:%f]",pd->min_m,pd->max_m); //set the color bar range
           gnuplot_cmd(handle,str);
           if(strcmp(p->fitType,"par3")==0)
             {

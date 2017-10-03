@@ -52,6 +52,7 @@ typedef struct
 {
   long double fixedParVal[POWSIZE];//values to fix parameters at when plotting in less dimensions than the data provides
   double data[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing data points to be plotted, indexed by plot # then variable # then data point #
+  double max_m,min_m;//maximum and minimum values
   double ciData[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing confidence interval data points to be plotted, indexed by plot # then variable # then data point #
   double fit[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing fit data to be plotted, indexed by plot # then variable # then data point #
   int plotDataSize[POWSIZE];
