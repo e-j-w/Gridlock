@@ -90,6 +90,8 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
     printf("x0 = %LE\n",fr->fitVert[0]);
   
   printf("\nf(x0) = %LE\n",fr->vertVal);
+
+  printf("\ny-intercept = %LE\n",eval1Par(0.0,fr));
 }
 
 void plotForm1Par(const parameters * p, fit_results * fr)

@@ -100,6 +100,8 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
     printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
   printf("\n");
   
+  printf("y-intercept = %LE\n\n",evalPoly3(0.0,fr));
+
   //check for NaN
   if((fr->fitVert[0]==fr->fitVert[0])&&(fr->fitVert[1]==fr->fitVert[1]))
   	{
