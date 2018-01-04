@@ -5,6 +5,97 @@ long double evalPoly3(long double x, const fit_results * fr)
 					+ fr->a[2]*x + fr->a[3];
 }
 
+//evaluates the fit function x values at the specified y value
+//returns the x value closest to closeToVal, above it if pos = 1, below if pos = 0
+long double evalPoly3X(long double y, const fit_results * fr, long double closeToVal, int pos)
+{
+  int i;
+  long double discr;//discriminant
+  long double roots[3];
+  int numRoots=0;
+  long double a,b,c,d;
+  long double p,q;
+
+  a=fr->a[0];
+  b=fr->a[1];
+  c=fr->a[2];
+  d=fr->a[3] - y;
+
+  p=(3.0*a*c - b*b)/(3.0*a*a);
+  q=(2.0*b*b*b - 9.0*a*b*c + 27.0*a*a*d)/(27.0*a*a*a);
+  
+  discr=18.0*a*b*c*d - 4.0*b*b*b*d + b*b*c*c - 4.0*a*c*c*c - 27.0*a*a*d*d;
+  if(discr>0.0)//3 real roots
+  	{
+  		for(i=0;i<3;i++)
+  			{
+  				roots[i]=2*sqrt(-1.0*p/3.0)*cos( (1.0/3.0) * acos( (3.0*q/(2.0*p)) * sqrt(-3.0/p) ) - ((2.0*PI*i)/3.0) );
+  				roots[i]-=b/(3.0*a);
+  			}
+      numRoots=3;
+  	}
+  else if(discr==0.0)//triple root
+  	{
+      if(b*b - 3.*a*c == 0)
+        {
+          roots[0]=b/(3.0*a);
+  		    numRoots=1;
+        }
+      else
+        {
+          roots[0]=(9.*a*d - b*c)/(2.*(b*b - 3.*a*c));
+          roots[1]=(4.*a*b*c - 9.*a*a*d - b*b*b)/(a*(b*b - 3.*a*c));
+          numRoots=2;
+        }
+  	}
+  else//one real, 2 complex roots
+  	{
+      if((p<0.)&&((4.*p*p*p + 27.*q*q)>0.))
+        {
+          roots[0]=-2.*(abs(q)/q)*sqrt(-1.*(p/3.))*cosh((1./3.)*acosh(-3.*abs(q)*sqrt(-3./p)/(2.*p)));
+          numRoots=1;
+        }
+      else if (p>0.)
+        {
+          roots[0]=-2.*sqrt(p/3.)*sinh((1./3.)*asinh(3.*q*sqrt(3./p)/(2.*p)));
+          numRoots=1;
+        }
+      else
+        numRoots=0;
+  	}
+  
+  long double minDiff,diff;
+  int selRoot = -1;
+  if(pos==0)
+    minDiff=-1*BIG_NUMBER;
+  else
+    minDiff=BIG_NUMBER;
+  for(i=0;i<numRoots;i++)
+    {
+      diff=roots[i]-closeToVal;
+      //printf("pos=%i, roots[%i]=%Lf, diff=%Lf\n",pos,i,roots[i],diff);
+      if((pos==1)&&(diff<minDiff)&&(diff>=0.))
+        {
+          diff=minDiff;
+          selRoot=i;
+        }
+      else if((pos==0)&&(diff>minDiff)&&(diff<0.))
+        {
+          diff=minDiff;
+          selRoot=i;
+        }
+    }
+  
+  if(selRoot>=0)
+    return roots[selRoot];
+  else
+    {
+      printf("WARNING: could not evaluate roots of function.\n");
+      return 0;
+    }
+
+}
+
 
 //determine uncertainty bounds for the critical point by intersection of fit function with line defining values at min + delta
 //done by shifting the function by the value at the minimum + a confidence level, and finding the roots around that minimum
@@ -100,7 +191,11 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
     printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
   printf("\n");
   
-  printf("y-intercept = %LE\n\n",evalPoly3(0.0,fr));
+  printf("y-intercept = %LE\n",evalPoly3(0.0,fr));
+  if(strcmp(p->dataType,"chisq")==0)
+    if((fr->fitVert[0]<0.)||(fr->fitVert[1]<0.))
+      printf("1-sigma bound in x assuming minimum at zero = %LE\n",evalPoly3X(evalPoly3(0.0,fr)+p->ciDelta,fr,0.0,1));
+  printf("\n");
 
   //check for NaN
   if((fr->fitVert[0]==fr->fitVert[0])&&(fr->fitVert[1]==fr->fitVert[1]))

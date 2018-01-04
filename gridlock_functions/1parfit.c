@@ -5,6 +5,15 @@ long double eval1Par(long double x, const fit_results * fr)
 					+ fr->a[2];
 }
 
+//evaluates the fit function x values at the specified y value
+long double eval1ParX(long double y, const fit_results * fr, int pos)
+{
+  if(pos==0) //negative root
+    return (-1.*fr->a[1] - sqrt(fr->a[1]*fr->a[1] - 4.*fr->a[0]*(fr->a[2]-y)))/(2.*fr->a[0]);
+  else //positive root
+    return (-1.*fr->a[1] + sqrt(fr->a[1]*fr->a[1] - 4.*fr->a[0]*(fr->a[2]-y)))/(2.*fr->a[0]);
+}
+
 //determine uncertainty bounds for the vertex by intersection of fit function with line defining values at min + delta
 //delta is the desired confidence level (1.00 for 1-sigma in 1 parameter)
 //derived by: 
@@ -92,6 +101,10 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
   printf("\nf(x0) = %LE\n",fr->vertVal);
 
   printf("\ny-intercept = %LE\n",eval1Par(0.0,fr));
+
+  if(strcmp(p->dataType,"chisq")==0)
+    if(fr->fitVert[0]<0.)
+      printf("1-sigma bound in x assuming minimum at zero = %LE\n",eval1ParX(eval1Par(0.0,fr)+p->ciDelta,fr,1));
 }
 
 void plotForm1Par(const parameters * p, fit_results * fr)
