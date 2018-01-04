@@ -18,6 +18,8 @@ void importData(data * d, parameters * p)
       d->max_x[i]=-1*BIG_NUMBER;
       d->min_x[i]=BIG_NUMBER;
     }
+  p->dllimit=-1*BIG_NUMBER;
+  p->dulimit=BIG_NUMBER;
   d->max_m=-1*BIG_NUMBER;
   d->min_m=BIG_NUMBER;
     
@@ -149,10 +151,16 @@ void importData(data * d, parameters * p)
           )
             {
               lineValid=1;
+
+              //check variable values against limits
               for(i=0;i<p->numVar;i++)
                 if(i<POWSIZE)
-                  if((d->x[i][d->lines]>p->ulimit[i])||(d->x[i][d->lines]<p->llimit[i]))//check against limits
+                  if((d->x[i][d->lines]>p->ulimit[i])||(d->x[i][d->lines]<p->llimit[i]))
                     lineValid=0;
+              
+              //check data values against weights
+              if((d->x[p->numVar][d->lines]>p->dulimit)||(d->x[p->numVar][d->lines]<p->dllimit))
+                lineValid=0;
                     
               //deal with weights
               if(p->uniWeight==1)
@@ -161,6 +169,7 @@ void importData(data * d, parameters * p)
                 d->x[p->numVar+1][d->lines]=1.;//set weights to 1
               if(d->x[p->numVar+1][d->lines]<=0)
                 lineValid=0;//invalidate data points with bad weights (can't divide by 0 weight)
+
               if(lineValid==1)
               	{
               		//determine maximum and minimum values
@@ -228,6 +237,20 @@ void importData(data * d, parameters * p)
                   if(p->verbose<1)
                     if(strcmp(p->dataType,"chisq")==0)
                       printf("Will treat data points as chi-squared values.\n");
+                }
+              if(strcmp(str2,"DATA_UPPER_LIMIT")==0)
+                {
+                  if(sscanf(str3,"%Lf",&p->dulimit))
+                    printf("Set data upper limit to: %0.3LE\n",p->dulimit);
+                  else
+                    printf("WARNING: could not properly set data upper limit.\n");
+                }
+              if(strcmp(str2,"DATA_LOWER_LIMIT")==0)
+                {
+                  if(sscanf(str3,"%Lf",&p->dllimit))
+                    printf("Set data lower limit to: %0.3LE\n",p->dllimit);
+                  else
+                    printf("WARNING: could not properly set data lower limit.\n");
                 }
             }
           else

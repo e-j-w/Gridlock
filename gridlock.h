@@ -26,7 +26,8 @@ typedef struct
   char plotMode[256];//the plotting style to be used
   int plotCI;//0=don't plot confidence interval, 1=plot it
   int numVar;
-  long double ulimit[POWSIZE],llimit[POWSIZE];
+  long double ulimit[POWSIZE],llimit[POWSIZE];//uppder and lower limits for variable values
+  long double dllimit,dulimit;//upper and lower limits for data values
   int verbose;//0=print everything,1=print vertex location only
   int readWeights;//0=don't read data weights from file,1=read weights from file
   int uniWeight;//0=uniform weight not specified,1=uniform weight specified
