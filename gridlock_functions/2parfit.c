@@ -18,14 +18,15 @@ void fit2ParChisqConf(const parameters * p, fit_results * fr)
   
   long double a,b,c;
   long double delta=p->ciDelta;
+  long double minPtVal = eval2Par(fr->fitVert[0],fr->fitVert[1],fr);
   fr->vertBoundsFound=1;
   
   //find x bounds
   a=4.*fr->a[1]*fr->a[0] - fr->a[2]*fr->a[2];
   b=4.*fr->a[1]*fr->a[3] - 2.*fr->a[2]*fr->a[4];
-  c=4.*fr->a[1]*(fr->a[5] - delta - fr->vertVal) - fr->a[4]*fr->a[4];
+  c=4.*fr->a[1]*(fr->a[5] - delta - minPtVal) - fr->a[4]*fr->a[4];
   if((b*b - 4*a*c)<0.) 
-    c=4.*fr->a[1]*(fr->a[5] + delta - fr->vertVal) - fr->a[4]*fr->a[4];//try flipping delta
+    c=4.*fr->a[1]*(fr->a[5] + delta - minPtVal) - fr->a[4]*fr->a[4];//try flipping delta
   if((b*b - 4*a*c)<0.)  
     fr->vertBoundsFound=0;
   else
@@ -37,9 +38,9 @@ void fit2ParChisqConf(const parameters * p, fit_results * fr)
   //find y bounds
   a=4.*fr->a[0]*fr->a[1] - fr->a[2]*fr->a[2];
   b=4.*fr->a[0]*fr->a[4] - 2.*fr->a[2]*fr->a[3];
-  c=4.*fr->a[0]*(fr->a[5] - delta - fr->vertVal) - fr->a[3]*fr->a[3];
+  c=4.*fr->a[0]*(fr->a[5] - delta - minPtVal) - fr->a[3]*fr->a[3];
   if((b*b - 4*a*c)<0.) 
-    c=4.*fr->a[0]*(fr->a[5] + delta - fr->vertVal) - fr->a[3]*fr->a[3];//try flipping delta
+    c=4.*fr->a[0]*(fr->a[5] + delta - minPtVal) - fr->a[3]*fr->a[3];//try flipping delta
   if((b*b - 4*a*c)<0.)  
     fr->vertBoundsFound=0;
   else
@@ -58,6 +59,40 @@ void fit2ParChisqConf(const parameters * p, fit_results * fr)
         fr->vertLBound[i]=a;
       }
 
+}
+
+void printFitVertex(const data * d, const parameters * p, const fit_results * fr)
+{
+  if(fr->a[0]>=0)
+    printf("Minimum in x direction, ");
+  else
+    printf("Maximum in x direction, ");
+  if(fr->vertBoundsFound==1)
+    {
+      //these values were calculated at long double precision, 
+      //check if they are the same to within float precision
+      if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
+        printf("x0 = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
+      else
+        printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+    }
+  else
+    printf("x0 = %LE\n",fr->fitVert[0]);
+  if(fr->a[1]>=0)
+    printf("Minimum in y direction, ");
+  else
+    printf("Maximum in y direction, ");
+  if(fr->vertBoundsFound==1)
+    {
+      if ((float)(fr->fitVert[1]-fr->vertLBound[1])==(float)(fr->vertUBound[1]-fr->fitVert[1]))
+        printf("y0 = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
+      else
+        printf("y0 = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[1]);
+    }
+  else
+    printf("y0 = %LE\n",fr->fitVert[1]);
+  
+  printf("\nf(x0,y0) = %LE\n",fr->vertVal);
 }
 
 //prints fit data
@@ -93,36 +128,7 @@ void print2Par(const data * d, const parameters * p, const fit_results * fr)
     printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
   printf("\n");
   
-  if(fr->a[0]>=0)
-    printf("Minimum in x direction, ");
-  else
-    printf("Maximum in x direction, ");
-  if(fr->vertBoundsFound==1)
-    {
-      //these values were calculated at long double precision, 
-      //check if they are the same to within float precision
-      if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
-        printf("x0 = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
-      else
-        printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
-    }
-  else
-    printf("x0 = %LE\n",fr->fitVert[0]);
-  if(fr->a[1]>=0)
-    printf("Minimum in y direction, ");
-  else
-    printf("Maximum in y direction, ");
-  if(fr->vertBoundsFound==1)
-    {
-      if ((float)(fr->fitVert[1]-fr->vertLBound[1])==(float)(fr->vertUBound[1]-fr->fitVert[1]))
-        printf("y0 = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
-      else
-        printf("y0 = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[1]);
-    }
-  else
-    printf("y0 = %LE\n",fr->fitVert[1]);
-  
-  printf("\nf(x0,y0) = %LE\n",fr->vertVal);
+  printFitVertex(d,p,fr);
   
 }
 
@@ -247,7 +253,76 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
   //print results
   if(print==1)
 		print2Par(d,p,fr);
-		
+
+  //check zero bounds
+  if(strcmp(p->dataType,"chisq")==0)
+    {
+      if(fr->fitVert[0]<0.)
+        {
+          if(fr->fitVert[1]>=0.)
+            {
+              //make a copy of the fit results to work on
+              fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
+              memcpy(temp1,fr,sizeof(fit_results));
+              //compute fit vertex assuming x is fixed to 0
+              temp1->fitVert[0]=0.;
+              temp1->fitVert[1]=(-1.*temp1->a[4])/(2.*temp1->a[1]);
+              //fit confidence interval to get bound for x
+              fit2ParChisqConf(p,temp1);
+              temp1->vertLBound[0]=-1.*temp1->vertUBound[0]; //mirror bounds in x
+              //determine confidence in y by fitting the parabola at x=0
+              fit_results *temp2=(fit_results*)calloc(1,sizeof(fit_results));
+              //map fit parameters into a 1D parabola
+              temp2->a[0]=temp1->a[1];
+              temp2->a[1]=temp1->a[4];
+              temp2->a[2]=temp1->a[5];
+              //find value at the vertex of the parabola
+              temp2->vertVal=eval2Par(temp1->fitVert[0],temp1->fitVert[1],temp1);
+              //fit confidence interval of the parabola (using ciDelta assuming 2 variables)
+              fit1ParChisqConf(p,temp2);
+              temp1->vertLBound[1]=temp2->vertLBound[0];
+              temp1->vertUBound[1]=temp2->vertUBound[0];
+              free(temp2);
+              printf("\nAssuming minimum at zero for x,\n");
+              printFitVertex(d,p,temp1);
+              free(temp1);
+            }
+        }
+      else if(fr->fitVert[1]<0.)
+        {
+          if(fr->fitVert[0]>=0.)
+            {
+              //make a copy of the fit results to work on
+              fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
+              memcpy(temp1,fr,sizeof(fit_results));
+              //compute fit vertex assuming y is fixed to 0
+              temp1->fitVert[0]=(-1.*temp1->a[3])/(2.*temp1->a[0]);
+              temp1->fitVert[1]=0.;
+              //fit confidence interval to get bound for y
+              fit2ParChisqConf(p,temp1);
+              temp1->vertLBound[1]=-1.*temp1->vertUBound[1]; //mirror bounds in x
+              //determine confidence in x by fitting the parabola at y=0
+              fit_results *temp2=(fit_results*)calloc(1,sizeof(fit_results));
+              //map fit parameters into a 1D parabola
+              temp2->a[0]=temp1->a[0];
+              temp2->a[1]=temp1->a[3];
+              temp2->a[2]=temp1->a[5];
+              //find value at the vertex of the parabola
+              temp2->vertVal=eval2Par(temp1->fitVert[0],temp1->fitVert[1],temp1);
+              //fit confidence interval of the parabola (using ciDelta assuming 2 variables)
+              fit1ParChisqConf(p,temp2);
+              temp1->vertLBound[0]=temp2->vertLBound[0];
+              temp1->vertUBound[0]=temp2->vertUBound[0];
+              free(temp2);
+              printf("\nAssuming minimum at zero for x,\n");
+              printFitVertex(d,p,temp1);
+              free(temp1);
+            }
+        }
+    }
+    
+      
+
 	if((p->plotData==1)&&(p->verbose<1))
 		{
 			preparePlotData(d,p,fr,pd);
