@@ -84,19 +84,18 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
   lin_eq_type linEq;
   linEq.dim=10;
   
-  for(i=0;i<2;i++)//loop over free parameters
-    for(j=i;j<2;j++)//loop over free parameters
-      linEq.matrix[i][j]=d->xxpowsum[i][3][j][3];//top-left 2x2 entries
-  
-  linEq.matrix[0][2]=d->xxpowsum[0][5][1][1];    
+  linEq.matrix[0][0]=d->xxpowsum[0][3][0][3];//x^6
+  linEq.matrix[0][1]=d->xxpowsum[0][3][1][3];//x^3y^3
+  linEq.matrix[0][2]=d->xxpowsum[0][5][1][1];
   linEq.matrix[0][3]=d->xxpowsum[0][4][1][2];
-  linEq.matrix[0][4]=d->xpowsum[0][5];
+  linEq.matrix[0][4]=d->xpowsum[0][5];//x^5
   linEq.matrix[0][5]=d->xxpowsum[0][3][1][2];
   linEq.matrix[0][6]=d->xxpowsum[0][4][1][1];
   linEq.matrix[0][7]=d->xpowsum[0][4];
   linEq.matrix[0][8]=d->xxpowsum[0][3][1][1];
   linEq.matrix[0][9]=d->xpowsum[0][3];
   
+  linEq.matrix[1][1]=d->xxpowsum[1][3][1][3];//y^6
   linEq.matrix[1][2]=d->xxpowsum[0][2][1][4];
   linEq.matrix[1][3]=d->xxpowsum[0][1][1][5];
   linEq.matrix[1][4]=d->xxpowsum[0][2][1][3];
@@ -155,17 +154,25 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
     for(j=0;j<i;j++)
       linEq.matrix[i][j]=linEq.matrix[j][i];
   
-  for(i=0;i<2;i++)
-    linEq.vector[i]=d->mxpowsum[i][3];
+  linEq.vector[0]=d->mxpowsum[0][3];
+  linEq.vector[1]=d->mxpowsum[1][3];
   linEq.vector[2]=d->mxxpowsum[0][2][1][1];
   linEq.vector[3]=d->mxxpowsum[0][1][1][2];
-  for(i=4;i<6;i++)
-    linEq.vector[i]=d->mxpowsum[i-4][2];
+  linEq.vector[4]=d->mxpowsum[0][2];
+  linEq.vector[5]=d->mxpowsum[1][2];
   linEq.vector[6]=d->mxxpowsum[0][1][1][1];
-  for(i=7;i<9;i++)
-    linEq.vector[i]=d->mxpowsum[i-7][1];
+  linEq.vector[7]=d->mxpowsum[0][1];
+  linEq.vector[8]=d->mxpowsum[1][1];
   linEq.vector[9]=d->msum;
-    
+
+  /*printf("Matrix:\n");
+  for(i=0;i<linEq.dim;i++)
+    {
+      for(j=0;j<linEq.dim;j++)
+        printf(" %LE ",linEq.matrix[i][j]);
+      printf("\n");
+    }*/
+
 	//solve system of equations and assign values
 	if(!(solve_lin_eq(&linEq)==1))
 		{
@@ -173,7 +180,7 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
 			printf("Perhaps there are not enough data points to perform a fit?\n");
 			exit(-1);
 		}
-  
+
   //save fit parameters  
   for(i=0;i<linEq.dim;i++)
     fr->a[i]=linEq.solution[i];
@@ -188,6 +195,16 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
          + fr->a[6]*d->x[0][i]*d->x[1][i] + fr->a[7]*d->x[0][i] + fr->a[8]*d->x[1][i] + fr->a[9];
       fr->chisq+=(d->x[2][i] - f)*(d->x[2][i] - f)/(d->x[2+1][i]*d->x[2+1][i]);
     }
+  
+  /*printf("Inverse matrix:\n");
+  for(i=0;i<linEq.dim;i++)
+    {
+      for(j=0;j<linEq.dim;j++)
+        printf(" %LE ",linEq.inv_matrix[i][j]);
+      printf("\n");
+    }
+  printf("chisq: %Lf\n",fr->chisq);*/
+
   //Calculate covariances and uncertainties, see J. Wolberg 
   //'Data Analysis Using the Method of Least Squares' sec 2.5
   for(i=0;i<linEq.dim;i++)

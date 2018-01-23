@@ -35,7 +35,7 @@ int get_inv(lin_eq_type * lin_eq)
   for(i=0;i<n;i++)
     for(j=0;j<n;j++)
       if(i==j)
-        id[i][j]=1.;
+        id[i][j]=1.0L;
         
   memcpy(lin_eq->inv_matrix,lin_eq->matrix,sizeof(lin_eq->matrix));
         
@@ -43,7 +43,7 @@ int get_inv(lin_eq_type * lin_eq)
     {
       for(j=i;j<n;j++)
         {
-          if(lin_eq->inv_matrix[j][i]!=0)
+          if(lin_eq->inv_matrix[j][i]!=0.0L)
             {
               for(k=0;k<n;k++)
                 {
@@ -55,7 +55,7 @@ int get_inv(lin_eq_type * lin_eq)
                   id[i][k]=id[j][k];
                   id[j][k]=s;
                 }
-              s=1./lin_eq->inv_matrix[i][i];
+              s=1.0L/lin_eq->inv_matrix[i][i];
               for(k=0;k<n;k++)
                 {
                   lin_eq->inv_matrix[i][k]=s*lin_eq->inv_matrix[i][k];
@@ -64,7 +64,7 @@ int get_inv(lin_eq_type * lin_eq)
               for(k=0;k<n;k++)
                 if(k!=i)
                   {
-                    s=-1.*lin_eq->inv_matrix[k][i];
+                    s=-1.0L*lin_eq->inv_matrix[k][i];
                     for(l=0;l<n;l++)
                       {
                         lin_eq->inv_matrix[k][l]=lin_eq->inv_matrix[k][l] + s*lin_eq->inv_matrix[i][l];
