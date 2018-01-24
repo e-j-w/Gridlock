@@ -1,13 +1,16 @@
 //generates the sums that will be used when fitting
 void generateSums(data * d,const parameters * p)
 {
-  
-  long double powVal=0.;
-  long double w=1.;
+
+  //indicies
   int i,j,k,l,m,n,o,q;
+
+  //128-bit: high precision needed for intermediate calculations
+  __float128 powVal=0.0L;
+  __float128 w=1.0L;
   
   //initialize sums (in case this function is called more than once)
-	d->msum=0.;
+	d->msum=0.0L;
   memset(d->xpowsum,0,POWSIZE*POWSIZE*sizeof(long double));
   memset(d->mxpowsum,0,POWSIZE*POWSIZE*sizeof(long double));
   memset(d->mxxpowsum,0,POWSIZE*POWSIZE*POWSIZE*POWSIZE*sizeof(long double));
@@ -20,7 +23,7 @@ void generateSums(data * d,const parameters * p)
       d->msum+=d->x[p->numVar][i]/w;
       for(j=0;j<p->numVar;j++)//loop over free parameters
         {
-          powVal=1.;
+          powVal=1.0L;
           for(k=0;k<6;k++)//loop over powers
             {
               d->xpowsum[j][k] += powVal/w;
@@ -32,7 +35,7 @@ void generateSums(data * d,const parameters * p)
             for(l=0;l<6;l++)//loop over powers (corresponding to parameter indexed by j)
               for(m=0;m<6;m++)//loop over powers (corresponding to parameter indexed by k)
                 {
-                  powVal=1.;
+                  powVal=1.0L;
                   for(q=0;q<l;q++)
                     powVal=powVal*d->x[j][i];
                   for(q=0;q<m;q++)
@@ -47,7 +50,7 @@ void generateSums(data * d,const parameters * p)
                 for(n=0;n<3;n++)//loop over powers (corresponding to parameter indexed by k)
                   for(o=0;o<3;o++)//loop over powers (corresponding to parameter indexed by l)
                     {
-                      powVal=1.;
+                      powVal=1.0L;
                       for(q=0;q<m;q++)
                         powVal=powVal*d->x[j][i];
                       for(q=0;q<n;q++)

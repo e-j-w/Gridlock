@@ -74,7 +74,7 @@ int get_inv(lin_eq_type * lin_eq)
             }
           break;
         }
-      if(lin_eq->inv_matrix[j][i]==0)
+      if(lin_eq->inv_matrix[j][i]==0.0L)
         return 0;//matrix is singular
     }
         

@@ -284,7 +284,7 @@ void importData(data * d, parameters * p)
         }
     }
   fclose(inp);
-  
+
   if(d->lines<1)
     {
       printf("ERROR: no data could be read from the input file.\n");

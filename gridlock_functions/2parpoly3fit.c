@@ -171,6 +171,11 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
       for(j=0;j<linEq.dim;j++)
         printf(" %LE ",linEq.matrix[i][j]);
       printf("\n");
+    }
+  printf("Vector:\n");
+  for(i=0;i<linEq.dim;i++)
+    {
+      printf("%LE\n",linEq.vector[i]);
     }*/
 
 	//solve system of equations and assign values
