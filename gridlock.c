@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	if(argc!=2)
 		{
 			printf("\ngridlock filename\n-----------------\n\n");
-			printf("Fits the data in the specified file.  The file should be in plaintext, with a line specifying the fit type using the format:\n\nFIT  type\n");
+			printf("Fits the data in the specified file.\nThe file should be in plaintext, with a line specifying the fit type using the format:\n\nFIT  type\n");
 			printf("\nPossible values of 'type' are:\n\nlin (line)\nlin_deming (line with errors in x)\npoly1 (1st order polynomial)\npoly2 (2nd order polynomial)\npoly3 (3rd order polynomial)\npar1 (2nd order polynomial)\npar2 (2nd order bivariate polynomial)\npar3 (2nd order trivariate polynomial)\n2parpoly3 (3rd order bivariate polynomial)\n");
 			printf("\nSee the README for more details.\n");
 			exit(-1);
@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
 			exit(-1);
 		}
   
-  if(p->filter==1)
-  	linearFilter(d,p);
+	if(p->filter==1)
+  		linearFilter(d,p);
   
 	if(p->verbose<1)
 		printDataInfo(d,p); //see print_data_info.c
