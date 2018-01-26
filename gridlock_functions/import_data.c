@@ -152,6 +152,12 @@ void importData(data * d, parameters * p)
             {
               lineValid=1;
 
+              //check variable and data values for NaN
+              for(i=0;i<p->numVar+2;i++)
+                if(i<POWSIZE)
+                  if(d->x[i][d->lines]!=d->x[i][d->lines])
+                    lineValid=0;
+
               //check variable values against limits
               for(i=0;i<p->numVar;i++)
                 if(i<POWSIZE)
@@ -294,9 +300,9 @@ void importData(data * d, parameters * p)
     }
   else if(p->verbose<1)
     {
-      printf("Successfully read data file: %s\n%i lines of data used.\n",p->filename,d->lines);
+      printf("Successfully read data file: %s\n%i line(s) of data used.\n",p->filename,d->lines);
       if(invalidLines>0)
-        printf("%i lines of data skipped (outside of fit region limits).\n",invalidLines);
+        printf("%i line(s) of data skipped (outside of fit region limits).\n",invalidLines);
     }
   
 }
