@@ -111,7 +111,7 @@ void plotForm1Par(const parameters * p, fit_results * fr)
 {
 	//set up equation forms for plotting
 	if(strcmp(p->plotMode,"1d")==0)
-		sprintf(fr->fitForm[0], "%LE*(x**2) + %LE*x + %LE",fr->a[0],fr->a[1],fr->a[2]);
+		sprintf(fr->fitForm[0], "%.10LE*(x**2) + %.10LE*x + %.10LE",fr->a[0],fr->a[1],fr->a[2]);
 }
 
 

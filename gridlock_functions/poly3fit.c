@@ -231,7 +231,7 @@ void plotFormPoly3(const parameters * p, fit_results * fr)
 	//set up equation forms for plotting
 	if(strcmp(p->plotMode,"1d")==0)
 		{
-			sprintf(fr->fitForm[0], "%LE*x*x*x + %0.10LE*x*x + %LE*x + %LE",fr->a[0],fr->a[1],fr->a[2],fr->a[3]);
+			sprintf(fr->fitForm[0], "%.10LE*x*x*x + %0.20LE*x*x + %.10LE*x + %.10LE",fr->a[0],fr->a[1],fr->a[2],fr->a[3]);
 		}
 }
 

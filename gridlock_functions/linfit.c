@@ -67,7 +67,7 @@ void plotFormLin(const parameters * p, fit_results * fr)
 {
 	//set up equation forms for plotting
 	if(strcmp(p->plotMode,"1d")==0)
-		sprintf(fr->fitForm[0], "%LE*x + %LE",fr->a[0],fr->a[1]);
+		sprintf(fr->fitForm[0], "%.10LE*x + %.10LE",fr->a[0],fr->a[1]);
 }
 
 //fit data to a line of the form

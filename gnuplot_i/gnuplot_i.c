@@ -640,6 +640,7 @@ void gnuplot_plot_equation(
     char const *    cmd    = (h->nplots > 0) ? "replot" : "plot";
     title                  = (title == NULL)      ? "(none)" : title;
 
+    //printf("Equation: %s\n",equation);
     gnuplot_cmd(h, "%s %s title \"%s\" with %s",
                   cmd, equation, title, h->pstyle) ;
     h->nplots++ ;
