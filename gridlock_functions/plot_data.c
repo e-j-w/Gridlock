@@ -1,3 +1,11 @@
+//forward declarations
+long double evalLin(long double, const fit_results *);
+long double evalPoly3(long double, const fit_results *);
+long double eval2ParPoly3(long double,long double, const fit_results *);
+long double eval1Par(long double, const fit_results *);
+long double eval2Par(long double,long double, const fit_results *);
+long double eval3Par(long double,long double,long double, const fit_results *);
+
 //generate data to be plotted
 //for multidimensional paraboloid fits, do this by by selecting datapoints nearest to the fit vertex
 void preparePlotData(const data * d, const parameters * p, const fit_results * fr, plot_data * pd)
@@ -37,8 +45,27 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
              
             if(useDataPoint==1)
               {
-                for(k=0;k<=p->numVar;k++)//parameter index (x,y,z)
-                  pd->data[i][k][pd->plotDataSize[i]]=((double)d->x[k][j]);
+                for(k=0;k<p->numVar;k++)//parameter index (x,y,z)
+                  {
+                    pd->data[i][k][pd->plotDataSize[i]]=((double)d->x[k][j]);
+                    pd->fit[i][k][pd->plotDataSize[i]]=((double)d->x[k][j]);
+                  }
+                pd->data[i][p->numVar][pd->plotDataSize[i]]=((double)d->x[p->numVar][j]);
+                if(strcmp(p->fitType,"par1")==0)
+                  pd->fit[i][p->numVar][pd->plotDataSize[i]]=(double)eval1Par(d->x[0][j],fr);
+                else if((strcmp(p->fitType,"lin")==0)||(strcmp(p->fitType,"lin_deming")==0))
+                  pd->fit[i][p->numVar][pd->plotDataSize[i]]=(double)evalLin(d->x[0][j],fr);
+                else if(strcmp(p->fitType,"poly3")==0)
+                  pd->fit[0][p->numVar][pd->plotDataSize[i]]=(double)evalPoly3(d->x[0][j],fr);
+                else if(strcmp(p->fitType,"par2")==0)
+                  pd->fit[0][p->numVar][pd->plotDataSize[i]]=((double)eval2Par(d->x[0][i],d->x[1][i],fr));
+                else if(strcmp(p->fitType,"2parpoly3")==0)
+                  pd->fit[0][p->numVar][pd->plotDataSize[i]]=((double)eval2ParPoly3(d->x[0][i],d->x[1][i],fr));
+                else if(strcmp(p->fitType,"par3")==0)
+                  pd->fit[i][p->numVar][pd->plotDataSize[i]]=(double)eval3Par(d->x[0][j],d->x[1][j],d->x[2][j],fr);
+                else
+                  printf("WARNING: Unknown fit type '%s', cannot plot fit.\n",p->fitType);
+                  
                 pd->plotDataSize[i]++;
               }
           }
@@ -51,8 +78,16 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
         for(j=0;j<d->lines;j++)
           if(d->x[i][j]==pd->fixedParVal[i])
             {
-              for(k=0;k<=p->numVar;k++)//parameter index (x,y,z,value)
-                pd->data[i][k][pd->plotDataSize[i]]=((double)d->x[k][j]);
+              for(k=0;k<p->numVar;k++)//parameter index (x,y,z,value)
+                {
+                  pd->data[i][k][pd->plotDataSize[i]]=((double)d->x[k][j]);
+                  pd->fit[i][k][pd->plotDataSize[i]]=((double)d->x[k][j]);
+                }
+              pd->data[i][p->numVar][pd->plotDataSize[i]]=((double)d->x[p->numVar][j]);
+              if(strcmp(p->fitType,"par3")==0)
+                pd->fit[i][p->numVar][pd->plotDataSize[i]]=(double)eval3Par(d->x[0][j],d->x[1][j],d->x[2][j],fr);
+              else
+                printf("WARNING: Unknown fit type '%s', cannot plot fit.\n",p->fitType);
               pd->plotDataSize[i]++;
             }
     }
@@ -63,8 +98,19 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
       for(i=0;i<d->lines;i++)
         {
           //copy over data to plot
-          for(j=0;j<=p->numVar;j++)//parameter index (x,y,z,value)
-            pd->data[0][j][pd->plotDataSize[0]]=((double)d->x[j][i]);
+          for(j=0;j<p->numVar;j++)//parameter index (x,y,z,value)
+            {
+              pd->data[0][j][pd->plotDataSize[0]]=((double)d->x[j][i]);
+              pd->fit[0][j][pd->plotDataSize[0]]=((double)d->x[j][i]);
+            }
+          pd->data[0][p->numVar][pd->plotDataSize[0]]=((double)d->x[p->numVar][i]);
+          if(strcmp(p->fitType,"2parpoly3")==0)
+            pd->fit[0][p->numVar][pd->plotDataSize[0]]=((double)eval2ParPoly3(d->x[0][i],d->x[1][i],fr));
+          else if(strcmp(p->fitType,"par2")==0)
+            pd->fit[0][p->numVar][pd->plotDataSize[0]]=((double)eval2Par(d->x[0][i],d->x[1][i],fr));
+          else
+            printf("WARNING: Unknown fit type '%s', cannot plot fit.\n",p->fitType);
+            
           pd->plotDataSize[0]++;
         }
     }
@@ -75,8 +121,17 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
       for(i=0;i<d->lines;i++)
         {
           //copy over data to plot
-          for(j=0;j<=p->numVar;j++)//parameter index (x,y,z,value)
-            pd->data[0][j][pd->plotDataSize[0]]=((double)d->x[j][i]);
+          for(j=0;j<p->numVar;j++)//parameter index (x,y,z,value)
+            {
+              pd->data[0][j][pd->plotDataSize[0]]=((double)d->x[j][i]);
+              pd->fit[0][j][pd->plotDataSize[0]]=((double)d->x[j][i]);
+            }
+          pd->data[0][p->numVar][pd->plotDataSize[0]]=((double)d->x[p->numVar][i]);
+          if(strcmp(p->fitType,"par3")==0)
+            pd->fit[0][p->numVar][pd->plotDataSize[0]]=(double)eval3Par(d->x[0][j],d->x[1][j],d->x[2][j],fr);
+          else
+            printf("WARNING: Unknown fit type '%s', cannot plot fit.\n",p->fitType);
+
           pd->plotDataSize[0]++;
         }
     }
@@ -165,6 +220,7 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
           if(pd->axisLabelStyle[i][p->numVar]==1)
             gnuplot_cmd(handle,"set format y '%%12.2E'");
           gnuplot_setstyle(handle,"lines");//set style for fit data
+          //gnuplot_plot_xy(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->plotDataSize[i], "Fit");
           strcpy(str,fr->fitForm[i]);//retrieve fit data functional form
           gnuplot_plot_equation(handle, str, "Fit");
           //plot confidence intervals

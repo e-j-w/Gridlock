@@ -1,3 +1,9 @@
+//evaluates the fit function at the specified point
+long double evalLin(long double x, const fit_results * fr)
+{
+	return fr->a[0]*x + fr->a[1];
+}
+
 long double confIntVal(long double input, const fit_results * fr, const data * d, int upper)
 {
 	int i;	

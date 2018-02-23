@@ -237,6 +237,16 @@ void gnuplot_setstyle(gnuplot_ctrl * h, char * plot_style)
     return ;
 }
 
+
+//set whether the output plot is smoothed
+//val=1 : smoothed
+//val=0 : not smoothed
+void gnuplot_setsmooth(gnuplot_ctrl * h, int val)
+{
+    h->smooth=val;
+    return ;
+}
+
 void gnuplot_setcolor(gnuplot_ctrl * h, char * color)
 {
     if (strcmp(color, "black") &&
@@ -830,9 +840,20 @@ void gnuplot_plot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, char
     char const *    cmd    = (handle->nplots > 0) ? "replot" : "plot";
     title                  = (title == NULL)      ? "(none)" : title;
     if(handle->colSet==0)
-        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s", cmd, tmp_filename,title, handle->pstyle) ;
+        {
+            if(handle->smooth)
+                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s smooth bezier", cmd, tmp_filename,title, handle->pstyle) ;
+            else
+                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s", cmd, tmp_filename,title, handle->pstyle) ;
+        }
     else
-        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
+        {
+            if(handle->smooth)
+                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s smooth bezier", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
+            else
+                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
+        }
+        
     handle->nplots++ ;
     return ;
 }
@@ -842,9 +863,20 @@ void gnuplot_splot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, cha
     char const *    cmd    = (handle->nplots > 0) ? "replot" : "splot";
     title                  = (title == NULL)      ? "(none)" : title;
     if(handle->colSet==0)
-        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s", cmd, tmp_filename,title, handle->pstyle) ;
+        {
+            if(handle->smooth)
+                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s smooth bezier", cmd, tmp_filename,title, handle->pstyle) ;
+            else
+                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s", cmd, tmp_filename,title, handle->pstyle) ;
+        }
     else
-        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
+        {
+            if(handle->smooth)
+                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s smooth bezier", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
+            else
+                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
+        }
+        
     handle->nplots++ ;
     return ;
 }
