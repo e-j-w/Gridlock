@@ -56,6 +56,7 @@ typedef struct
   double max_m,min_m;//maximum and minimum values
   double ciData[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing confidence interval data points to be plotted, indexed by plot # then variable # then data point #
   double fit[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing fit data to be plotted, indexed by plot # then variable # then data point #
+  int numFitPlotPts;//number of data points reserved for plotting fit data
   int plotDataSize[POWSIZE];
   int numPlots;
   int axisLabelStyle[POWSIZE][POWSIZE];//0=normal,1=scientific notation
