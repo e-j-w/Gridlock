@@ -34,6 +34,7 @@ typedef struct
   long double uniWeightVal;//value specified for uniform weights
   int filter;//0=no filter,1=linear filter
   double filterSigma;//sigma value to be used for filter
+  int forceZeroX,forceZeroY,forceZeroZ;//whether or not to attempt forcing the fitted minimum to zero for x,y,z
 }parameters;
 
 typedef struct
@@ -57,6 +58,7 @@ typedef struct
   double ciData[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing confidence interval data points to be plotted, indexed by plot # then variable # then data point #
   double fit[POWSIZE][POWSIZE][MAXFILELENGTH];//array containing fit data to be plotted, indexed by plot # then variable # then data point #
   int numFitPlotPts;//number of data points reserved for plotting fit data
+  int numFitPtsPerVar;
   int plotDataSize[POWSIZE];
   int numPlots;
   int axisLabelStyle[POWSIZE][POWSIZE];//0=normal,1=scientific notation

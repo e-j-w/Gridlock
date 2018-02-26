@@ -524,6 +524,49 @@ void gnuplot_plot_xyz(
     return ;
 }
 
+//same as the above function but modified to allow plotting of grid data as a mesh
+//gnuplot requires empty lines between each block of data for all x values in the grid
+void gnuplot_plot_xyzn(
+    gnuplot_ctrl    *   handle,
+    double          *   x,
+    double          *   y,
+    double          *   z,
+    int                 n,
+    int                 ndim,
+    char            *   title
+)
+{
+    int     i,j ;
+    FILE*   tmpfd ;
+    char const * tmpfname;
+
+    if (handle==NULL || x==NULL || y==NULL || z==NULL || (n<1)) return ;
+
+    /* Open temporary file for output   */
+    tmpfname = gnuplot_tmpfile(handle);
+    tmpfd = fopen(tmpfname, "w");
+
+    if (tmpfd == NULL) {
+        fprintf(stderr,"cannot create temporary file: exiting plot") ;
+        return ;
+    }
+
+    /* Write data to this file  */
+    j=0;
+    for (i=0 ; i<n; i++) {
+        fprintf(tmpfd, "%.18e %.18e %.18e\n", x[i], y[i], z[i]) ;
+        j++;
+        if(j>=ndim) {
+            fprintf(tmpfd, "\n"); //insert blank line
+            j=0;
+        }
+    }
+    fclose(tmpfd) ;
+
+    gnuplot_splot_atmpfile(handle,tmpfname,title);
+    return ;
+}
+
 void gnuplot_plot_xyza(
     gnuplot_ctrl    *   handle,
     double          *   x,

@@ -313,6 +313,16 @@ void gnuplot_plot_xyz(
     char            *   title
 ) ;
 
+void gnuplot_plot_xyzn(
+    gnuplot_ctrl    *   handle,
+    double          *   x,
+    double          *   y,
+    double          *   z,
+    int                 n,
+    int                 ndim,
+    char            *   title
+) ;
+
 
 /*-------------------------------------------------------------------------*/
 /**

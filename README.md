@@ -76,7 +76,8 @@ Add these options (eg. 'PLOT 1d') as a single line anywhere in the data file to 
 | UPPER_LIMITS value1 value2 value3 | Upper fit limits for each variable (specify as many values as there are variables).  Use with LOWER_LIMITS to specify a fit range.|
 | DATA_LOWER_LIMIT value | Lower fit limit for data values.  Use with DATA_UPPER_LIMIT to specify a fit range for data values.|
 | DATA_UPPER_LIMIT value | Upper fit limit for data values.  Use with DATA_LOWER_LIMIT to specify a fit range for data values.|
-
+| ZEROX | When fitting using the *par2* function with chisq data, show the fit result assuming a minimum in x at x=0.|
+| ZEROY | When fitting using the *par2* function with chisq data, show the fit result assuming a minimum in y at y=0.|
 
 ## Acknowledgments
 

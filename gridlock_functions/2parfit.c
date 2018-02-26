@@ -257,9 +257,9 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
   //check zero bounds
   if(strcmp(p->dataType,"chisq")==0)
     {
-      if(fr->fitVert[0]<0.)
+      if((fr->fitVert[0]<0.) || (p->forceZeroX==1))
         {
-          if(fr->fitVert[1]>=0.)
+          if((fr->fitVert[1]>=0.) || (p->forceZeroX==1))
             {
               //make a copy of the fit results to work on
               fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
@@ -288,8 +288,9 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
               printFitVertex(d,p,temp1);
               free(temp1);
             }
+          
         }
-      else if(fr->fitVert[1]<0.) //implies fitVert[0]>=0.
+      else if((fr->fitVert[1]<0.) || (p->forceZeroY==1)) //implies fitVert[0]>=0.
         {
           //make a copy of the fit results to work on
           fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
@@ -314,7 +315,7 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
           temp1->vertLBound[0]=temp2->vertLBound[0];
           temp1->vertUBound[0]=temp2->vertUBound[0];
           free(temp2);
-          printf("\nAssuming minimum at zero for x,\n");
+          printf("\nAssuming minimum at zero for y,\n");
           printFitVertex(d,p,temp1);
           free(temp1);
         }

@@ -65,6 +65,10 @@ void importData(data * d, parameters * p)
 						p->readWeights=1;//data has weights, in the last column
 					else if(strcmp(str,"UNWEIGHTED\n")==0)
 						p->readWeights=0;//data is unweighted
+          else if(strcmp(str,"ZEROX\n")==0)
+						p->forceZeroX=1;//force x to zero
+          else if(strcmp(str,"ZEROY\n")==0)
+						p->forceZeroY=1;//force y to zero
         }
     }
   //check the fit type
