@@ -270,6 +270,17 @@ void gnuplot_plot_xy(
     char            *   title
 ) ;
 
+void gnuplot_plot_xygrid(
+    gnuplot_ctrl    *   handle,
+    double          *   x,
+    double          *   y,
+    int                 n,
+    int                 ndim,
+    int                 nskip,
+    int                 nblockskip,
+    char            *   title
+) ;
+
 /*-------------------------------------------------------------------------*/
 /**
   @brief    Plot a 3d graph from a list of points.
@@ -313,13 +324,15 @@ void gnuplot_plot_xyz(
     char            *   title
 ) ;
 
-void gnuplot_plot_xyzn(
+void gnuplot_plot_xyzgrid(
     gnuplot_ctrl    *   handle,
     double          *   x,
     double          *   y,
     double          *   z,
     int                 n,
     int                 ndim,
+    int                 nskip,
+    int                 nblockskip,
     char            *   title
 ) ;
 

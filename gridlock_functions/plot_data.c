@@ -123,7 +123,7 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
   pd->max_m=(double)d->max_m;
 
   //generate fit plot data
-  pd->numFitPtsPerVar=50;
+  pd->numFitPtsPerVar=20;
   pd->numFitPlotPts=1;
   double floorFactor;
   for(i=0;i<p->numVar;i++)
@@ -138,20 +138,22 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
             {
               if(k!=0)
                 floorFactor=floorFactor*pd->numFitPtsPerVar;
+              
+              //variable not fixed
+              //had to use a spreadsheet to visualize this haHAA
+              pd->fit[i][k][j]=d->min_x[k] + (((int)(floor((double)j/floorFactor))%pd->numFitPtsPerVar)/(double)pd->numFitPtsPerVar)*(d->max_x[k] - d->min_x[k]);
+
               //handle fixed variable cases
               if(strcmp(p->plotMode,"1d")==0)
                 {
                   if(k!=i)//variable fixed
-                    pd->fit[i][k][j]=pd->fixedParVal[k];
+                    pd->fit[i][k][j]=(double)pd->fixedParVal[k];
                 }
               else if((p->numVar==3)&&(strcmp(p->plotMode,"2d")==0))
                 {
                   if(k==i)//variable fixed
-                    pd->fit[i][k][j]=pd->fixedParVal[k];
+                    pd->fit[i][k][j]=(double)pd->fixedParVal[k];
                 }
-              //variable not fixed
-              //had to use a spreadsheet to visualize this haHAA
-              pd->fit[i][k][j]=d->min_x[k] + (((int)(floor((double)j/floorFactor))%pd->numFitPtsPerVar)/(double)pd->numFitPtsPerVar)*(d->max_x[k] - d->min_x[k]);
             }
           if(strcmp(p->fitType,"par1")==0)
             pd->fit[i][p->numVar][j]=(double)eval1Par(pd->fit[i][0][j],fr);
@@ -222,7 +224,19 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
           if(pd->axisLabelStyle[i][p->numVar]==1)
             gnuplot_cmd(handle,"set format y '%%12.2E'");
           gnuplot_setstyle(handle,"lines");//set style for fit data
-          gnuplot_plot_xy(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPlotPts, "Fit");
+          if(p->numVar==1)
+            {
+              gnuplot_plot_xy(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPlotPts, "Fit");
+            }  
+          else
+            {
+              if(i==0)
+                gnuplot_plot_xy(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPtsPerVar, "Fit");
+              else if(i==1)
+                gnuplot_plot_xygrid(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPtsPerVar*pd->numFitPtsPerVar, pd->numFitPtsPerVar, pd->numFitPtsPerVar, 0, "Fit");
+              else if(i==2)
+                gnuplot_plot_xygrid(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar, pd->numFitPtsPerVar*pd->numFitPtsPerVar, 0, "Fit");
+            }
           //strcpy(str,fr->fitForm[i]);//retrieve fit data functional form
           //gnuplot_plot_equation(handle, str, "Fit (function)");
           //plot confidence intervals
@@ -311,14 +325,14 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
               gnuplot_cmd(handle,str);
               gnuplot_setstyle(handle,"lines");
               gnuplot_cmd(handle,"set grid");//set style for fit data
-              /*if(i==0)
-                gnuplot_plot_xyzn(handle, pd->fit[i][1], pd->fit[i][2], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar*pd->numFitPtsPerVar, "Fit");
+              if(i==0)
+                gnuplot_plot_xyzgrid(handle, pd->fit[i][1], pd->fit[i][2], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar*pd->numFitPtsPerVar, pd->numFitPtsPerVar, 0, "Fit");
               else if(i==1)
-                gnuplot_plot_xyzn(handle, pd->fit[i][0], pd->fit[i][2], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar*pd->numFitPtsPerVar, "Fit");
+                gnuplot_plot_xyzgrid(handle, pd->fit[i][0], pd->fit[i][2], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar, 0, pd->numFitPtsPerVar, "Fit");
               else if(i==2)
-                gnuplot_plot_xyzn(handle, pd->fit[i][0], pd->fit[i][1], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar*pd->numFitPtsPerVar, "Fit");*/
-              strcpy(str,fr->fitForm[i]);//retrieve fit data functional form
-              gnuplot_plot_equation(handle, str, "Fit (function)");
+                gnuplot_plot_xyzgrid(handle, pd->fit[i][0], pd->fit[i][1], pd->fit[i][p->numVar], pd->numFitPtsPerVar*pd->numFitPtsPerVar, pd->numFitPtsPerVar, 0, 0, "Fit");
+              //strcpy(str,fr->fitForm[i]);//retrieve fit data functional form
+              //gnuplot_plot_equation(handle, str, "Fit (function)");
               printf("Showing surface plot with parameter %i fixed to %Lf\n",i+1,pd->fixedParVal[i]);
               printf("%i data points available for plot.\n",pd->plotDataSize[i]);
               if(i<(p->numVar-1))
@@ -347,7 +361,7 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
           gnuplot_setstyle(handle,"lines");
           gnuplot_cmd(handle,"set grid");//set style for fit data
           //gnuplot_cmd(handle,"set dgrid3d 30,30 qnorm 2");//set style for fit data
-          gnuplot_plot_xyzn(handle, pd->fit[0][0], pd->fit[0][1], pd->fit[0][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar, "Fit");
+          gnuplot_plot_xyzgrid(handle, pd->fit[0][0], pd->fit[0][1], pd->fit[0][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar, 0, 0, "Fit");
           //strcpy(str,fr->fitForm[0]);//retrieve fit data functional form
           //gnuplot_plot_equation(handle, str, "Fit (function)");
           printf("Showing surface plot.\n");

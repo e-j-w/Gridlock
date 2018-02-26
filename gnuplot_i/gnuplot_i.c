@@ -455,6 +455,61 @@ void gnuplot_plot_xy(
     return ;
 }
 
+
+//JW: same as the above function but modified to allow skipping over individual
+//lines of data or blocks of data
+//ndim = # of data points in each 'block'
+//nskip = take only every nskipth data point
+//nblockskip = take only every nblockskipth data block
+void gnuplot_plot_xygrid(
+    gnuplot_ctrl    *   handle,
+    double          *   x,
+    double          *   y,
+    int                 n,
+    int                 ndim,
+    int                 nskip,
+    int                 nblockskip,
+    char            *   title
+)
+{
+    int     i,k ;
+    FILE*   tmpfd ;
+    char const * tmpfname;
+
+    if (handle==NULL || x==NULL || y==NULL || (n<1)) return ;
+
+    /* Open temporary file for output   */
+    tmpfname = gnuplot_tmpfile(handle);
+    tmpfd = fopen(tmpfname, "w");
+
+    if (tmpfd == NULL) {
+        fprintf(stderr,"cannot create temporary file: exiting plot") ;
+        return ;
+    }
+
+    /* Write data to this file  */
+    k=ndim*nblockskip;
+    for (i=0 ; i<n; i++) {
+        if(nskip>0) {
+            if(i%nskip==0) {
+                fprintf(tmpfd, "%.18e %.18e\n", x[i], y[i]) ;
+            }  
+        }else if(nblockskip>0){
+            if(i%k<ndim) {
+                fprintf(tmpfd, "%.18e %.18e\n", x[i], y[i]) ;
+                printf("%i %i %i\n",i%k, ndim, i);
+            }   
+        }else{
+            fprintf(tmpfd, "%.18e %.18e\n", x[i], y[i]) ;
+        }
+    }
+    
+    fclose(tmpfd) ;
+
+    gnuplot_plot_atmpfile(handle,tmpfname,title);
+    return ;
+}
+
 /*-------------------------------------------------------------------------*/
 /**
   @brief    Plot a 3d graph from a list of points.
@@ -524,19 +579,23 @@ void gnuplot_plot_xyz(
     return ;
 }
 
-//same as the above function but modified to allow plotting of grid data as a mesh
+//JW: same as the above function but modified to allow plotting of grid data as a mesh
 //gnuplot requires empty lines between each block of data for all x values in the grid
-void gnuplot_plot_xyzn(
+//ndim = # of points in each dimension of the grid = # of data points in each 'block' of x values
+//nskip = take only every nskipth data point
+void gnuplot_plot_xyzgrid(
     gnuplot_ctrl    *   handle,
     double          *   x,
     double          *   y,
     double          *   z,
     int                 n,
     int                 ndim,
+    int                 nskip,
+    int                 nblockskip,
     char            *   title
 )
 {
-    int     i,j ;
+    int     i,j,k ;
     FILE*   tmpfd ;
     char const * tmpfname;
 
@@ -553,9 +612,25 @@ void gnuplot_plot_xyzn(
 
     /* Write data to this file  */
     j=0;
+    k=ndim*nblockskip;
     for (i=0 ; i<n; i++) {
-        fprintf(tmpfd, "%.18e %.18e %.18e\n", x[i], y[i], z[i]) ;
-        j++;
+        if(nskip>0) {
+            if(i%nskip==0) {
+                fprintf(tmpfd, "%.18e %.18e %.18e\n", x[i], y[i], z[i]) ;
+            }  
+            j++;
+        }else if(nblockskip>0){
+            if(i%k<ndim) {
+                fprintf(tmpfd, "%.18e %.18e %.18e\n", x[i], y[i], z[i]) ;
+                printf("%i %i %i\n",i%k, ndim, i);
+                j++;
+            }   
+        }else{
+            fprintf(tmpfd, "%.18e %.18e %.18e\n", x[i], y[i], z[i]) ;
+            j++;
+        }
+        
+        
         if(j>=ndim) {
             fprintf(tmpfd, "\n"); //insert blank line
             j=0;
