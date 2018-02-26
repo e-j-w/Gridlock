@@ -497,7 +497,6 @@ void gnuplot_plot_xygrid(
         }else if(nblockskip>0){
             if(i%k<ndim) {
                 fprintf(tmpfd, "%.18e %.18e\n", x[i], y[i]) ;
-                printf("%i %i %i\n",i%k, ndim, i);
             }   
         }else{
             fprintf(tmpfd, "%.18e %.18e\n", x[i], y[i]) ;
@@ -622,7 +621,6 @@ void gnuplot_plot_xyzgrid(
         }else if(nblockskip>0){
             if(i%k<ndim) {
                 fprintf(tmpfd, "%.18e %.18e %.18e\n", x[i], y[i], z[i]) ;
-                printf("%i %i %i\n",i%k, ndim, i);
                 j++;
             }   
         }else{
