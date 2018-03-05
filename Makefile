@@ -1,18 +1,18 @@
-CFLAGS 	= -I./gnuplot_i -I./utils -I./gridlock_functions -o2
+CFLAGS 	= -I./src/gnuplot_i -I./utils -I./src -o2
 
 all: lib gridlock
 
-gridlock: gridlock.c gridlock.h gnuplot_i.o lin_eq_solver.o
+gridlock: src/gridlock.c src/gridlock.h src/gnuplot_i.o src/lin_eq_solver.o
 	@echo Making gridlock...
-	gcc $(CFLAGS) gridlock.c -Wall -o gridlock gnuplot_i.o lin_eq_solver.o -lm
+	gcc $(CFLAGS) src/gridlock.c -Wall -o gridlock src/gnuplot_i.o src/lin_eq_solver.o -lm
 	@echo Tidying up...
-	rm -rf *~ *.o
+	rm -rf *~ src/*.o
 	
-lib:gnuplot_i/gnuplot_i.c gnuplot_i/gnuplot_i.h utils/lin_eq_solver.c utils/lin_eq_solver.h
+lib:src/gnuplot_i/gnuplot_i.c src/gnuplot_i/gnuplot_i.h src/lin_eq_solver.c src/lin_eq_solver.h
 	@echo Making libraries...
-	gcc -I./gnuplot_i -o2 -c -o gnuplot_i.o gnuplot_i/gnuplot_i.c
-	gcc -I./utils -o2 -c -o lin_eq_solver.o utils/lin_eq_solver.c
+	gcc -I./src/gnuplot_i -o2 -c -o src/gnuplot_i.o src/gnuplot_i/gnuplot_i.c
+	gcc -I./src -o2 -c -o src/lin_eq_solver.o src/lin_eq_solver.c
 	
 
 clean:
-	rm -rf *~ gridlock *.o
+	rm -rf *~ gridlock src/*.o

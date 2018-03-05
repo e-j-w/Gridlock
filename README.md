@@ -5,7 +5,7 @@ Maintainer: Jonathan Williams
 
 ## Description
 
-Gridlock is a program for fitting grids of data points with various functions and finding fit properties (eg. confidence intervals, intercepts, vertices).  Fitting routines are available for data with up to 3 free parameters.  Example data is included in the `sample_*.txt` files.
+Gridlock is a program for fitting grids of data points with various functions and finding fit properties (eg. confidence intervals, intercepts, vertices).  Fitting routines are available for data with up to 3 free parameters.  Example data is included in the files in the `sample` directory.
 
 Data files must contain a line specifying the fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Fitting Functions Available* section below).  It is possible to specify grid fitting limits for each parameter in data files (see the *Options* section below and the `sample_3par.txt` file for an example).  It is also possible to plot data (using `gnuplot`) by including a line in the data file specifying a plotting style, see the options section below.
  
@@ -74,8 +74,8 @@ Add these options (eg. 'PLOT 1d') as a single line anywhere in the data file to 
 | LINEAR_FILTER sigma | Before fitting, filter the data to emphasize prominent linear features, by only keeping data falling within sigma standard deviations of the mean x/y value.  Only applicable to data with one free parameter.|
 | LOWER_LIMITS value1 value2 value3 | Lower fit limits for each variable (specify as many values as there are variables).  Use with UPPER_LIMITS to specify a fit range.|
 | UPPER_LIMITS value1 value2 value3 | Upper fit limits for each variable (specify as many values as there are variables).  Use with LOWER_LIMITS to specify a fit range.|
-| DATA_LOWER_LIMIT value | Lower fit limit for data values.  Use with DATA_UPPER_LIMIT to specify a fit range for data values.|
-| DATA_UPPER_LIMIT value | Upper fit limit for data values.  Use with DATA_LOWER_LIMIT to specify a fit range for data values.|
+| DATA_LOWER_LIMIT value | Lower fit limit for data values.  Use with DATA_UPPER_LIMIT to specify a fit range for data values.  This option can be used to filter outlier data.|
+| DATA_UPPER_LIMIT value | Upper fit limit for data values.  Use with DATA_LOWER_LIMIT to specify a fit range for data values.  This option can be used to filter outlier data.|
 | ZEROX | When fitting using the *par2* function with chisq data, show the fit result assuming a minimum in x at x=0.|
 | ZEROY | When fitting using the *par2* function with chisq data, show the fit result assuming a minimum in y at y=0.|
 
