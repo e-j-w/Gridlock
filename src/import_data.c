@@ -20,6 +20,7 @@ void importData(data * d, parameters * p)
     }
   p->dllimit=-1*BIG_NUMBER;
   p->dulimit=BIG_NUMBER;
+  p->numCIEvalPts=0;
   d->max_m=-1*BIG_NUMBER;
   d->min_m=BIG_NUMBER;
     
@@ -56,12 +57,17 @@ void importData(data * d, parameters * p)
               		p->filter=1;//use linear filter on data
               		p->filterSigma=atof(str3);
               	}
+              else if(strcmp(str2,"EVAL_CI")==0)
+              	{
+              		p->CIEvalPts[p->numCIEvalPts]=(long double)atof(str3);
+                  p->numCIEvalPts++;
+              	}
             }
 					else if(strcmp(str,"PARAMETERS\n")==0)
 						p->verbose=1;//only print the fit vertex data, unless an error occurs
 					else if(strcmp(str,"COEFFICIENTS\n")==0)
 						p->verbose=2;//only print the fit coefficients, unless an error occurs
-					else if(strcmp(str,"WEIGHTED\n")==0)
+					else if((strcmp(str,"WEIGHTED\n")==0)||(strcmp(str,"WEIGHT\n")==0)||(strcmp(str,"WEIGHTS\n")==0))
 						p->readWeights=1;//data has weights, in the last column
 					else if(strcmp(str,"UNWEIGHTED\n")==0)
 						p->readWeights=0;//data is unweighted

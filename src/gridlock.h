@@ -26,7 +26,7 @@ typedef struct
   char plotMode[256];//the plotting style to be used
   int plotCI;//0=don't plot confidence interval, 1=plot it
   int numVar;
-  long double ulimit[POWSIZE],llimit[POWSIZE];//uppder and lower limits for variable values
+  long double ulimit[POWSIZE],llimit[POWSIZE];//upper and lower limits for variable values
   long double dllimit,dulimit;//upper and lower limits for data values
   int verbose;//0=print everything,1=print vertex location only
   int readWeights;//0=don't read data weights from file,1=read weights from file
@@ -35,6 +35,8 @@ typedef struct
   int filter;//0=no filter,1=linear filter
   double filterSigma;//sigma value to be used for filter
   int forceZeroX,forceZeroY,forceZeroZ;//whether or not to attempt forcing the fitted minimum to zero for x,y,z
+  int numCIEvalPts; //number of points to evaluate the confidence interval bounds at (where applicable)
+  long double CIEvalPts[100]; //array of x values at which to evaluate the confidence interval at
 }parameters;
 
 typedef struct

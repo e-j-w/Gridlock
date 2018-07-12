@@ -4,7 +4,7 @@ long double evalLin(long double x, const fit_results * fr)
 	return fr->a[0]*x + fr->a[1];
 }
 
-long double confIntVal(long double input, const fit_results * fr, const data * d, int upper)
+long double confIntVal(long double x, const fit_results * fr, const data * d, int upper)
 {
 	int i;	
 	long double cVal;
@@ -13,7 +13,31 @@ long double confIntVal(long double input, const fit_results * fr, const data * d
 	
 	for (i=0;i<fr->ciEEValues;i++)
 		{
-			cVal=fr->ciEEVal[0][i]*input + fr->ciEEVal[1][i];
+			cVal=fr->ciEEVal[0][i]*x + fr->ciEEVal[1][i];
+			//printf("i: %i, cVal: %LE\n",i,cVal);
+			//printf("ciEEVals[%i]: %LE %LE\n",i,fr->ciEEVal[0][i],fr->ciEEVal[1][i]);
+			if(cVal>maxCVal)
+				maxCVal=cVal;
+			if(cVal<minCVal)
+				minCVal=cVal;
+		}
+	if(upper==1)
+		return maxCVal;
+	else
+		return minCVal;
+
+}
+
+long double confIntValX(long double y, const fit_results * fr, const data * d, int upper)
+{
+	int i;	
+	long double cVal;
+	long double maxCVal=-1.*BIG_NUMBER;
+	long double minCVal=BIG_NUMBER;
+	
+	for (i=0;i<fr->ciEEValues;i++)
+		{
+			cVal=(y - fr->ciEEVal[1][i])/fr->ciEEVal[0][i];
 			//printf("i: %i, cVal: %LE\n",i,cVal);
 			//printf("ciEEVals[%i]: %LE %LE\n",i,fr->ciEEVal[0][i],fr->ciEEVal[1][i]);
 			if(cVal>maxCVal)
@@ -62,6 +86,28 @@ void printLin(const data * d, const parameters * p, fit_results * fr)
   else
     printf("y-intercept = %LE + %LE - %LE  (from confidence interval)\n",fr->fitVert[1],fr->fitVert[1]-confIntVal(0.0,fr,d,0),confIntVal(0.0,fr,d,1)-fr->fitVert[1]);
   
+	if(p->numCIEvalPts>0)
+		{
+			int i;
+			for(i=0;i<p->numCIEvalPts;i++)
+				{
+					long double x,fx;
+					x=p->CIEvalPts[i];
+					fx=evalLin(p->CIEvalPts[i],fr);
+					printf("\n");
+					if ((float)(fx-confIntVal(x,fr,d,0))==(float)(confIntVal(x,fr,d,1)-fx))
+						{
+							printf("Confidence interval at x = %LE: y = %LE +/- %LE\n",x,fx,fx-confIntVal(x,fr,d,0));
+							printf("Confidence interval at y = %LE: x = %LE +/- %LE\n",fx,x,x-confIntValX(fx,fr,d,0));
+						}	
+					else
+						{
+							printf("Confidence interval at x = %LE: y = %LE + %LE - %LE\n",x,fx,fx-confIntVal(x,fr,d,0),confIntVal(x,fr,d,1)-fx);
+							printf("Confidence interval at y = %LE: x = %LE + %LE - %LE\n",fx,x,x-confIntValX(fx,fr,d,0),confIntValX(fx,fr,d,1)-x);
+						}
+						
+				}
+		}
   /*//draw confidence interval ellipse
   handle=gnuplot_init();
   gnuplot_plot_xy(handle, fr->ciEEVal[0], fr->ciEEVal[1], fr->ciEEValues, "Data");
