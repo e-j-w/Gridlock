@@ -268,6 +268,13 @@ void importData(data * d, parameters * p)
                   else
                     printf("WARNING: could not properly set data lower limit.\n");
                 }
+              if(strcmp(str2,"SET_CI_DELTA")==0)
+                {
+                  if(sscanf(str3,"%Lf",&p->ciDelta))
+                    printf("Set confidence interval delta value to: %0.3LE\n",p->ciDelta);
+                  else
+                    printf("WARNING: could not properly set confidence interval delta value.\n");
+                }
             }
           else
             {

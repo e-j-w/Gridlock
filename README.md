@@ -63,7 +63,7 @@ Add these options (eg. 'PLOT 1d') as a single line anywhere in the data file to 
 
 |**Option**|**Effect**|
 |:---:|:---:|
-| DATA_TYPE chisq | Tells the program that the data provided corresponds to reduced chi-square goodness of fit statistic values computed on a grid for each of the free parameters.|
+| DATA_TYPE chisq | Tells the program that the data provided corresponds to chi-square goodness of fit statistic values computed on a grid for each of the free parameters.|
 | PARAMETERS | If used, the program will only output the fit parameters (coordinates of the fit paraboloid vertex, or x and y intercept for a linear fit), which can be useful for interfacing the program with shell scripts.|
 | COEFFICIENTS | If used, the program will only output the fit coefficients (a1, a2, ... ), which can be useful for interfacing the program with shell scripts.|
 | PLOT 1d | Shows plot(s) in one variable, using fixed values for any other variables corresponding to the closest data points to the local minimum/maximum of the fit function.|
@@ -79,6 +79,7 @@ Add these options (eg. 'PLOT 1d') as a single line anywhere in the data file to 
 | ZEROX | When fitting using the *par2* function with chisq data, show the fit result assuming a minimum in x at x=0.|
 | ZEROY | When fitting using the *par2* function with chisq data, show the fit result assuming a minimum in y at y=0.|
 | EVAL_CI value | When fitting a function (such as 'lin') which provides a confidence interval, evaluate the bounds of the confidence interval for the given value of the independent variable.|
+| SET_CI_DELTA value | When fitting chi-square data, manually set the delta value used to evaluate uncertainties (by default, delta is set to the 1-sigma bound ie. 1.00 for 1 parameter, 2.30 for 2 parameters, etc.).|
 
 ## Acknowledgments
 
