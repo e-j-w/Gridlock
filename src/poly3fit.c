@@ -140,6 +140,7 @@ void fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt)
   
   if(fr->vertBoundsFound==1)
   	{
+      //printf("a0=%LE, a1=%LE, a2=%LE, a3=%LE]\n",fr->a[0],fr->a[1],fr->a[2],fr->a[3]);
   		//printf("Bounds around point at x=%LE are [%LE %LE %LE]\n",pt,roots[0],roots[1],roots[2]);
   		int i;
   		long double uInterval=BIG_NUMBER;
