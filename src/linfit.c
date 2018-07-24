@@ -142,8 +142,9 @@ void fitLin(const parameters * p, const data * d, fit_results * fr, plot_data * 
 	//solve system of equations and assign values
 	if(!(solve_lin_eq(&linEq)==1))
 		{
-			printf("ERROR: Could not determine fit parameters.\n");
+			printf("ERROR: Could not determine fit parameters (lin).\n");
 			printf("Perhaps there are not enough data points to perform a fit?\n");
+      printf("Otherwise you can also try adjusting the fit range using the UPPER_LIMITS and LOWER_LIMITS options.\n");
 			exit(-1);
 		}
   
