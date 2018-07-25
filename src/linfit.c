@@ -73,13 +73,14 @@ void printLin(const data * d, const parameters * p, fit_results * fr)
     }
   
   printf("\nFIT RESULTS\n-----------\n");
-  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit parameter uncertainties reported at 1-sigma.\n");
   printf("Fit function: f(x,y) = a1*x + a2\n\n");
   printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
   printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
   printf("                       a2 = %LE +/- %LE\n",fr->a[1],fr->aerr[1]);
   printf("\n");
   
+	printf("Confidence interval values below reported at 1-sigma (68.3%%).\n");
   printf("x-intercept = %LE\n",fr->fitVert[0]);
   if ((float)(fr->fitVert[1]-confIntVal(0.0,fr,d,0))==(float)(confIntVal(0.0,fr,d,1)-fr->fitVert[1]))
     printf("y-intercept = %LE +/- %LE (from confidence interval)\n",fr->fitVert[1],fr->fitVert[1]-confIntVal(0.0,fr,d,0));

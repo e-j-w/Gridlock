@@ -64,11 +64,12 @@ void fit2ParChisqConf(const parameters * p, fit_results * fr)
 void printFitVertex2Par(const data * d, const parameters * p, const fit_results * fr)
 {
   if(fr->a[0]>=0)
-    printf("Minimum in x direction, ");
+    printf("Minimum in x direction");
   else
-    printf("Maximum in x direction, ");
+    printf("Maximum in x direction");
   if(fr->vertBoundsFound==1)
     {
+      printf(" (with %s confidence interval), ",p->ciSigmaDesc);
       //these values were calculated at long double precision, 
       //check if they are the same to within float precision
       if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
@@ -77,20 +78,26 @@ void printFitVertex2Par(const data * d, const parameters * p, const fit_results 
         printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
     }
   else
-    printf("x0 = %LE\n",fr->fitVert[0]);
+    {
+      printf(", x0 = %LE\n",fr->fitVert[0]);
+    }
+
   if(fr->a[1]>=0)
-    printf("Minimum in y direction, ");
+    printf("Minimum in y direction");
   else
-    printf("Maximum in y direction, ");
+    printf("Maximum in y direction");
   if(fr->vertBoundsFound==1)
     {
+      printf(" (with %s confidence interval), ",p->ciSigmaDesc);
       if ((float)(fr->fitVert[1]-fr->vertLBound[1])==(float)(fr->vertUBound[1]-fr->fitVert[1]))
         printf("y0 = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
       else
         printf("y0 = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[1]);
     }
   else
-    printf("y0 = %LE\n",fr->fitVert[1]);
+    {
+      printf(", y0 = %LE\n",fr->fitVert[1]);
+    }
   
   printf("\nf(x0,y0) = %LE\n",fr->vertVal);
 }
@@ -120,7 +127,7 @@ void print2Par(const data * d, const parameters * p, const fit_results * fr)
     } 
   
   printf("\nFIT RESULTS\n-----------\n");
-  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit parameter uncertainties reported at 1-sigma.\n");
   printf("Fit function: f(x,y) = a1*x^2 + a2*y^2 + a3*x*y\n                     + a4*x + a5*y + a6\n\n");
   printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
   printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);

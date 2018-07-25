@@ -74,7 +74,7 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
     } 
     
   printf("\nFIT RESULTS\n-----------\n");
-  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit parameter uncertainties reported at 1-sigma.\n");
   printf("Fit function: f(x,y) = a1*x^2 + a2*x + a3\n\n");
   printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
   printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
@@ -83,11 +83,12 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
   printf("\n");
   
   if(fr->a[0]>=0)
-    printf("Minimum in x direction, ");
+    printf("Minimum in x direction");
   else
-    printf("Maximum in x direction, ");
+    printf("Maximum in x direction");
   if(fr->vertBoundsFound==1)
     {
+      printf(" (with %s confidence interval), ",p->ciSigmaDesc);
       //these values were calculated at long double precision, 
       //check if they are the same to within float precision
       if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
@@ -96,7 +97,10 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
         printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
     }
   else
-    printf("x0 = %LE\n",fr->fitVert[0]);
+    {
+      printf(", x0 = %LE\n",fr->fitVert[0]);
+    }
+    
   
   printf("\nf(x0) = %LE\n",fr->vertVal);
 
@@ -104,7 +108,7 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
 
   if(strcmp(p->dataType,"chisq")==0)
     if(fr->fitVert[0]<0.)
-      printf("1-sigma bound in x assuming minimum at zero = %LE\n",eval1ParX(eval1Par(0.0,fr)+p->ciDelta,fr,1));
+      printf("%s bound in x assuming minimum at zero = %LE\n",p->ciSigmaDesc, eval1ParX(eval1Par(0.0,fr)+p->ciDelta,fr,1));
 }
 
 void plotForm1Par(const parameters * p, fit_results * fr)

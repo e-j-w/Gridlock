@@ -95,7 +95,7 @@ void print3Par(const data * d, const parameters * p, const fit_results * fr)
     }
   
   printf("\nFIT RESULTS\n-----------\n");
-  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit parameter uncertainties reported at 1-sigma.\n");
   printf("Fit function: f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2\n                       + a4*x*y + a5*x*z + a6*y*z\n                       + a7*x + a8*y + a9*z + a10\n\n");
   printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
   printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
@@ -103,12 +103,15 @@ void print3Par(const data * d, const parameters * p, const fit_results * fr)
     printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
   printf("\n");
   
+
+  printf("Confidence interval values below reported at %s.\n",p->ciSigmaDesc);
   if(fr->a[0]>=0)
-    printf("Minimum in x direction, ");
+    printf("Minimum in x direction");
   else
-    printf("Maximum in x direction, ");
+    printf("Maximum in x direction");
   if(fr->vertBoundsFound==1)
     {
+      printf(" (with %s confidence interval), ",p->ciSigmaDesc);
       //these values were calculated at long double precision, 
       //check if they are the same to within float precision
       if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
@@ -117,33 +120,44 @@ void print3Par(const data * d, const parameters * p, const fit_results * fr)
         printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
     }
   else
-    printf("x0 = %LE\n",fr->fitVert[0]);
+    {
+      printf(", x0 = %LE\n",fr->fitVert[0]);
+    }
+    
   if(fr->a[1]>=0)
-    printf("Minimum in y direction, ");
+    printf("Minimum in y direction");
   else
-    printf("Maximum in y direction, ");
+    printf("Maximum in y direction");
   if(fr->vertBoundsFound==1)
     {
+      printf(" (with %s confidence interval), ",p->ciSigmaDesc);
       if ((float)(fr->fitVert[1]-fr->vertLBound[1])==(float)(fr->vertUBound[1]-fr->fitVert[1]))
         printf("y0 = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
       else
         printf("y0 = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[1]);
     }
   else
-    printf("y0 = %LE\n",fr->fitVert[1]);
+    {
+      printf(", y0 = %LE\n",fr->fitVert[1]);
+    }
+    
   if(fr->a[2]>=0)
-    printf("Minimum in z direction, ");
+    printf("Minimum in z direction");
   else
-    printf("Maximum in z direction, ");
+    printf("Maximum in z direction");
   if(fr->vertBoundsFound==1)
     {
+      printf(" (with %s confidence interval), ",p->ciSigmaDesc);
       if ((float)(fr->fitVert[2]-fr->vertLBound[2])==(float)(fr->vertUBound[2]-fr->fitVert[2]))
         printf("z0 = %LE +/- %LE\n",fr->fitVert[2],fr->vertUBound[2]-fr->fitVert[2]);
       else
         printf("z0 = %LE + %LE - %LE\n",fr->fitVert[2],fr->vertUBound[2]-fr->fitVert[2],fr->fitVert[2]-fr->vertLBound[2]);
     }
   else
-    printf("z0 = %LE\n",fr->fitVert[2]);
+    {
+      printf(", z0 = %LE\n",fr->fitVert[2]);
+    }
+    
   
   printf("\nf(x0,y0,z0) = %LE\n",fr->vertVal); 
     

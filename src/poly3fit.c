@@ -184,7 +184,7 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
     } 
   
   printf("\nFIT RESULTS\n-----------\n");
-  printf("Uncertainties reported at 1-sigma.\n");
+  printf("Fit parameter uncertainties reported at 1-sigma.\n");
   printf("Fit function: f(x,y) = a1*x^3 + a2*x^2 + a3*x + a4\n\n");
   printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
   printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
@@ -209,16 +209,16 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
 					if(evalPoly3(fr->fitVert[0],fr)<evalPoly3(fr->fitVert[1],fr))
 						{
 							if((float)(fr->vertUBound[0]-fr->fitVert[0])==(float)(fr->fitVert[0]-fr->vertLBound[0]))
-								printf("Local minimum with 1-sigma confidence interval: x = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
+								printf("Local minimum (with %s confidence interval): x = %LE +/- %LE\n",p->ciSigmaDesc, fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
 							else
-								printf("Local minimum with 1-sigma confidence interval: x = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+								printf("Local minimum (with %s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
 						}
 					else
 						{
 							if((float)(fr->vertUBound[0]-fr->fitVert[1])==(float)(fr->fitVert[1]-fr->vertLBound[0]))
-								printf("Local minimum with 1-sigma confidence interval: x = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1]);
+								printf("Local minimum (with %s confidence interval): x = %LE +/- %LE\n",p->ciSigmaDesc,fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1]);
 							else
-								printf("Local minimum with 1-sigma confidence interval: x = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[0]);
+								printf("Local minimum with (%s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[0]);
 						}
 				}
     }

@@ -129,7 +129,8 @@ void importData(data * d, parameters * p)
     }
   fclose(inp);
   
-  //generate the appropriate 1-sigma confidence level
+  //by default, use the appropriate 1-sigma confidence level
+  strcpy(p->ciSigmaDesc,"1-sigma (68.3%)");
   if(p->numVar==1)
   	p->ciDelta=1.00;
   else if(p->numVar==2)
@@ -259,21 +260,95 @@ void importData(data * d, parameters * p)
                   if(sscanf(str3,"%Lf",&p->dulimit))
                     printf("Set data upper limit to: %0.3LE\n",p->dulimit);
                   else
-                    printf("WARNING: could not properly set data upper limit.\n");
+                    {
+                      printf("ERROR: could not properly set data upper limit (DATA_UPPER_LIMIT option).\n");
+                      exit(-1);
+                    }
                 }
               if(strcmp(str2,"DATA_LOWER_LIMIT")==0)
                 {
                   if(sscanf(str3,"%Lf",&p->dllimit))
                     printf("Set data lower limit to: %0.3LE\n",p->dllimit);
                   else
-                    printf("WARNING: could not properly set data lower limit.\n");
+                    {
+                      printf("ERROR: could not properly set data lower limit (DATA_LOWER_LIMIT option).\n");
+                      exit(-1);
+                    }
                 }
               if(strcmp(str2,"SET_CI_DELTA")==0)
                 {
                   if(sscanf(str3,"%Lf",&p->ciDelta))
-                    printf("Set confidence interval delta value to: %0.3LE\n",p->ciDelta);
+                    {
+                      printf("Set confidence interval delta value to: %0.3LE\n",p->ciDelta);
+                      sprintf(p->ciSigmaDesc,"custom (delta=%Lf)",p->ciDelta);//indicate custom confidence interval
+                    }
                   else
-                    printf("WARNING: could not properly set confidence interval delta value.\n");
+                    {
+                      printf("ERROR: could not properly set confidence interval delta value (SET_CI_DELTA option).\n");
+                      exit(-1);
+                    }
+                    
+                }
+              if(strcmp(str2,"SET_CI_SIGMA")==0)
+                {
+                  if(strcmp(str3,"1")==0)
+                    {
+                      if(p->numVar==1)
+                        p->ciDelta=1.00;
+                      else if(p->numVar==2)
+                        p->ciDelta=2.30;
+                      else if(p->numVar==3)
+                        p->ciDelta=3.53;
+                      else
+                        p->ciDelta=0.00;
+                      printf("Set confidence interval to 1-sigma (68.3%%), delta value: %0.3LE\n",p->ciDelta);
+                      strcpy(p->ciSigmaDesc,"1-sigma (68.3%)");
+                    }
+                  else if(strcmp(str3,"2")==0)
+                    {
+                      if(p->numVar==1)
+                        p->ciDelta=4.00;
+                      else if(p->numVar==2)
+                        p->ciDelta=6.17;
+                      else if(p->numVar==3)
+                        p->ciDelta=8.02;
+                      else
+                        p->ciDelta=0.00;
+                      printf("Set confidence interval to 2-sigma (95.4%%), delta value: %0.3LE\n",p->ciDelta);
+                      strcpy(p->ciSigmaDesc,"2-sigma (95.4%)");
+                    }
+                  else if(strcmp(str3,"3")==0)
+                    {
+                      if(p->numVar==1)
+                        p->ciDelta=9.00;
+                      else if(p->numVar==2)
+                        p->ciDelta=11.8;
+                      else if(p->numVar==3)
+                        p->ciDelta=14.2;
+                      else
+                        p->ciDelta=0.00;
+                      printf("Set confidence interval to 3-sigma (99.73%%), delta value: %0.3LE\n",p->ciDelta);
+                      strcpy(p->ciSigmaDesc,"3-sigma (99.73%)");
+                    }
+                  else if(strcmp(str3,"90%")==0)
+                    {
+                      if(p->numVar==1)
+                        p->ciDelta=2.71;
+                      else if(p->numVar==2)
+                        p->ciDelta=4.61;
+                      else if(p->numVar==3)
+                        p->ciDelta=6.25;
+                      else
+                        p->ciDelta=0.00;
+                      printf("Set confidence interval to 90%%, delta value: %0.3LE\n",p->ciDelta);
+                      strcpy(p->ciSigmaDesc,"90%");
+                    }
+                  else
+                    {
+                      printf("ERROR: Invalid parameter for SET_CI_SIGMA: %s\nValid parameters: 1, 2, 3, 90%%\n",str3);
+                      exit(-1);
+                    }
+                    
                 }
             }
           else

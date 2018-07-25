@@ -19,7 +19,7 @@ void printLinDeming(const data * d, const parameters * p, const fit_results * fr
     }
   
   printf("\nFIT RESULTS\n-----------\n");
-  //printf("Uncertainties reported at 1-sigma.\n");
+  //printf("Fit parameter uncertainties reported at 1-sigma.\n");
   printf("Fit function: f(x,y) = a1*x + a2 (Deming regression, delta = %0.3Lf)\n\n",p->fitOpt);
   printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
   printf("Coefficients from fit: a1 = %LE\n",fr->a[0]);

@@ -22,6 +22,7 @@ typedef struct
   long double fitOpt;//fit option value (eg. delta for Deming regression) 
   char dataType[256];//the type of data provided (regular, chisq values, etc.)
   long double ciDelta;//delta value for confidence interval calculation
+  char ciSigmaDesc[256];//description of sigma used for confidence interval calculation
   int plotData;//0=don't plot, 1=plot
   char plotMode[256];//the plotting style to be used
   int plotCI;//0=don't plot confidence interval, 1=plot it
