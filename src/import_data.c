@@ -210,7 +210,6 @@ void importData(data * d, parameters * p)
             }
           else if(sscanf(str,"%s %s",str2,str3)>=2)
             {
-              printf("HERE!! %s\n",str2);
               if((p->numVar>0)&&(sscanf(str,"%s %Lf %Lf %Lf %Lf %Lf",str2,&d->x[0][d->lines],
               &d->x[1][d->lines],&d->x[2][d->lines],&d->x[3][d->lines],
               &d->x[4][d->lines])==p->numVar+1))
