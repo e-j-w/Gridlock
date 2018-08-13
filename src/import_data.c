@@ -208,148 +208,155 @@ void importData(data * d, parameters * p)
               else
                 invalidLines++;
             }
-          else if((p->numVar>0)&&(sscanf(str,"%s %Lf %Lf %Lf %Lf %Lf",str2,&d->x[0][d->lines],
+          else if(sscanf(str,"%s %s",str2,str3)>=2)
+            {
+              printf("HERE!! %s\n",str2);
+              if((p->numVar>0)&&(sscanf(str,"%s %Lf %Lf %Lf %Lf %Lf",str2,&d->x[0][d->lines],
               &d->x[1][d->lines],&d->x[2][d->lines],&d->x[3][d->lines],
               &d->x[4][d->lines])==p->numVar+1))
-            {
-              if(strcmp(str2,"UPPER_LIMITS")==0)
                 {
-                  for(i=0;i<p->numVar;i++)
-                    if(i<POWSIZE)
-                      p->ulimit[i]=d->x[i][d->lines];
-                  if(p->verbose<1)
+                  if(strcmp(str2,"UPPER_LIMITS")==0)
                     {
-                      printf("Set fit region upper limits to [");
                       for(i=0;i<p->numVar;i++)
-                        printf(" %0.3LE ",p->ulimit[i]);
-                      printf("]\n");
+                        if(i<POWSIZE)
+                          p->ulimit[i]=d->x[i][d->lines];
+                      if(p->verbose<1)
+                        {
+                          printf("Set fit region upper limits to [");
+                          for(i=0;i<p->numVar;i++)
+                            printf(" %0.3LE ",p->ulimit[i]);
+                          printf("]\n");
+                        }
                     }
-                }
-              if(strcmp(str2,"LOWER_LIMITS")==0)
-                { 
-                  for(i=0;i<p->numVar;i++)
-                    if(i<POWSIZE)
-                      p->llimit[i]=d->x[i][d->lines];
-                  if(p->verbose<1)
-                    {
-                      printf("Set fit region lower limits to [");
+                  if(strcmp(str2,"LOWER_LIMITS")==0)
+                    { 
                       for(i=0;i<p->numVar;i++)
-                        printf(" %0.3LE ",p->llimit[i]);
-                      printf("]\n");
+                        if(i<POWSIZE)
+                          p->llimit[i]=d->x[i][d->lines];
+                      if(p->verbose<1)
+                        {
+                          printf("Set fit region lower limits to [");
+                          for(i=0;i<p->numVar;i++)
+                            printf(" %0.3LE ",p->llimit[i]);
+                          printf("]\n");
+                        }
                     }
                 }
-            }
-          else if(sscanf(str,"%s %s",str2,str3)==2)
-            {
-              if(strcmp(str2,"PLOT")==0)
+              if(sscanf(str,"%s %s",str2,str3)==2)
                 {
-                  p->plotData=1;
-                  strcpy(p->plotMode,str3);
-                  if(p->verbose<1)
-                    printf("Will plot data using mode: %s\n",p->plotMode);
-                }
-              if(strcmp(str2,"DATA_TYPE")==0)
-                {
-                  strcpy(p->dataType,str3);
-                  if(p->verbose<1)
-                    if(strcmp(p->dataType,"chisq")==0)
-                      printf("Will treat data points as chi-squared values.\n");
-                }
-              if(strcmp(str2,"DATA_UPPER_LIMIT")==0)
-                {
-                  if(sscanf(str3,"%Lf",&p->dulimit))
-                    printf("Set data upper limit to: %0.3LE\n",p->dulimit);
-                  else
+                  
+                  if(strcmp(str2,"PLOT")==0)
                     {
-                      printf("ERROR: could not properly set data upper limit (DATA_UPPER_LIMIT option).\n");
-                      exit(-1);
+                      p->plotData=1;
+                      strcpy(p->plotMode,str3);
+                      if(p->verbose<1)
+                        printf("Will plot data using mode: %s\n",p->plotMode);
                     }
-                }
-              if(strcmp(str2,"DATA_LOWER_LIMIT")==0)
-                {
-                  if(sscanf(str3,"%Lf",&p->dllimit))
-                    printf("Set data lower limit to: %0.3LE\n",p->dllimit);
-                  else
+                  if(strcmp(str2,"DATA_TYPE")==0)
                     {
-                      printf("ERROR: could not properly set data lower limit (DATA_LOWER_LIMIT option).\n");
-                      exit(-1);
+                      strcpy(p->dataType,str3);
+                      if(p->verbose<1)
+                        if(strcmp(p->dataType,"chisq")==0)
+                          printf("Will treat data points as chi-squared values.\n");
                     }
-                }
-              if(strcmp(str2,"SET_CI_DELTA")==0)
-                {
-                  if(sscanf(str3,"%Lf",&p->ciDelta))
+                  if(strcmp(str2,"DATA_UPPER_LIMIT")==0)
                     {
-                      printf("Set confidence interval delta value to: %0.3LE\n",p->ciDelta);
-                      sprintf(p->ciSigmaDesc,"custom (delta=%Lf)",p->ciDelta);//indicate custom confidence interval
-                    }
-                  else
-                    {
-                      printf("ERROR: could not properly set confidence interval delta value (SET_CI_DELTA option).\n");
-                      exit(-1);
-                    }
-                    
-                }
-              if(strcmp(str2,"SET_CI_SIGMA")==0)
-                {
-                  if(strcmp(str3,"1")==0)
-                    {
-                      if(p->numVar==1)
-                        p->ciDelta=1.00;
-                      else if(p->numVar==2)
-                        p->ciDelta=2.30;
-                      else if(p->numVar==3)
-                        p->ciDelta=3.53;
+                      if(sscanf(str3,"%Lf",&p->dulimit))
+                        printf("Set data upper limit to: %0.3LE\n",p->dulimit);
                       else
-                        p->ciDelta=0.00;
-                      printf("Set confidence interval to 1-sigma (68.3%%), delta value: %0.3LE\n",p->ciDelta);
-                      strcpy(p->ciSigmaDesc,"1-sigma (68.3%)");
+                        {
+                          printf("ERROR: could not properly set data upper limit (DATA_UPPER_LIMIT option).\n");
+                          exit(-1);
+                        }
                     }
-                  else if(strcmp(str3,"2")==0)
+                  if(strcmp(str2,"DATA_LOWER_LIMIT")==0)
                     {
-                      if(p->numVar==1)
-                        p->ciDelta=4.00;
-                      else if(p->numVar==2)
-                        p->ciDelta=6.17;
-                      else if(p->numVar==3)
-                        p->ciDelta=8.02;
+                      if(sscanf(str3,"%Lf",&p->dllimit))
+                        printf("Set data lower limit to: %0.3LE\n",p->dllimit);
                       else
-                        p->ciDelta=0.00;
-                      printf("Set confidence interval to 2-sigma (95.4%%), delta value: %0.3LE\n",p->ciDelta);
-                      strcpy(p->ciSigmaDesc,"2-sigma (95.4%)");
+                        {
+                          printf("ERROR: could not properly set data lower limit (DATA_LOWER_LIMIT option).\n");
+                          exit(-1);
+                        }
                     }
-                  else if(strcmp(str3,"3")==0)
+                  if(strcmp(str2,"SET_CI_DELTA")==0)
                     {
-                      if(p->numVar==1)
-                        p->ciDelta=9.00;
-                      else if(p->numVar==2)
-                        p->ciDelta=11.8;
-                      else if(p->numVar==3)
-                        p->ciDelta=14.2;
+                      if(sscanf(str3,"%Lf",&p->ciDelta))
+                        {
+                          printf("Set confidence interval delta value to: %0.3LE\n",p->ciDelta);
+                          sprintf(p->ciSigmaDesc,"custom (delta=%Lf)",p->ciDelta);//indicate custom confidence interval
+                        }
                       else
-                        p->ciDelta=0.00;
-                      printf("Set confidence interval to 3-sigma (99.73%%), delta value: %0.3LE\n",p->ciDelta);
-                      strcpy(p->ciSigmaDesc,"3-sigma (99.73%)");
+                        {
+                          printf("ERROR: could not properly set confidence interval delta value (SET_CI_DELTA option).\n");
+                          exit(-1);
+                        }
+                        
                     }
-                  else if(strcmp(str3,"90%")==0)
+                  if(strcmp(str2,"SET_CI_SIGMA")==0)
                     {
-                      if(p->numVar==1)
-                        p->ciDelta=2.71;
-                      else if(p->numVar==2)
-                        p->ciDelta=4.61;
-                      else if(p->numVar==3)
-                        p->ciDelta=6.25;
+                      
+                      if(strcmp(str3,"1")==0)
+                        {
+                          if(p->numVar==1)
+                            p->ciDelta=1.00;
+                          else if(p->numVar==2)
+                            p->ciDelta=2.30;
+                          else if(p->numVar==3)
+                            p->ciDelta=3.53;
+                          else
+                            p->ciDelta=0.00;
+                          printf("Set confidence interval to 1-sigma (68.3%%), delta value: %0.3LE\n",p->ciDelta);
+                          strcpy(p->ciSigmaDesc,"1-sigma (68.3%)");
+                        }
+                      else if(strcmp(str3,"2")==0)
+                        {
+                          if(p->numVar==1)
+                            p->ciDelta=4.00;
+                          else if(p->numVar==2)
+                            p->ciDelta=6.17;
+                          else if(p->numVar==3)
+                            p->ciDelta=8.02;
+                          else
+                            p->ciDelta=0.00;
+                          printf("Set confidence interval to 2-sigma (95.4%%), delta value: %0.3LE\n",p->ciDelta);
+                          strcpy(p->ciSigmaDesc,"2-sigma (95.4%)");
+                        }
+                      else if(strcmp(str3,"3")==0)
+                        {
+                          if(p->numVar==1)
+                            p->ciDelta=9.00;
+                          else if(p->numVar==2)
+                            p->ciDelta=11.8;
+                          else if(p->numVar==3)
+                            p->ciDelta=14.2;
+                          else
+                            p->ciDelta=0.00;
+                          printf("Set confidence interval to 3-sigma (99.73%%), delta value: %0.3LE\n",p->ciDelta);
+                          strcpy(p->ciSigmaDesc,"3-sigma (99.73%)");
+                        }
+                      else if(strcmp(str3,"90%")==0)
+                        {
+                          if(p->numVar==1)
+                            p->ciDelta=2.71;
+                          else if(p->numVar==2)
+                            p->ciDelta=4.61;
+                          else if(p->numVar==3)
+                            p->ciDelta=6.25;
+                          else
+                            p->ciDelta=0.00;
+                          printf("Set confidence interval to 90%%, delta value: %0.3LE\n",p->ciDelta);
+                          strcpy(p->ciSigmaDesc,"90%");
+                        }
                       else
-                        p->ciDelta=0.00;
-                      printf("Set confidence interval to 90%%, delta value: %0.3LE\n",p->ciDelta);
-                      strcpy(p->ciSigmaDesc,"90%");
+                        {
+                          printf("ERROR: Invalid parameter for SET_CI_SIGMA: %s\nValid parameters: 1, 2, 3, 90%%\n",str3);
+                          exit(-1);
+                        }
+                        
                     }
-                  else
-                    {
-                      printf("ERROR: Invalid parameter for SET_CI_SIGMA: %s\nValid parameters: 1, 2, 3, 90%%\n",str3);
-                      exit(-1);
-                    }
-                    
                 }
+              
             }
           else
             {
