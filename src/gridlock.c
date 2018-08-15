@@ -14,6 +14,7 @@
 #include "2parfit.c"
 #include "3parfit.c"
 #include "poly3fit.c"
+#include "poly4fit.c"
 #include "2parpoly3fit.c"
 
 int main(int argc, char *argv[])
@@ -77,7 +78,9 @@ int main(int argc, char *argv[])
 			fitLinDeming(p,d,fr,pd,1);
 		}
 	else if(strcmp(p->fitType,"poly3")==0)
-		fitPoly3(p,d,fr,pd,1);      
+		fitPoly3(p,d,fr,pd,1);
+	else if(strcmp(p->fitType,"poly4")==0)
+		fitPoly4(p,d,fr,pd,1);
 	else if(strcmp(p->fitType,"2parpoly3")==0)
 		fit2ParPoly3(p,d,fr,pd,1);
 	

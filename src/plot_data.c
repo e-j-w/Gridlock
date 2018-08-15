@@ -1,6 +1,7 @@
 //forward declarations
 long double evalLin(long double, const fit_results *);
 long double evalPoly3(long double, const fit_results *);
+long double evalPoly4(long double, const fit_results *);
 long double eval2ParPoly3(long double,long double, const fit_results *);
 long double eval1Par(long double, const fit_results *);
 long double eval2Par(long double,long double, const fit_results *);
@@ -161,6 +162,8 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
             pd->fit[i][p->numVar][j]=(double)evalLin(pd->fit[i][0][j],fr);
           else if(strcmp(p->fitType,"poly3")==0)
             pd->fit[i][p->numVar][j]=(double)evalPoly3(pd->fit[i][0][j],fr);
+          else if(strcmp(p->fitType,"poly4")==0)
+            pd->fit[i][p->numVar][j]=(double)evalPoly4(pd->fit[i][0][j],fr);
           else if(strcmp(p->fitType,"par2")==0)
             pd->fit[i][p->numVar][j]=((double)eval2Par(pd->fit[i][0][j],pd->fit[i][1][j],fr));
           else if(strcmp(p->fitType,"2parpoly3")==0)
