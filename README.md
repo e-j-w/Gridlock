@@ -44,6 +44,7 @@ Tested using gcc and GNU make on Ubuntu 14.04/16.04, Scientific Linux/CentOS 6, 
 |**lin_deming** | line (Deming regression) | f(x) = a1\*x + a2 with errors in x (see note below)|
 |**par1** | parabola (2nd order polynomial) | f(x) = a1\*x^2 + a2\*x + a3|
 |**poly3** | cubic polynomial | f(x) = a1\*x^3 + a2\*x^2 + a3\*x + a4|
+|**poly4** | quartic polynomial | f(x) = a1\*x^4 + a2\*x^3 + a3\*x^2 + a4\*x + a5|
 
 NOTE: The **lin\_deming** function can take an optional parameter specifying the ratio of variances in y and x data.  Default value is 1 (errors perpendicular to line).  The parameter is specified on the fit fucntion line (eg. 'FIT lin\_deming 3' for variance in y data 3x that of x data). 
 
