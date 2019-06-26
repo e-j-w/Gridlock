@@ -978,21 +978,12 @@ void gnuplot_splot_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, cha
 {
     char const *    cmd    = (handle->nplots > 0) ? "replot" : "splot";
     title                  = (title == NULL)      ? "(none)" : title;
-    if(handle->colSet==0)
-        {
-            if(handle->smooth)
-                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s smooth bezier", cmd, tmp_filename,title, handle->pstyle) ;
-            else
-                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s", cmd, tmp_filename,title, handle->pstyle) ;
-        }
+
+    if(handle->smooth)
+        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s smooth bezier", cmd, tmp_filename,title, handle->pstyle) ;
     else
-        {
-            if(handle->smooth)
-                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s smooth bezier", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
-            else
-                gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
-        }
-        
+        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s", cmd, tmp_filename,title, handle->pstyle) ;
+
     handle->nplots++ ;
     return ;
 }
@@ -1001,10 +992,9 @@ void gnuplot_splot4d_atmpfile(gnuplot_ctrl * handle, char const* tmp_filename, c
 {
     char const *    cmd    = (handle->nplots > 0) ? "replot" : "splot";
     title                  = (title == NULL)      ? "(none)" : title;
-    if(handle->colSet==0)
-        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s lc palette", cmd, tmp_filename,title, handle->pstyle) ;
-    else
-        gnuplot_cmd(handle, "%s \"%s\" title \"%s\" lt rgb \"%s\" with %s lc palette", cmd, tmp_filename,title, handle->col, handle->pstyle) ;
+
+    gnuplot_cmd(handle, "%s \"%s\" title \"%s\" with %s lc palette", cmd, tmp_filename,title, handle->pstyle) ;
+
     handle->nplots++ ;
     return ;
 }

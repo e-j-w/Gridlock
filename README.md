@@ -5,7 +5,7 @@ Maintainer: Jonathan Williams
 
 ## Introduction
 
-Are you the type of person who needs to fit a chisq surface in 2 variables to a 3rd order polynomial and then find the local minimum and confidence interval in each variable even though one of the variables is bounded to zero?  Or maybe you just want to fit a line to some data and have the x-intercept be automatically calculated?  Boy, do I have a program for you!
+Are you the type of person who needs to fit a chisq surface in 2 variables to a 3rd order polynomial and then find the local minimum and confidence interval in each variable even though one of the variables is bounded to zero?  Or maybe you just want to fit a line to some data and have the x-intercept be automatically displayed?  Boy, do I have a program for you!
 
 
 ## Description
@@ -24,6 +24,7 @@ Data files must contain a line specifying the fit function, formatted 'FIT type'
 * Simple ASCII data file format (compatible with gnuplot, excel, etc.).
 * Plotting of fits is available via a built-in interface to gnuplot (program will still compile and run if gnuplot is not present, but plotting will be unavailable).
 * Lots of esoteric extra functionality added in an ad-hoc manner as the maintainter sees fit.
+* Written in C because reasons.
 
 ## How to Install
 
