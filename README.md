@@ -32,7 +32,7 @@ Use `make` to compile.  Optional data plotting requires `gnuplot` to be installe
 
 To run the program from anywhere, move the resulting `gridlock` executable to any directory under your `$PATH` environment variable.
 
-Tested using gcc and GNU make on Ubuntu 14.04/16.04, Scientific Linux/CentOS 6, and Arch Linux (as of Jan 2018).  The code may not build on compilers/platforms without support for 128-bit floating point (__float128) values, which are used to obtain higher precision in fits.  Otherwise the code is self-contained and should work on more or less any Linux distro.
+Tested using gcc and GNU make on Ubuntu 14.04/16.04, Scientific Linux/CentOS 6, and Arch Linux (as of June 2019).  The code may not build on compilers/platforms without support for 128-bit floating point (__float128) values, which are used to obtain higher precision in fits.  Otherwise the code is self-contained and should work on more or less any Linux distro.
 
 
 ## Fitting Functions Available
@@ -79,6 +79,7 @@ Add these options (eg. 'PLOT 1d') as a single line anywhere in the data file to 
 | WEIGHTED | Use weights for the data points, specified in a column after the data values.|
 | UNIFORM_WEIGHT value | Use a single weight value for all data points, without the need to put an extra column in the data file.|
 | LINEAR_FILTER sigma | Before fitting, filter the data to emphasize prominent linear features, by only keeping data falling within sigma standard deviations of the mean x/y value.  Only applicable to data with one free parameter.|
+| IGNORE_PAR value | Ignore a certain parameter ('value' may be 'x', 'y', or 'z') in the data when fitting and plotting.  Equivalent to removing the column of values corresponding to the specified parameter from the data file.|
 | LOWER_LIMITS value1 value2 value3 | Lower fit limits for each variable (specify as many values as there are variables).  Use with UPPER_LIMITS to specify a fit range.|
 | UPPER_LIMITS value1 value2 value3 | Upper fit limits for each variable (specify as many values as there are variables).  Use with LOWER_LIMITS to specify a fit range.|
 | DATA_LOWER_LIMIT value | Lower fit limit for data values.  Use with DATA_UPPER_LIMIT to specify a fit range for data values.  This option can be used to filter outlier data.|

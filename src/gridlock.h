@@ -26,6 +26,7 @@ typedef struct
   int plotData;//0=don't plot, 1=plot
   char plotMode[256];//the plotting style to be used
   int plotCI;//0=don't plot confidence interval, 1=plot it
+  int ignorePar[POWSIZE]; //flags to ignore data corresponding to specific parameters (x,y,z)
   int numVar;
   long double ulimit[POWSIZE],llimit[POWSIZE];//upper and lower limits for variable values
   long double dllimit,dulimit;//upper and lower limits for data values
