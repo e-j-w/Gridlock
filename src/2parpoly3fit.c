@@ -186,7 +186,7 @@ void print2ParPoly3(const data * d, const parameters * p, const fit_results * fr
   //print local minimum and confidence bounds (if necessary)
 	if((strcmp(p->dataType,"chisq")==0)&&(fr->vertBoundsFound==1))
 		{
-      printf("Local minimum with %s confidence interval:\n",p->ciSigmaDesc);
+      printf("Local minimum (with %s confidence interval) at:\n",p->ciSigmaDesc);
 			if((float)(fr->vertUBound[0]-fr->fitVert[0])==(float)(fr->fitVert[0]-fr->vertLBound[0]))
 				printf("x = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
 			else
@@ -198,8 +198,8 @@ void print2ParPoly3(const data * d, const parameters * p, const fit_results * fr
 		}
 	else
     {
-      printf("Local minimum:\n");
-      printf("x = %LE, y = %LE\n",fr->fitVert[0],fr->fitVert[1]);
+      printf("Local minimum at:\n");
+      printf("x = %LE\ny = %LE\n",fr->fitVert[0],fr->fitVert[1]);
     }
 		
     
