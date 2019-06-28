@@ -5,6 +5,7 @@ void importData(data * d, parameters * p)
   FILE *inp;
   int i,j;
   char str[256],str2[256],str3[256];
+  long double val;
   
   //initialize values
   int invalidLines=0;
@@ -35,12 +36,23 @@ void importData(data * d, parameters * p)
     {
       if(fgets(str,256,inp)!=NULL)
         {
-        	if(sscanf(str,"%s %s %Lf",str2,str3,&p->fitOpt)==3)
+        	if(sscanf(str,"%s %s %Lf",str2,str3,&val)==3)
             {
-              if(strcmp(str2,"FIT")==0)
+              if(strcmp(str2,"FIT")==0){
                 strcpy(p->fitType,str3);
-              else
-              	p->fitOpt=0.;
+                p->fitOpt = val;
+              }else if(strcmp(str2,"SLICE_PAR")==0){
+                if(strcmp(str3,"x")==0){
+                  p->ignorePar[0]=2;
+                  p->sliceVal[0] = val;
+                }else if(strcmp(str3,"y")==0){
+                  p->ignorePar[1]=2;
+                  p->sliceVal[1] = val;
+                }else if(strcmp(str3,"z")==0){
+                  p->ignorePar[2]=2;
+                  p->sliceVal[2] = val;
+                }
+              }
             }
           else if(sscanf(str,"%s %s",str2,str3)==2)
             {
@@ -147,6 +159,12 @@ void importData(data * d, parameters * p)
         printf("Will ignore data corresponding to the y variable.\n");
       if(p->ignorePar[2]==1)
         printf("Will ignore data corresponding to the z variable.\n");
+      if(p->ignorePar[0]==2)
+        printf("Will slice data at x = %Lf.\n",p->sliceVal[0]);
+      if(p->ignorePar[1]==2)
+        printf("Will slice data at y = %Lf.\n",p->sliceVal[1]);
+      if(p->ignorePar[2]==2)
+        printf("Will slice data at z = %Lf.\n",p->sliceVal[2]);
     }
   fclose(inp);
   
@@ -162,10 +180,10 @@ void importData(data * d, parameters * p)
   	p->ciDelta=0.00;
   
   
-  //setup datafor if parameters are ignored 
+  //setup data for if parameters are ignored/sliced
   int numIgnoredPar = 0;
   for(i=0;i<POWSIZE;i++){
-    if(p->ignorePar[i]==1){
+    if(p->ignorePar[i]>=1){
       numIgnoredPar++;
     }
   }
@@ -183,42 +201,68 @@ void importData(data * d, parameters * p)
             {
               lineValid=1;
 
-              //handle ignored variables by reshuffling data
+              //handle validity of sliced data
               for(i=POWSIZE-1;i>=0;i--){
-                if(p->ignorePar[i]==1){
-                  for(j=i;j<p->numVar+numIgnoredPar;j++)
-                    d->x[j][d->lines]=d->x[j+1][d->lines];
-                  if(p->readWeights==1)
-                    d->x[p->numVar+numIgnoredPar][d->lines]=d->x[p->numVar+1+numIgnoredPar][d->lines];
+                if(p->ignorePar[i]==2){
+                  if(numCols > i+1){
+                    if(d->x[i][d->lines] != p->sliceVal[i]){
+                      lineValid = 0;
+                      break;
+                    }
+                  }
                 }
               }
-
-              //check variable and data values for NaN
-              for(i=0;i<p->numVar+2;i++)
-                if(i<POWSIZE)
-                  if(d->x[i][d->lines]!=d->x[i][d->lines])
-                    lineValid=0;
-
-              //check variable values against limits
-              for(i=0;i<p->numVar;i++)
-                if(i<POWSIZE)
-                  if((d->x[i][d->lines]>p->ulimit[i])||(d->x[i][d->lines]<p->llimit[i]))
-                    lineValid=0;
               
-              //check data values against weights
-              if((d->x[p->numVar][d->lines]>p->dulimit)||(d->x[p->numVar][d->lines]<p->dllimit))
-                lineValid=0;
-                    
-              //deal with weights
-              if(p->uniWeight==1)
-              	d->x[p->numVar+1][d->lines]=p->uniWeightVal;
-              else if(p->readWeights==0)
-                d->x[p->numVar+1][d->lines]=1.;//set weights to 1
-              if(d->x[p->numVar+1][d->lines]<=0)
-                lineValid=0;//invalidate data points with bad weights (can't divide by 0 weight)
+              if(lineValid == 1){
 
+                //handle ignored/sliced variables by reshuffling data
+                for(i=POWSIZE-1;i>=0;i--){
+                  if(p->ignorePar[i]>=1){
+                    if(numCols > i+1){
+                      for(j=i;j<p->numVar+numIgnoredPar;j++)
+                        d->x[j][d->lines]=d->x[j+1][d->lines];
+                      if(p->readWeights==1)
+                        d->x[p->numVar+numIgnoredPar][d->lines]=d->x[p->numVar+1+numIgnoredPar][d->lines];
+                    }
+                  }
+                }
+
+                //check variable and data values for NaN
+                for(i=0;i<p->numVar+2;i++)
+                  if(i<POWSIZE)
+                    if(d->x[i][d->lines]!=d->x[i][d->lines]){
+                      lineValid=0;
+                      break;
+                    }
+                      
+
+                //check variable values against limits
+                for(i=0;i<p->numVar;i++)
+                  if(i<POWSIZE)
+                    if((d->x[i][d->lines]>p->ulimit[i])||(d->x[i][d->lines]<p->llimit[i])){
+                      lineValid=0;
+                      break;
+                    }
+                      
+                
+                //check data values against limits
+                if((d->x[p->numVar][d->lines]>p->dulimit)||(d->x[p->numVar][d->lines]<p->dllimit)){
+                  lineValid=0;
+                }
+
+              }
+              
               if(lineValid==1)
               	{
+
+                  //deal with weights
+                  if(p->uniWeight==1)
+                    d->x[p->numVar+1][d->lines]=p->uniWeightVal;
+                  else if(p->readWeights==0)
+                    d->x[p->numVar+1][d->lines]=1.;//set weights to 1
+                  if(d->x[p->numVar+1][d->lines]<=0)
+                    lineValid=0;//invalidate data points with bad weights (can't divide by 0 weight)
+
               		//determine maximum and minimum values
               		if(d->x[p->numVar][d->lines] > d->max_m)
               			d->max_m=d->x[p->numVar][d->lines];
@@ -232,7 +276,7 @@ void importData(data * d, parameters * p)
 				          			d->min_x[i]=d->x[i][d->lines];
               			}
               		
-              		//got to the next data point
+              		//go to the next data point
                 	d->lines++;
                 }
               else
@@ -240,9 +284,8 @@ void importData(data * d, parameters * p)
             }
           else if(sscanf(str,"%s %s",str2,str3)>=2)
             {
-              if((p->numVar>0)&&(sscanf(str,"%s %Lf %Lf %Lf %Lf %Lf",str2,&d->x[0][d->lines],
-              &d->x[1][d->lines],&d->x[2][d->lines],&d->x[3][d->lines],
-              &d->x[4][d->lines])==p->numVar+1+numIgnoredPar))
+              numCols = sscanf(str,"%s %Lf %Lf %Lf %Lf %Lf",str2,&d->x[0][d->lines],&d->x[1][d->lines],&d->x[2][d->lines],&d->x[3][d->lines],&d->x[4][d->lines]);
+              if((p->numVar>0)&&(numCols==p->numVar+1+numIgnoredPar))
                 {
                   if(strcmp(str2,"UPPER_LIMITS")==0)
                     {
@@ -252,10 +295,12 @@ void importData(data * d, parameters * p)
                       
                       //reshuffle limit if parameters ignored
                       for(i=POWSIZE-1;i>=0;i--){
-                        if(p->ignorePar[i]==1){
-                          for(j=i;j<p->numVar+numIgnoredPar;j++)
-                            if(j<POWSIZE-1)
-                              p->ulimit[j]=p->ulimit[j+1];
+                        if(p->ignorePar[i]>=1){
+                          if(numCols > i+1){
+                            for(j=i;j<p->numVar+numIgnoredPar;j++)
+                              if(j<POWSIZE-1)
+                                p->ulimit[j]=p->ulimit[j+1];
+                          }
                         }
                       }
 
@@ -275,10 +320,12 @@ void importData(data * d, parameters * p)
 
                       //reshuffle limit if parameters ignored
                       for(i=POWSIZE-1;i>=0;i--){
-                        if(p->ignorePar[i]==1){
-                          for(j=i;j<p->numVar+numIgnoredPar;j++)
-                            if(j<POWSIZE-1)
-                              p->llimit[j]=p->llimit[j+1];
+                        if(p->ignorePar[i]>=1){
+                          if(numCols > i+1){
+                            for(j=i;j<p->numVar+numIgnoredPar;j++)
+                              if(j<POWSIZE-1)
+                                p->llimit[j]=p->llimit[j+1];
+                          }
                         }
                       }
 
@@ -447,7 +494,7 @@ void importData(data * d, parameters * p)
       sprintf(str,"specified fit type '%s' requires data using %i parameter(s).",p->fitType,p->numVar);
       printf("ERROR: no data could be read from the input file.  If data is present, check that it uses the correct number of parameters - %s",str);
       if(numIgnoredPar > 0){
-        sprintf(str,"  Note that you are ignoring %i parameter(s) in the data (IGNORE_PAR commands).",numIgnoredPar);
+        sprintf(str,"  Note that you are ignoring and/or slicing on %i parameter(s) in the data (IGNORE_PAR and/or SLICE_PAR commands).",numIgnoredPar);
         printf("%s",str);
       }
       printf("\n");

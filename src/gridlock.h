@@ -26,7 +26,8 @@ typedef struct
   int plotData;//0=don't plot, 1=plot
   char plotMode[256];//the plotting style to be used
   int plotCI;//0=don't plot confidence interval, 1=plot it
-  int ignorePar[POWSIZE]; //flags to ignore data corresponding to specific parameters (x,y,z)
+  int ignorePar[POWSIZE]; //flags to ignore data corresponding to specific parameters (x,y,z) (0=don't ignore,1=ignore,2=slice at specified value)
+  long double sliceVal[POWSIZE]; //value to slice grid at for each parameter, if ignorePar==2 
   int numVar;
   long double ulimit[POWSIZE],llimit[POWSIZE];//upper and lower limits for variable values
   long double dllimit,dulimit;//upper and lower limits for data values

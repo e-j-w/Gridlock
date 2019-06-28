@@ -79,7 +79,8 @@ Add these options (eg. 'PLOT 1d') as a single line anywhere in the data file to 
 | WEIGHTED | Use weights for the data points, specified in a column after the data values.|
 | UNIFORM_WEIGHT value | Use a single weight value for all data points, without the need to put an extra column in the data file.|
 | LINEAR_FILTER sigma | Before fitting, filter the data to emphasize prominent linear features, by only keeping data falling within sigma standard deviations of the mean x/y value.  Only applicable to data with one free parameter.|
-| IGNORE_PAR value | Ignore a certain parameter ('value' may be 'x', 'y', or 'z') in the data when fitting and plotting.  Equivalent to removing the column of values corresponding to the specified parameter from the data file.|
+| IGNORE_PAR par | Ignore a certain parameter ('par' may be 'x', 'y', or 'z') in the data when fitting and plotting.  Equivalent to removing the column of values corresponding to the specified parameter from the data file.|
+| SLICE_PAR par value | Slice the grid at the specified parameter and value ('par' may be 'x', 'y', or 'z') in the data when fitting and plotting (ie. take only the data where the specified parameter has the specified value, and fit only the remaining parameters).|
 | LOWER_LIMITS value1 value2 value3 | Lower fit limits for each variable (specify as many values as there are variables).  Use with UPPER_LIMITS to specify a fit range.|
 | UPPER_LIMITS value1 value2 value3 | Upper fit limits for each variable (specify as many values as there are variables).  Use with LOWER_LIMITS to specify a fit range.|
 | DATA_LOWER_LIMIT value | Lower fit limit for data values.  Use with DATA_UPPER_LIMIT to specify a fit range for data values.  This option can be used to filter outlier data.|
