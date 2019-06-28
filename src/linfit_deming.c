@@ -31,6 +31,41 @@ void printLinDeming(const data * d, const parameters * p, const fit_results * fr
   
   //printf("value at x=90 = %LE\n",fr->a[0]*90. + fr->a[1]);
   //printf("CI at x=90 = [%LE %LE]\n",confIntVal(90.,fr,d,1),confIntVal(90.,fr,d,0));
+
+  if((p->findMinGridPoint == 1)||(p->findMaxGridPoint == 1)){
+    printf("\n");
+		int i;
+    if(p->findMinGridPoint == 1){
+      long double currentVal;
+      long double minVal = BIG_NUMBER;
+      int minPt = -1;
+      for(i=0;i<d->lines;i++){
+        currentVal = evalLin(d->x[0][i],fr);
+        if(currentVal < minVal){
+          minVal = currentVal;
+          minPt = i;
+        }
+      }
+      if(minPt >= 0){
+        printf("Grid point corresponding to the lowest value (%LE) of the fitted function is at [ %0.3LE ].\n",minVal,d->x[0][minPt]);
+      }
+    }
+    if(p->findMaxGridPoint == 1){
+      long double currentVal;
+      long double maxVal = -1.0*BIG_NUMBER;
+      int maxPt = -1;
+      for(i=0;i<d->lines;i++){
+        currentVal = evalLin(d->x[0][i],fr);
+        if(currentVal > maxVal){
+          maxVal = currentVal;
+          maxPt = i;
+        }
+      }
+      if(maxPt >= 0){
+        printf("Grid point corresponding to the highest value (%LE) of the fitted function is at [ %0.3LE ].\n",maxVal,d->x[0][maxPt]);
+      }
+    }
+  }
     
 }
 

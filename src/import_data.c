@@ -96,6 +96,10 @@ void importData(data * d, parameters * p)
 						p->forceZeroX=1;//force x to zero
           else if(strcmp(str,"ZEROY\n")==0)
 						p->forceZeroY=1;//force y to zero
+          else if(strcmp(str,"FIND_MIN_GRID_POINT_FROM_FIT\n")==0)
+						p->findMinGridPoint=1;//find the grid point corresponding to the smallest value of the fit function
+          else if(strcmp(str,"FIND_MAX_GRID_POINT_FROM_FIT\n")==0)
+						p->findMaxGridPoint=1;//find the grid point corresponding to the smallest value of the fit function
         }
     }
   //check the fit type
@@ -464,7 +468,7 @@ void importData(data * d, parameters * p)
                 }
               else if((strcmp(str,"PARAMETERS\n")!=0)&&(strcmp(str,"COEFFICIENTS\n")!=0)&&(strcmp(str,"WEIGHTED\n")!=0)&&
                       (strcmp(str,"WEIGHT\n")!=0)&&(strcmp(str,"WEIGHTS\n")!=0)&&(strcmp(str,"UNWEIGHTED\n")!=0)&&
-                      (strcmp(str,"ZEROX\n")!=0)&&(strcmp(str,"ZEROY\n")!=0))
+                      (strcmp(str,"ZEROX\n")!=0)&&(strcmp(str,"ZEROY\n")!=0)&&(strcmp(str,"FIND_MIN_GRID_POINT_FROM_FIT\n")!=0)&&(strcmp(str,"FIND_MAX_GRID_POINT_FROM_FIT\n")!=0))
                 if(p->verbose<1)
                   printf("WARNING: Improperly formatted data on line %i of the input file.\nLine content: %s",linenum+1,str);
             }

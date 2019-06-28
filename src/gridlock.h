@@ -40,6 +40,7 @@ typedef struct
   int forceZeroX,forceZeroY,forceZeroZ;//whether or not to attempt forcing the fitted minimum to zero for x,y,z
   int numCIEvalPts; //number of points to evaluate the confidence interval bounds at (where applicable)
   long double CIEvalPts[100]; //array of x values at which to evaluate the confidence interval at
+  int findMinGridPoint,findMaxGridPoint;
 }parameters;
 
 typedef struct
