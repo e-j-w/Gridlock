@@ -18,7 +18,7 @@
 typedef struct
 {
   char filename[256];//name of the data file
-  char fitType[256];//the type of fit (linear,parabola,etc)
+  char fitType[128];//the type of fit (linear,parabola,etc)
   long double fitOpt;//fit option value (eg. delta for Deming regression) 
   char dataType[256];//the type of data provided (regular, chisq values, etc.)
   long double ciDelta;//delta value for confidence interval calculation
