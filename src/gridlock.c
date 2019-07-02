@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 		{
 			printf("\ngridlock filename\n-----------------\n\n");
 			printf("Fits the data in the specified file.\nThe file should be in plaintext, with a line specifying the fit type using the format:\n\nFIT  type\n");
-			printf("\nPossible values of 'type' are:\n\nlin (line)\nlin_deming (line with errors in x)\npoly1 (1st order polynomial)\npoly2 (2nd order polynomial)\npoly3 (3rd order polynomial)\npar1 (2nd order polynomial)\npar2 (2nd order bivariate polynomial)\npar3 (2nd order trivariate polynomial)\n2parpoly3 (3rd order bivariate polynomial)\n");
+			printf("\nPossible values of 'type' are:\n\nlin (line)\nlin_deming (line with errors in x)\npoly1 (1st order polynomial)\npoly2 (2nd order polynomial)\npoly3 (3rd order polynomial)\npoly4 (4th order polynomial)\npar1 (2nd order polynomial)\npar2 (2nd order bivariate polynomial)\npar3 (2nd order trivariate polynomial)\n2parpoly3 (3rd order bivariate polynomial)\n");
 			printf("\nSee the README for more details.\n");
 			exit(-1);
 		}
