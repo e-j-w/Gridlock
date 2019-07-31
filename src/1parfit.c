@@ -107,8 +107,16 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
   printf("\ny-intercept = %LE\n",eval1Par(0.0,fr));
 
   if(strcmp(p->dataType,"chisq")==0)
-    if( ((fr->a[0] >= 0.)&&(fr->fitVert[0]<0.)) || ((fr->a[0] < 0.)&&(fr->fitVert[0]>0.)) )
-      printf("Upper bound (with %s confidence interval) assuming minimum at zero: x = %LE\n",p->ciSigmaDesc, eval1ParX(eval1Par(0.0,fr)+p->ciDelta,fr,1));
+    if( ((fr->a[0] >= 0.)&&(fr->fitVert[0]<0.)) || ((fr->a[0] < 0.)&&(fr->fitVert[0]>0.)) || (p->forceZeroX) )
+      {
+        if( ((fr->a[0] >= 0.)&&(fr->fitVert[0]<0.)) || ((fr->a[0] < 0.)&&(fr->fitVert[0]>0.)) )
+          printf("Upper bound (with %s confidence interval) assuming minimum at zero: x = %LE\n",p->ciSigmaDesc, eval1ParX(eval1Par(0.0,fr)+p->ciDelta,fr,1));
+        else
+          printf("Lower bound (with %s confidence interval) assuming minimum at zero: x = %LE\n",p->ciSigmaDesc, eval1ParX(eval1Par(0.0,fr)+p->ciDelta,fr,0));
+      }
+      
+      
+      
   
   if((p->findMinGridPoint == 1)||(p->findMaxGridPoint == 1)){
     printf("\n");

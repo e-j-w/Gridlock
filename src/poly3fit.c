@@ -194,7 +194,7 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
   
   printf("y-intercept = %LE\n",evalPoly3(0.0,fr));
   if(strcmp(p->dataType,"chisq")==0)
-    if((fr->fitVert[0]<0.)||(fr->fitVert[1]<0.))
+    if((fr->fitVert[0]<0.)||(fr->fitVert[1]<0.)||(p->forceZeroX))
       printf("Upper bound (with %s confidence interval) assuming minimum at zero: x = %LE\n",p->ciSigmaDesc,evalPoly3X(evalPoly3(0.0,fr)+p->ciDelta,fr,0.0,1));
   printf("\n");
 

@@ -87,11 +87,12 @@ Add these options (eg. 'PLOT 1d') as a single line anywhere in the data file to 
 | UPPER_LIMITS value1 value2 value3 | Upper fit limits for each variable (specify as many values as there are variables).  Use with LOWER_LIMITS to specify a fit range.|
 | DATA_LOWER_LIMIT value | Lower fit limit for data values.  Use with DATA_UPPER_LIMIT to specify a fit range for data values.  This option can be used to filter outlier data.|
 | DATA_UPPER_LIMIT value | Upper fit limit for data values.  Use with DATA_LOWER_LIMIT to specify a fit range for data values.  This option can be used to filter outlier data.|
-| ZEROX | When fitting using the *par2* or *2parpoly3* function with chisq data, show the fit result assuming a minimum in x at x=0.|
-| ZEROY | When fitting using the *par2* or *2parpoly3* function with chisq data, show the fit result assuming a minimum in y at y=0.|
+| ZEROX | When fitting using the *par1*, *par2*, *poly3*, or *2parpoly3* functions with chisq data, show the fit result assuming a minimum in x at x=0.|
+| ZEROY | When fitting using the *par2* or *2parpoly3* functions with chisq data, show the fit result assuming a minimum in y at y=0.|
 | EVAL_CI value | When fitting a function (such as 'lin') which provides a confidence interval, evaluate the bounds of the confidence interval for the given value of the independent variable.|
 | SET_CI_SIGMA value | When fitting chi-square data, manually set the sigma value used to evaluate uncertainties (valid values are 1, 2, 3, 90%).  The program will then handle the appropriate confidence bounds for the number of free parameters used.  Default value is 1-sigma.|
 | SET_CI_DELTA value | For people who know what they're doing and for whom SET_CI_SIGMA isn't enough.  When fitting chi-square data, manually set the delta value used to evaluate confidence bounds (by default, delta is set to the 1-sigma bound ie. 1.00 for 1 parameter, 2.30 for 2 parameters, etc.).|
+
 
 ## Acknowledgments
 
