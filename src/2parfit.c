@@ -301,7 +301,24 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
   //check zero bounds
   if(strcmp(p->dataType,"chisq")==0)
     {
-      if((fr->fitVert[0]<0.) || (p->forceZeroX==1))
+      if((p->forceZeroX==1) && (p->forceZeroY==1))
+        {
+          //make a copy of the fit results to work on
+          fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
+          memcpy(temp1,fr,sizeof(fit_results));
+          //set fit vertex to (0,0)
+          temp1->fitVert[0]=0.;
+          temp1->fitVert[1]=0.;
+          //fit confidence interval to get bound for x and y
+          fit2ParChisqConf(p,temp1);
+          if(print==1)
+            {
+              printf("\nAssuming minimum at zero for both x and y,\n");
+              printFitVertex2Par(d,p,temp1);
+            }
+          free(temp1);
+        }
+      else if((fr->fitVert[0]<0.) || (p->forceZeroX==1))
         {
           if((fr->fitVert[1]>=0.) || (p->forceZeroX==1))
             {

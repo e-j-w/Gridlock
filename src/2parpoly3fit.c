@@ -127,25 +127,24 @@ void printFitVertex2ParPoly3(const data * d, const parameters * p, const fit_res
 {
   if(fr->vertBoundsFound==1)
     {
+      printf("Local minimum (with %s confidence interval) at:\n",p->ciSigmaDesc);
       //these values were calculated at long double precision, 
       //check if they are the same to within float precision
       if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
         printf("x0 = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
       else
         printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
-    }
-  else
-    printf("x0 = %LE\n",fr->fitVert[0]);
-
-  if(fr->vertBoundsFound==1)
-    {
       if ((float)(fr->fitVert[1]-fr->vertLBound[1])==(float)(fr->vertUBound[1]-fr->fitVert[1]))
         printf("y0 = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
       else
         printf("y0 = %LE + %LE - %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[1]);
     }
   else
-    printf("y0 = %LE\n",fr->fitVert[1]);
+    {
+      printf("Local minimum at:\n");
+      printf("x0 = %LE\n",fr->fitVert[0]);
+      printf("y0 = %LE\n",fr->fitVert[1]);
+    }
   
   printf("\nf(x0,y0) = %LE\n",fr->vertVal);
 }
@@ -409,7 +408,24 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
   //check zero bounds
   if(strcmp(p->dataType,"chisq")==0)
     {
-      if((fr->fitVert[0]<0.) || (p->forceZeroX==1))
+      if((p->forceZeroX==1) && (p->forceZeroY==1))
+        {
+          //make a copy of the fit results to work on
+          fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
+          memcpy(temp1,fr,sizeof(fit_results));
+          //set fit vertex to (0,0)
+          temp1->fitVert[0]=0.;
+          temp1->fitVert[1]=0.;
+          //fit confidence interval to get bound for x and y
+          fit2ParPoly3ChisqConf(d,p,temp1,3);
+          if(print==1)
+            {
+              printf("\nAssuming minimum at zero for both x and y,\n");
+              printFitVertex2ParPoly3(d,p,temp1);
+            }
+          free(temp1);
+        }
+      else if((fr->fitVert[0]<0.) || (p->forceZeroX==1))
         {
           if((fr->fitVert[1]>=0.) || (p->forceZeroX==1))
             {
