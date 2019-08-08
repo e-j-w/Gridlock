@@ -257,6 +257,24 @@ void plotForm2ParPoly3(const parameters * p, fit_results * fr, const plot_data *
 //f(x,y) = a1*x^3 + a2*y^3 + a3*x^2*y + a4*x*y^2 + a5*x^2 + a6*y^2 +a7*x*y + a8*x + a9*y + a10
 void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
 {
+
+  int numFitPar = 10;
+  fr->ndf=d->lines-numFitPar;
+  if(fr->ndf < 0)
+    {
+      printf("\nERROR: not enough data points for a fit (NDF < 0) using the %s function.\n",p->fitType);
+      printf("%i data point(s) provided, %i data points needed.\n",d->lines,numFitPar);
+      exit(-1);
+    }
+  else if(fr->ndf == 0)
+    {
+      if(p->verbose<1)
+        {
+          printf("\nWARNING: number of data points is equal to the number of fit parameters (%i).\n",numFitPar);
+          printf("Fit is constrained to pass through data points (NDF = 0).\n");
+        }
+    }
+
   //construct equations
   int i,j;
   lin_eq_type linEq;
@@ -370,7 +388,6 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
     fr->a[i]=linEq.solution[i];
   long double f;
   fr->chisq=0;
-  fr->ndf=d->lines-11;
   for(i=0;i<d->lines;i++)//loop over data points for chisq
     {
       f=fr->a[0]*d->x[0][i]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[1][i]*d->x[1][i]*d->x[1][i]

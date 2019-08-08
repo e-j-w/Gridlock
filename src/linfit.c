@@ -163,6 +163,24 @@ void plotFormLin(const parameters * p, fit_results * fr)
 //f(x) = a1*x + a2
 void fitLin(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
 {
+
+	int numFitPar = 2;
+  fr->ndf=d->lines-numFitPar;
+  if(fr->ndf < 0)
+    {
+      printf("\nERROR: not enough data points for a fit (NDF < 0) using the %s function.\n",p->fitType);
+      printf("%i data point(s) provided, %i data points needed.\n",d->lines,numFitPar);
+      exit(-1);
+    }
+  else if(fr->ndf == 0)
+    {
+      if(p->verbose<1)
+        {
+          printf("\nWARNING: number of data points is equal to the number of fit parameters (%i).\n",numFitPar);
+          printf("Fit is constrained to pass through data points (NDF = 0).\n");
+        }
+    }
+
   //construct equations
   int i,j;
   lin_eq_type linEq;
@@ -190,7 +208,6 @@ void fitLin(const parameters * p, const data * d, fit_results * fr, plot_data * 
     fr->a[i]=linEq.solution[i];
   long double f;
   fr->chisq=0;
-  fr->ndf=d->lines-3;
   for(i=0;i<d->lines;i++)//loop over data points for chisq
     {
       f=fr->a[0]*d->x[0][i] + fr->a[1];

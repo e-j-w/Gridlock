@@ -222,6 +222,24 @@ void plotForm3Par(const parameters * p, fit_results * fr, const plot_data * pd)
 //f(x,y,z) = a1*x^2 + a2*y^2 + a3*z^2 + a4*x*y + a5*x*z + a6*y*z +a7*x + a8*y + a9*z + a10
 void fit3Par(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
 {
+
+  int numFitPar = 10;
+  fr->ndf=d->lines-numFitPar;
+  if(fr->ndf < 0)
+    {
+      printf("\nERROR: not enough data points for a fit (NDF < 0) using the %s function.\n",p->fitType);
+      printf("%i data point(s) provided, %i data points needed.\n",d->lines,numFitPar);
+      exit(-1);
+    }
+  else if(fr->ndf == 0)
+    {
+      if(p->verbose<1)
+        {
+          printf("\nWARNING: number of data points is equal to the number of fit parameters (%i).\n",numFitPar);
+          printf("Fit is constrained to pass through data points (NDF = 0).\n");
+        }
+    }
+
   //construct equations (n=3 specific case)
   int i,j;
   lin_eq_type linEq;
@@ -318,7 +336,6 @@ void fit3Par(const parameters * p, const data * d, fit_results * fr, plot_data *
     fr->a[i]=linEq.solution[i];
   long double f;
   fr->chisq=0;
-  fr->ndf=d->lines-11;
   for(i=0;i<d->lines;i++)//loop over data points for chisq
     {
       f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[1][i]*d->x[1][i] + fr->a[2]*d->x[2][i]*d->x[2][i] + fr->a[3]*d->x[0][i]*d->x[1][i] + fr->a[4]*d->x[0][i]*d->x[2][i] + fr->a[5]*d->x[1][i]*d->x[2][i] + fr->a[6]*d->x[0][i] + fr->a[7]*d->x[1][i] + fr->a[8]*d->x[2][i] + fr->a[9];
