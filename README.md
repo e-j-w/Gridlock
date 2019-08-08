@@ -1,18 +1,10 @@
-# **Gridlock** - a program to fit grids of data
+# **Gridlock**
 
-Maintainer: Jonathan Williams
-
-
-## Introduction
-
-Are you the type of person who needs to fit a chisq surface in 2 variables to a 3rd order polynomial and then find the local minimum and confidence interval in each variable even though one of the variables is bounded to zero?  Or maybe you just want to fit a line to some data and have the x-intercept be automatically displayed?  Boy, do I have a program for you!
-
+**A program to fit grids of data**
 
 ## Description
 
-Gridlock is a program for fitting grids of data points with various functions and finding fit properties (eg. confidence intervals, intercepts, vertices).  Fitting routines are available for data with up to 3 free parameters.  Example data is included in the files in the `sample` directory.
-
-Data files must contain a line specifying the fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Fitting Functions Available* section below).  It is possible to specify grid fitting limits for each parameter in data files (see the *Options* section below and the `sample_3par.txt` file for an example).  It is also possible to plot data (using `gnuplot`) by including a line in the data file specifying a plotting style, see the options section below.
+Gridlock is a program for fitting grids of data points with various functions and finding fit properties (eg. confidence intervals, intercepts, vertices).  Fitting routines are available for data with up to 3 free parameters.
  
 
 ## Features
@@ -22,7 +14,7 @@ Data files must contain a line specifying the fit function, formatted 'FIT type'
 * Automatically calculates and displays certain properties of fits (confidence intervals, intercepts, vertices).
 * Various polynomial type fitting functions implemented.
 * Simple ASCII data file format (compatible with gnuplot, excel, etc.).
-* Plotting of fits is available via a built-in interface to gnuplot (program will still compile and run if gnuplot is not present, but plotting will be unavailable).
+* Plotting of fits is available via a built-in interface to gnuplot (the program will still compile and run if gnuplot is not present, but plotting will be unavailable).
 * Lots of esoteric extra functionality added in an ad-hoc manner as the maintainter sees fit.
 * Written in C because reasons.
 
@@ -33,6 +25,16 @@ Use `make` to compile.  Optional data plotting requires `gnuplot` to be installe
 To run the program from anywhere, move the resulting `gridlock` executable to any directory under your `$PATH` environment variable.
 
 Tested using gcc and GNU make on Ubuntu 14.04/16.04, Scientific Linux/CentOS 6, and Arch Linux (as of June 2019).  The code may not build on compilers/platforms without support for 128-bit floating point (__float128) values, which are used to obtain higher precision in fits.  Otherwise the code is self-contained and should work on more or less any Linux distro.
+
+## How to Use
+
+The program is run from the command line, with the only argument being the path to a file containing the data to be fitted:
+
+```
+gridlock /path/to/data/file
+```
+
+In addition to the data itself, data files must contain a line specifying the desired fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Fitting Functions Available* section below).  Example data files are included in the `sample` directory.  It is possible to specify grid fitting limits for each parameter in data files (see the *Options* section below and the `sample_3par.txt` file for an example).  It is also possible to plot data (using `gnuplot`) by including a line in the data file specifying a plotting style, see the *Options* section below.
 
 
 ## Fitting Functions Available
@@ -61,7 +63,6 @@ NOTE: The **lin\_deming** function can take an optional parameter specifying the
 |**Name**|**Description**|**Form**|
 |:---:|:---:|:---:|
 |**par3** | trivariate parabola | f(x,y,z) = a1\*x^2 + a2\*y^2 + a3\*z^2 + a4\*x\*y + a5\*x\*z + a6\*y\*z + a7\*x + a8\*y + a9\*z + a10|
-
 
 
 ## Options

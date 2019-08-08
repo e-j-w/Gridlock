@@ -478,8 +478,6 @@ void importData(data * d, parameters * p)
                 {
                   p->plotData=1;
                   strcpy(p->plotMode,str3);
-                  if(p->verbose<1)
-                    printf("Will plot data using mode: %s\n",p->plotMode);
                 }
             }
           linenum++;
