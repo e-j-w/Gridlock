@@ -76,6 +76,7 @@ typedef struct
   long double aerr[MAX_DIM]; //array holding uncertainties in parameters
   long double covar[MAX_DIM][MAX_DIM];//covariance between parameters (specified by the two indices)
   long double fitVert[POWSIZE]; //the vertex of the fit paraboloid
+  int numFitVert; //number of vertices (where appropriate)
   long double vertUBound[POWSIZE],vertLBound[POWSIZE];//upper and lower bounds of the vertex
   long double vertVal; //value of the fit function at the vertex;
   long double chisq,ndf;

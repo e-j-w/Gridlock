@@ -5,13 +5,14 @@ long double evalPoly3(long double x, const fit_results * fr)
 					+ fr->a[2]*x + fr->a[3];
 }
 
-//evaluates the fit function x values at the specified y value
-//returns the x value closest to closeToVal, above it if pos = 1, below if pos = 0
-long double evalPoly3X(long double y, const fit_results * fr, long double closeToVal, int pos)
+//gets the roots of the polynomial
+//y: amount to offset the polynomial by before finding roots
+//roots: array to store the roots in (must have length of at least 3)
+//returns the number of roots found (max 3)
+int getPoly3Roots(long double y, const fit_results * fr, long double * roots)
 {
   int i;
   long double discr;//discriminant
-  long double roots[3];
   int numRoots=0;
   long double a,b,c,d;
   long double p,q;
@@ -53,16 +54,29 @@ long double evalPoly3X(long double y, const fit_results * fr, long double closeT
       if((p<0.)&&((4.*p*p*p + 27.*q*q)>0.))
         {
           roots[0]=-2.*(abs(q)/q)*sqrt(-1.*(p/3.))*cosh((1./3.)*acosh(-3.*abs(q)*sqrt(-3./p)/(2.*p)));
+          roots[0]-=b/(3.0*a);
           numRoots=1;
         }
       else if (p>0.)
         {
           roots[0]=-2.*sqrt(p/3.)*sinh((1./3.)*asinh(3.*q*sqrt(3./p)/(2.*p)));
+          roots[0]-=b/(3.0*a);
           numRoots=1;
         }
       else
         numRoots=0;
   	}
+
+  return numRoots;
+}
+
+//evaluates the fit function x values at the specified y value
+//returns the x value closest to closeToVal, above it if pos = 1, below if pos = 0
+long double evalPoly3X(const long double y, const fit_results * fr, long double closeToVal, int pos)
+{
+  int i;
+  long double *roots=(long double*)calloc(3,sizeof(long double));
+  int numRoots=getPoly3Roots(y,fr,roots);
   
   long double minDiff,diff;
   int selRoot = -1;
@@ -87,9 +101,14 @@ long double evalPoly3X(long double y, const fit_results * fr, long double closeT
     }
   
   if(selRoot>=0)
-    return roots[selRoot];
+    {
+      long double val=roots[selRoot];
+      free(roots);
+      return val;
+    }   
   else
     {
+      free(roots);
       printf("WARNING: could not evaluate roots of function.\n");
       return 0;
     }

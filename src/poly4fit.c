@@ -193,6 +193,16 @@ void printPoly4(const data * d, const parameters * p, const fit_results * fr)
   printf("\n");
   
   printf("y-intercept = %LE\n",evalPoly4(0.0,fr));
+  printf("\n");
+
+  for(i=0;i<fr->numFitVert;i++)
+    {
+      if((12.0*fr->a[0]*fr->fitVert[i]*fr->fitVert[i] + 6.0*fr->a[1]*fr->fitVert[i] + 2.0*fr->a[2])>=0)
+        printf("Local minimum: x = %LE\n",fr->fitVert[i]);
+      else
+        printf("Local maximum: x = %LE\n",fr->fitVert[i]);
+    }
+    
   
   if((p->findMinGridPoint == 1)||(p->findMaxGridPoint == 1)){
     printf("\n");
@@ -333,6 +343,20 @@ void fitPoly4(const parameters * p, const data * d, fit_results * fr, plot_data 
   fr->fitVert[0]/=3.*fr->a[0];
   fr->fitVert[1]=-1.0*fr->a[1] + sqrt(fr->a[1]*fr->a[1] - 3.*fr->a[0]*fr->a[2]);
   fr->fitVert[1]/=3.*fr->a[0];*/
+
+  //find minima/maxima of fit
+  //derivative of a quartic is a cubic, will use cubic functions (poly3fit.c)
+  fit_results *svarfr=(fit_results*)calloc(1,sizeof(fit_results));
+  svarfr->a[0]=4.0*fr->a[0];
+  svarfr->a[1]=3.0*fr->a[1];
+  svarfr->a[2]=2.0*fr->a[2];
+  svarfr->a[3]=fr->a[3];
+  //get cubic roots
+  long double *roots=(long double*)calloc(3,sizeof(long double));
+  fr->numFitVert=getPoly3Roots(0.0,svarfr,roots);
+  for(i=0;i<fr->numFitVert;i++)
+    fr->fitVert[i]=roots[i];
+  free(roots);
   
   
   /*//find confidence bounds if neccessary

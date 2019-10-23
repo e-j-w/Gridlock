@@ -3,4 +3,5 @@ gridlock
 *.o
 *.out
 *.txt
+.nfs*
 *~
