@@ -124,41 +124,14 @@ void fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt)
   
   long double vertVal = evalPoly3(pt,fr);
   //printf("vertval: %LF\n",vertVal);
-  long double a,b,c,d;
   long double delta=p->ciDelta;
-  long double discr;//discriminant
-  long double roots[3];
-  fr->vertBoundsFound=1;
   
-  a=fr->a[0];
-  b=fr->a[1];
-  c=fr->a[2];
-  d=fr->a[3] - delta - vertVal;
+  long double *roots=(long double*)calloc(3,sizeof(long double));
+  int numRoots=getPoly3Roots(delta + vertVal,fr,roots);
   
-  discr=18.0*a*b*c*d - 4.0*b*b*b*d + b*b*c*c - 4.0*a*c*c*c - 27.0*a*a*d*d;
-  if(discr>0.0)//3 real roots
+  if(numRoots==3)
   	{
-  		int i;
-  		long double p,q;
-  		p=(3.0*a*c - b*b)/(3.0*a*a);
-  		q=(2.0*b*b*b - 9.0*a*b*c + 27.0*a*a*d)/(27.0*a*a*a);
-  		for(i=0;i<3;i++)
-  			{
-  				roots[i]=2*sqrt(-1.0*p/3.0)*cos( (1.0/3.0) * acos( (3.0*q/(2.0*p)) * sqrt(-3.0/p) ) - ((2.0*PI*i)/3.0) );
-  				roots[i]-=b/(3.0*a);
-  			}
-  	}
-  else if(discr==0.0)//triple root
-  	{
-  		fr->vertBoundsFound=0;
-  	}
-  else//one real, 2 complex roots
-  	{
-  		fr->vertBoundsFound=0;
-  	}
-  
-  if(fr->vertBoundsFound==1)
-  	{
+      fr->vertBoundsFound=1;
       //printf("a0=%LE, a1=%LE, a2=%LE, a3=%LE]\n",fr->a[0],fr->a[1],fr->a[2],fr->a[3]);
   		//printf("Bounds around point at x=%LE are [%LE %LE %LE]\n",pt,roots[0],roots[1],roots[2]);
   		int i;
@@ -176,6 +149,8 @@ void fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt)
 			fr->vertUBound[0]=pt+uInterval;
 			fr->vertLBound[0]=pt-lInterval;
   	}
+
+  free(roots);
 
 }
 
@@ -240,6 +215,10 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
 								printf("Local minimum with (%s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[0]);
 						}
 				}
+      else if((strcmp(p->dataType,"chisq")==0)&&(fr->vertBoundsFound==0))
+        {
+          printf("Specified confidence interval (%s) is unbound for the local minimum.\n",p->ciSigmaDesc);
+        }
     }
   else
     printf("Fit function is monotonic (no critical points).\n");

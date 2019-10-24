@@ -5,160 +5,132 @@ long double evalPoly4(long double x, const fit_results * fr)
 					+ fr->a[2]*x*x + fr->a[3]*x + fr->a[4];
 }
 
-/*//evaluates the fit function x values at the specified y value
-//returns the x value closest to closeToVal, above it if pos = 1, below if pos = 0
-long double evalPoly3X(long double y, const fit_results * fr, long double closeToVal, int pos)
+//returns the index of the vertex which corresponds to the most 
+//extreme minimum or maximum in the function
+//(excluding divergent minima/maxima)
+//minMax: 0 for minimum, 1 for maximum
+int getExtremeMinMaxVert(int minMax, const fit_results * fr)
 {
   int i;
-  long double discr;//discriminant
-  long double roots[3];
-  int numRoots=0;
-  long double a,b,c,d;
-  long double p,q;
-
-  a=fr->a[0];
-  b=fr->a[1];
-  c=fr->a[2];
-  d=fr->a[3] - y;
-
-  p=(3.0*a*c - b*b)/(3.0*a*a);
-  q=(2.0*b*b*b - 9.0*a*b*c + 27.0*a*a*d)/(27.0*a*a*a);
+  int ind=-1;
+  long double exval;
+  if(minMax==0)
+    exval=BIG_NUMBER;
+  else
+    exval=-1.0*BIG_NUMBER;
   
-  discr=18.0*a*b*c*d - 4.0*b*b*b*d + b*b*c*c - 4.0*a*c*c*c - 27.0*a*a*d*d;
-  if(discr>0.0)//3 real roots
-  	{
-  		for(i=0;i<3;i++)
-  			{
-  				roots[i]=2*sqrt(-1.0*p/3.0)*cos( (1.0/3.0) * acos( (3.0*q/(2.0*p)) * sqrt(-3.0/p) ) - ((2.0*PI*i)/3.0) );
-  				roots[i]-=b/(3.0*a);
-  			}
-      numRoots=3;
-  	}
-  else if(discr==0.0)//triple root
-  	{
-      if(b*b - 3.*a*c == 0)
+  for(i=0;i<fr->numFitVert;i++)
+    {
+      if((12.0*fr->a[0]*fr->fitVert[i]*fr->fitVert[i] + 6.0*fr->a[1]*fr->fitVert[i] + 2.0*fr->a[2])>=0)
         {
-          roots[0]=b/(3.0*a);
-  		    numRoots=1;
+          //vertex is a minimum
+          if(minMax==0)
+            {
+              if(evalPoly4(fr->fitVert[i],fr) < exval)
+                {
+                  exval=evalPoly4(fr->fitVert[i],fr);
+                  ind=i;
+                }
+            }
         }
       else
         {
-          roots[0]=(9.*a*d - b*c)/(2.*(b*b - 3.*a*c));
-          roots[1]=(4.*a*b*c - 9.*a*a*d - b*b*b)/(a*(b*b - 3.*a*c));
-          numRoots=2;
+          //vertex is a maximum
+          if(minMax!=0)
+            {
+              if(evalPoly4(fr->fitVert[i],fr) > exval)
+                {
+                  exval=evalPoly4(fr->fitVert[i],fr);
+                  ind=i;
+                }
+            }
         }
-  	}
-  else//one real, 2 complex roots
-  	{
-      if((p<0.)&&((4.*p*p*p + 27.*q*q)>0.))
-        {
-          roots[0]=-2.*(abs(q)/q)*sqrt(-1.*(p/3.))*cosh((1./3.)*acosh(-3.*abs(q)*sqrt(-3./p)/(2.*p)));
-          numRoots=1;
-        }
-      else if (p>0.)
-        {
-          roots[0]=-2.*sqrt(p/3.)*sinh((1./3.)*asinh(3.*q*sqrt(3./p)/(2.*p)));
-          numRoots=1;
-        }
+    }
+
+    if(ind==-1)
+      {
+        printf("ERROR: could not find extreme minimum/maximum of quartic function.\n");
+        exit(-1);
+      }
+    return ind;
+    
+}
+
+//evaluates fit function x values for the specified y value by iterative search
+//y: value to search for
+//closeToVal: where to start the search (in x)
+//dir: search direction, 1 for increasing x, 0 for decreasing x
+//resultVal: location to store the search result
+//returns 1 if the search successful, 0 if not (fit function diverges past distanceAbortThreshold)
+int evalPoly4XSearch(const data * d, const fit_results * fr, const long double y, const long double closeToVal, const int dir, long double * resultVal)
+{
+
+  //define step size in terms of data range
+  long double stepSize = (d->max_x[0] - d->min_x[0])/10000.0;
+  long double distanceAbortThreshold = (d->max_m - d->min_m)*20.0;
+  long double distanceSolvedThreshold = (d->max_m - d->min_m)/10000000.0;
+  long double searchVal=closeToVal;
+  long double distance=evalPoly4(searchVal,fr)-y;
+  int distSign;
+
+  //printf("stepSize: %Lf, distanceSolvedThreshold: %Lf, distanceAbortThreshold: %Lfi\n",stepSize,distanceSolvedThreshold,distanceAbortThreshold);
+
+  while((fabsl(distance))>distanceSolvedThreshold)
+    {
+      distSign = signbit(distance)==0;
+      if(dir==1)
+        searchVal+=stepSize;
       else
-        numRoots=0;
-  	}
-  
-  long double minDiff,diff;
-  int selRoot = -1;
-  if(pos==0)
-    minDiff=-1*BIG_NUMBER;
-  else
-    minDiff=BIG_NUMBER;
-  for(i=0;i<numRoots;i++)
-    {
-      diff=roots[i]-closeToVal;
-      //printf("pos=%i, roots[%i]=%Lf, diff=%Lf\n",pos,i,roots[i],diff);
-      if((pos==1)&&(diff<minDiff)&&(diff>=0.))
+        searchVal-=stepSize;
+      distance=evalPoly4(searchVal,fr)-y;
+      if(distance>distanceAbortThreshold)
+        return 0;
+      if((signbit(distance)==0)!=distSign)
         {
-          diff=minDiff;
-          selRoot=i;
+          //we have passed the point of interest!
+          //rewind back and decrease the step size
+          if(dir==1)
+            searchVal-=stepSize;
+          else
+            searchVal+=stepSize;
+          stepSize/=10.;
         }
-      else if((pos==0)&&(diff>minDiff)&&(diff<0.))
-        {
-          diff=minDiff;
-          selRoot=i;
-        }
-    }
-  
-  if(selRoot>=0)
-    return roots[selRoot];
-  else
-    {
-      printf("WARNING: could not evaluate roots of function.\n");
-      return 0;
+      //printf("searchVal: %Lf, distance: %Lf, abs(distance): %Lf\n",searchVal, distance,fabsl(distance));
     }
 
-}*/
+  memcpy(resultVal,&searchVal,sizeof(long double));
+  //printf("Returning search result: %Lf\n",searchVal);
+  return 1;
+
+}
 
 
-/*//determine uncertainty bounds for the critical point by intersection of fit function with line defining values at min + delta
-//done by shifting the function by the value at the minimum + a confidence level, and finding the roots around that minimum
+//determine uncertainty bounds for the local minimum by intersection of fit function with line defining values at min + delta
+//done using iterative search
 //delta is the desired confidence level (1.00 for 1-sigma in 1 parameter)
-void fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt)
+void fitPoly4ChisqConf(const parameters * p, const data * d, fit_results * fr, long double pt)
 {
   
-  long double vertVal = evalPoly3(pt,fr);
+  long double vertVal = evalPoly4(pt,fr);
   //printf("vertval: %LF\n",vertVal);
-  long double a,b,c,d;
   long double delta=p->ciDelta;
-  long double discr;//discriminant
-  long double roots[3];
-  fr->vertBoundsFound=1;
-  
-  a=fr->a[0];
-  b=fr->a[1];
-  c=fr->a[2];
-  d=fr->a[3] - delta - vertVal;
-  
-  discr=18.0*a*b*c*d - 4.0*b*b*b*d + b*b*c*c - 4.0*a*c*c*c - 27.0*a*a*d*d;
-  if(discr>0.0)//3 real roots
-  	{
-  		int i;
-  		long double p,q;
-  		p=(3.0*a*c - b*b)/(3.0*a*a);
-  		q=(2.0*b*b*b - 9.0*a*b*c + 27.0*a*a*d)/(27.0*a*a*a);
-  		for(i=0;i<3;i++)
-  			{
-  				roots[i]=2*sqrt(-1.0*p/3.0)*cos( (1.0/3.0) * acos( (3.0*q/(2.0*p)) * sqrt(-3.0/p) ) - ((2.0*PI*i)/3.0) );
-  				roots[i]-=b/(3.0*a);
-  			}
-  	}
-  else if(discr==0.0)//triple root
-  	{
-  		fr->vertBoundsFound=0;
-  	}
-  else//one real, 2 complex roots
-  	{
-  		fr->vertBoundsFound=0;
-  	}
-  
-  if(fr->vertBoundsFound==1)
-  	{
-      //printf("a0=%LE, a1=%LE, a2=%LE, a3=%LE]\n",fr->a[0],fr->a[1],fr->a[2],fr->a[3]);
-  		//printf("Bounds around point at x=%LE are [%LE %LE %LE]\n",pt,roots[0],roots[1],roots[2]);
-  		int i;
-  		long double uInterval=BIG_NUMBER;
-  		long double lInterval=BIG_NUMBER;
-  		for(i=0;i<3;i++)
-  			{
-					if(roots[i]-pt > 0.0)
-						if(roots[i]-pt < uInterval)
-							uInterval=roots[i]-pt;
-					if(pt-roots[i] > 0.0)
-						if(pt-roots[i] < lInterval)
-							lInterval=pt-roots[i];
-				}
-			fr->vertUBound[0]=pt+uInterval;
-			fr->vertLBound[0]=pt-lInterval;
-  	}
 
-}*/
+  long double boundVal=0.;
+  fr->vertBoundsFound=0;
+
+  if(evalPoly4XSearch(d, fr, vertVal+delta, pt, 1, &boundVal)==1)
+    {
+      fr->vertUBound[0]=boundVal;
+      if(evalPoly4XSearch(d, fr, vertVal+delta, pt, 0, &boundVal)==1)
+        {
+          fr->vertLBound[0]=boundVal;
+          fr->vertBoundsFound=1;
+        }
+    }
+  
+  //printf("Bounds: %Lf %Lf\n",fr->vertLBound[0],fr->vertUBound[0]);
+
+}
 
 
 //prints fit data
@@ -195,12 +167,36 @@ void printPoly4(const data * d, const parameters * p, const fit_results * fr)
   printf("y-intercept = %LE\n",evalPoly4(0.0,fr));
   printf("\n");
 
+  int minInd = getExtremeMinMaxVert(0,fr); //find the minimum
   for(i=0;i<fr->numFitVert;i++)
     {
       if((12.0*fr->a[0]*fr->fitVert[i]*fr->fitVert[i] + 6.0*fr->a[1]*fr->fitVert[i] + 2.0*fr->a[2])>=0)
-        printf("Local minimum: x = %LE\n",fr->fitVert[i]);
+        {
+          if((i==minInd)&&(strcmp(p->dataType,"chisq")==0))
+            {
+              if(fr->vertBoundsFound==1)
+                {
+                  if((float)(fr->vertUBound[0]-fr->fitVert[i])==(float)(fr->fitVert[i]-fr->vertLBound[0]))
+                  printf("Local minimum (with %s confidence interval): x = %LE +/- %LE\n",p->ciSigmaDesc, fr->fitVert[i],fr->vertUBound[0]-fr->fitVert[i]);
+                else
+                  printf("Local minimum (with %s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[i],fr->vertUBound[0]-fr->fitVert[i],fr->fitVert[i]-fr->vertLBound[0]);
+                }
+              else
+                {
+                  printf("Local minimum: x = %LE\n",fr->fitVert[i]);
+                  printf("Specified confidence interval (%s) is unbound for this local minimum.\n",p->ciSigmaDesc);
+                }
+            }
+          else
+            {
+              printf("Local minimum: x = %LE\n",fr->fitVert[i]);
+            }
+        }
       else
-        printf("Local maximum: x = %LE\n",fr->fitVert[i]);
+        {
+          printf("Local maximum: x = %LE\n",fr->fitVert[i]);
+        }
+        
     }
     
   
@@ -337,12 +333,6 @@ void fitPoly4(const parameters * p, const data * d, fit_results * fr, plot_data 
       fr->covar[i][j]=linEq.inv_matrix[i][j]*(fr->chisq/fr->ndf);
   for(i=0;i<linEq.dim;i++)
     fr->aerr[i]=(long double)sqrt((double)(fr->covar[i][i]));
-    
-  /*//now that the fit is performed, use the fit parameters (and the derivative of the fitting function) to find the critical points
-  fr->fitVert[0]=-1.0*fr->a[1] - sqrt(fr->a[1]*fr->a[1] - 3.*fr->a[0]*fr->a[2]);
-  fr->fitVert[0]/=3.*fr->a[0];
-  fr->fitVert[1]=-1.0*fr->a[1] + sqrt(fr->a[1]*fr->a[1] - 3.*fr->a[0]*fr->a[2]);
-  fr->fitVert[1]/=3.*fr->a[0];*/
 
   //find minima/maxima of fit
   //derivative of a quartic is a cubic, will use cubic functions (poly3fit.c)
@@ -357,16 +347,14 @@ void fitPoly4(const parameters * p, const data * d, fit_results * fr, plot_data 
   for(i=0;i<fr->numFitVert;i++)
     fr->fitVert[i]=roots[i];
   free(roots);
+
+  int minInd = getExtremeMinMaxVert(0,fr); //find the minimum
   
-  
-  /*//find confidence bounds if neccessary
+  //find confidence bounds if neccessary
   if(strcmp(p->dataType,"chisq")==0)
   	{
-  		if(evalPoly3(fr->fitVert[0],fr)<evalPoly3(fr->fitVert[1],fr))
-  			fitPoly3ChisqConf(p,fr,fr->fitVert[0]);
-  		else
-  			fitPoly3ChisqConf(p,fr,fr->fitVert[1]);
-  	}*/
+  		fitPoly4ChisqConf(p,d,fr,fr->fitVert[minInd]);
+  	}
   //print results
   if(print==1)
 		printPoly4(d,p,fr);
