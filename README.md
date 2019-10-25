@@ -15,7 +15,7 @@ Gridlock is a program for fitting grids of data points with various functions an
 * Various polynomial type fitting functions implemented.
 * Simple ASCII data file format (compatible with gnuplot, excel, etc.).
 * Plotting of fits is available via a built-in interface to gnuplot (the program will still compile and run if gnuplot is not present, but plotting will be unavailable).
-* Lots of esoteric extra functionality added in an ad-hoc manner as the maintainter sees fit.
+* Lots of esoteric extra functionality added in an ad-hoc manner as the maintainer sees fit.
 * Written in C because reasons.
 
 ## How to Install
@@ -49,7 +49,7 @@ In addition to the data itself, data files must contain a line specifying the de
 |**poly3** | cubic polynomial | f(x) = a1\*x^3 + a2\*x^2 + a3\*x + a4|
 |**poly4** | quartic polynomial | f(x) = a1\*x^4 + a2\*x^3 + a3\*x^2 + a4\*x + a5|
 
-NOTE: The **lin\_deming** function can take an optional parameter specifying the ratio of variances in y and x data.  Default value is 1 (errors perpendicular to line).  The parameter is specified on the fit fucntion line (eg. 'FIT lin\_deming 3' for variance in y data 3x that of x data). 
+NOTE: The **lin\_deming** function can take an optional parameter specifying the ratio of variances in y and x data.  Default value is 1 (errors perpendicular to line).  The parameter is specified on the fit function line (eg. 'FIT lin\_deming 3' for variance in y data 3x that of x data). 
 
 ### Functions with 2 free parameters:
 

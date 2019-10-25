@@ -103,8 +103,6 @@ void print3Par(const data * d, const parameters * p, const fit_results * fr)
     printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
   printf("\n");
   
-
-  printf("Confidence interval values below reported at %s.\n",p->ciSigmaDesc);
   if(fr->a[0]>=0)
     printf("Minimum in x direction");
   else
