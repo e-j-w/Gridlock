@@ -207,6 +207,8 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
   char * str=(char*)calloc(256,sizeof(char));
   plotOpen=1; 
   handle=gnuplot_init();
+  char fitTxtStr[256];
+	sprintf(fitTxtStr,"Fit (%s)",p->fitType);
     
   printf("\nDATA PLOTS\n----------\n");
   
@@ -229,16 +231,16 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
           gnuplot_setstyle(handle,"lines");//set style for fit data
           if(p->numVar==1)
             {
-              gnuplot_plot_xy(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPlotPts, "Fit");
+              gnuplot_plot_xy(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPlotPts, fitTxtStr);
             }  
           else
             {
               if(i==0)
-                gnuplot_plot_xy(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPtsPerVar, "Fit");
+                gnuplot_plot_xy(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPtsPerVar, fitTxtStr);
               else if(i==1)
-                gnuplot_plot_xygrid(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPtsPerVar*pd->numFitPtsPerVar, pd->numFitPtsPerVar, pd->numFitPtsPerVar, 0, "Fit");
+                gnuplot_plot_xygrid(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPtsPerVar*pd->numFitPtsPerVar, pd->numFitPtsPerVar, pd->numFitPtsPerVar, 0, fitTxtStr);
               else if(i==2)
-                gnuplot_plot_xygrid(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar, pd->numFitPtsPerVar*pd->numFitPtsPerVar, 0, "Fit");
+                gnuplot_plot_xygrid(handle, pd->fit[i][i], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar, pd->numFitPtsPerVar*pd->numFitPtsPerVar, 0, fitTxtStr);
             }
           //strcpy(str,fr->fitForm[i]);//retrieve fit data functional form
           //gnuplot_plot_equation(handle, str, "Fit (function)");
@@ -329,11 +331,11 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
               gnuplot_setstyle(handle,"lines");
               gnuplot_cmd(handle,"set grid");//set style for fit data
               if(i==0)
-                gnuplot_plot_xyzgrid(handle, pd->fit[i][1], pd->fit[i][2], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar*pd->numFitPtsPerVar, pd->numFitPtsPerVar, 0, "Fit");
+                gnuplot_plot_xyzgrid(handle, pd->fit[i][1], pd->fit[i][2], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar*pd->numFitPtsPerVar, pd->numFitPtsPerVar, 0, fitTxtStr);
               else if(i==1)
-                gnuplot_plot_xyzgrid(handle, pd->fit[i][0], pd->fit[i][2], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar, 0, pd->numFitPtsPerVar, "Fit");
+                gnuplot_plot_xyzgrid(handle, pd->fit[i][0], pd->fit[i][2], pd->fit[i][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar, 0, pd->numFitPtsPerVar, fitTxtStr);
               else if(i==2)
-                gnuplot_plot_xyzgrid(handle, pd->fit[i][0], pd->fit[i][1], pd->fit[i][p->numVar], pd->numFitPtsPerVar*pd->numFitPtsPerVar, pd->numFitPtsPerVar, 0, 0, "Fit");
+                gnuplot_plot_xyzgrid(handle, pd->fit[i][0], pd->fit[i][1], pd->fit[i][p->numVar], pd->numFitPtsPerVar*pd->numFitPtsPerVar, pd->numFitPtsPerVar, 0, 0, fitTxtStr);
               //strcpy(str,fr->fitForm[i]);//retrieve fit data functional form
               //gnuplot_plot_equation(handle, str, "Fit (function)");
               printf("Showing surface plot with parameter %i fixed to %Lf\n",i+1,pd->fixedParVal[i]);
@@ -364,7 +366,7 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
           gnuplot_setstyle(handle,"lines");
           gnuplot_cmd(handle,"set grid");//set style for fit data
           //gnuplot_cmd(handle,"set dgrid3d 30,30 qnorm 2");//set style for fit data
-          gnuplot_plot_xyzgrid(handle, pd->fit[0][0], pd->fit[0][1], pd->fit[0][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar, 0, 0, "Fit");
+          gnuplot_plot_xyzgrid(handle, pd->fit[0][0], pd->fit[0][1], pd->fit[0][p->numVar], pd->numFitPlotPts, pd->numFitPtsPerVar, 0, 0, fitTxtStr);
           //strcpy(str,fr->fitForm[0]);//retrieve fit data functional form
           //gnuplot_plot_equation(handle, str, "Fit (function)");
           printf("Showing surface plot.\n");

@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   
 	if((p->numVar<1)||(p->numVar>3))
 		{
-			printf("ERROR: the number of free parameters (NUM_PAR) must be 3 or less, and cannot be negative.\nAborting...\n");
+			printf("ERROR: the number of free parameters (NUM_PAR) must be 3 or less, and cannot be negative.\n");
 			exit(-1);
 		}
 	if(p->numVar>(POWSIZE-2))
