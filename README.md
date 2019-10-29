@@ -18,7 +18,7 @@ Gridlock is a program for fitting grids of data points with various functions an
 * Lots of esoteric extra functionality added in an ad-hoc manner as the maintainer sees fit.
 * Written in C because reasons.
 
-## How to Install
+## How to install
 
 Use `make` to compile.  Optional data plotting requires `gnuplot` to be installed.
 
@@ -26,7 +26,7 @@ To run the program from anywhere, move the resulting `gridlock` executable to an
 
 Tested using gcc and GNU make on Ubuntu 14.04/16.04, Scientific Linux/CentOS 6, and Arch Linux (as of June 2019).  The code may not build on compilers/platforms without support for 128-bit floating point (__float128) values, which are used to obtain higher precision in fits.  Otherwise the code is self-contained and should work on more or less any Linux distro.
 
-## How to Use
+## How to use
 
 The program is run from the command line, with the only argument being the path to a file containing the data to be fitted:
 
@@ -34,20 +34,24 @@ The program is run from the command line, with the only argument being the path 
 gridlock /path/to/data/file
 ```
 
-In addition to the data itself, data files must contain a line specifying the desired fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Fitting Functions Available* section below).  Example data files are included in the `sample` directory.  It is possible to specify grid fitting limits for each parameter in data files (see the *Options* section below and the `sample_3par.txt` file for an example).  It is also possible to plot data (using `gnuplot`) by including a line in the data file specifying a plotting style, see the *Options* section below.
+In addition to the data itself, data files must contain a line specifying the desired fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Available fitting functions* section below).  Example data files are included in the `sample` directory.
+
+It is possible to specify grid fitting limits for each parameter in data files (see the *Options* section below and the `sample_3par.txt` file for an example).
+
+It is also possible to plot data (using `gnuplot`) by including a line in the data file specifying a plotting style, see the *Options* section below.
 
 
-## Fitting Functions Available
+## Available fitting functions
 
 ### Functions with 1 free parameter:
 
 |**Name**|**Description**|**Form**|
 |:---:|:---:|:---:|
-|**lin** | line | f(x) = a1\*x + a2|
-|**lin_deming** | line (Deming regression) | f(x) = a1\*x + a2 with errors in x (see note below)|
-|**par1** | parabola (2nd order polynomial) | f(x) = a1\*x^2 + a2\*x + a3|
-|**poly3** | cubic polynomial | f(x) = a1\*x^3 + a2\*x^2 + a3\*x + a4|
-|**poly4** | quartic polynomial | f(x) = a1\*x^4 + a2\*x^3 + a3\*x^2 + a4\*x + a5|
+|**lin** | line | f(x) = a<sub>1</sub>x + a<sub>2</sub>|
+|**lin_deming** | line (Deming regression) | f(x) = a<sub>1</sub>x + a<sub>2</sub> with errors in x (see note below)|
+|**par1** | parabola (2nd order polynomial) | f(x) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>x + a<sub>3</sub>|
+|**poly3** | cubic polynomial | f(x) = a<sub>1</sub>x<sup>3</sup> + a<sub>2</sub>x<sup>2</sup> + a<sub>3</sub>x + a<sub>4</sub>|
+|**poly4** | quartic polynomial | f(x) = a<sub>1</sub>x<sup>4</sup> + a<sub>2</sub>x<sup>3</sup> + a<sub>3</sub>x<sup>2</sup> + a<sub>4</sub>x + a<sub>5</sub>|
 
 NOTE: The **lin\_deming** function can take an optional parameter specifying the ratio of variances in y and x data.  Default value is 1 (errors perpendicular to line).  The parameter is specified on the fit function line (eg. 'FIT lin\_deming 3' for variance in y data 3x that of x data). 
 
@@ -55,14 +59,14 @@ NOTE: The **lin\_deming** function can take an optional parameter specifying the
 
 |**Name**|**Description**|**Form**|
 |:---:|:---:|:---:|
-|**par2** | bivariate parabola (paraboloid) | f(x,y) = a1\*x^2 + a2\*y^2 + a3\*x\*y + a4\*x + a5\*y + a6|
-|**2parpoly3** | bivariate cubic polynomial | f(x,y) = a1\*x^3 + a2\*y^3 + a3\*x^2\*y + a4\*x\*y^2 + a5\*x^2 + a6\*y^2 +a7\*x\*y + a8\*x + a9\*y + a10|
+|**par2** | bivariate parabola (paraboloid) | f(x,y) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>y<sup>2</sup> + a<sub>3</sub>xy + a<sub>4</sub>x + a<sub>5</sub>y + a<sub>6</sub>|
+|**2parpoly3** | bivariate cubic polynomial | f(x,y) = a<sub>1</sub>x<sup>3</sup> + a<sub>2</sub>y<sup>3</sup> + a<sub>3</sub>x<sup>2</sup>y + a<sub>4</sub>xy<sup>2</sup> + a<sub>5</sub>x<sup>2</sup> + a<sub>6</sub>y<sup>2</sup> +a<sub>7</sub>xy + a<sub>8</sub>x + a<sub>9</sub>y + a<sub>10</sub>|
 
 ### Functions with 3 free parameters:
 
 |**Name**|**Description**|**Form**|
 |:---:|:---:|:---:|
-|**par3** | trivariate parabola | f(x,y,z) = a1\*x^2 + a2\*y^2 + a3\*z^2 + a4\*x\*y + a5\*x\*z + a6\*y\*z + a7\*x + a8\*y + a9\*z + a10|
+|**par3** | trivariate parabola | f(x,y,z) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>y<sup>2</sup> + a<sub>3</sub>z<sup>2</sup> + a<sub>4</sub>xy + a<sub>5</sub>xz + a<sub>6</sub>yz + a<sub>7</sub>x + a<sub>8</sub>y + a<sub>9</sub>z + a<sub>10</sub>|
 
 
 ## Options
