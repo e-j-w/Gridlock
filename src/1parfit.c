@@ -24,7 +24,7 @@ void fit1ParChisqConf(const parameters * p, fit_results * fr)
   
   long double a,b,c;
   long double delta=p->ciDelta;
-  fr->vertBoundsFound=1;
+  fr->vertBoundsFound[0]=1;
   
   a=fr->a[0];
   b=fr->a[1];
@@ -32,7 +32,7 @@ void fit1ParChisqConf(const parameters * p, fit_results * fr)
   if((b*b - 4*a*c)<0.) 
     c=fr->a[2] + delta - fr->vertVal;//try flipping delta
   if((b*b - 4*a*c)<0.)
-    fr->vertBoundsFound=0;
+    fr->vertBoundsFound[0]=0;
   else
     {
       fr->vertUBound[0]=(-1.*b + (long double)sqrt((double)(b*b - 4*a*c)))/(2*a);
@@ -86,7 +86,7 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
     printf("Minimum in x direction");
   else
     printf("Maximum in x direction");
-  if(fr->vertBoundsFound==1)
+  if(fr->vertBoundsFound[0]==1)
     {
       printf(" (with %s confidence interval), ",p->ciSigmaDesc);
       //these values were calculated at long double precision, 

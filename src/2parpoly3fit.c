@@ -104,14 +104,14 @@ void fit2ParPoly3ChisqConf(const data * d, const parameters * p, fit_results * f
 				else
 					fr->fitVert[i]=svarfr->fitVert[1];
 				//save confidence bounds, if applicable
-				if((strcmp(p->dataType,"chisq")==0)&&(svarfr->vertBoundsFound==1))
+				if((strcmp(p->dataType,"chisq")==0)&&(svarfr->vertBoundsFound[0]==1))
 					{
-						fr->vertBoundsFound=1;
+						fr->vertBoundsFound[0]=1;
 						fr->vertLBound[i]=svarfr->vertLBound[0];
 						fr->vertUBound[i]=svarfr->vertUBound[0];
 					}
 				else
-					fr->vertBoundsFound=0;
+					fr->vertBoundsFound[0]=0;
 				
 					
 			}
@@ -125,7 +125,7 @@ void fit2ParPoly3ChisqConf(const data * d, const parameters * p, fit_results * f
 
 void printFitVertex2ParPoly3(const data * d, const parameters * p, const fit_results * fr)
 {
-  if(fr->vertBoundsFound==1)
+  if(fr->vertBoundsFound[0]==1)
     {
       printf("Local minimum (with %s confidence interval) at:\n",p->ciSigmaDesc);
       //these values were calculated at long double precision, 
@@ -183,7 +183,7 @@ void print2ParPoly3(const data * d, const parameters * p, const fit_results * fr
   printf("\n");
   
   //print local minimum and confidence bounds (if necessary)
-	if((strcmp(p->dataType,"chisq")==0)&&(fr->vertBoundsFound==1))
+	if((strcmp(p->dataType,"chisq")==0)&&(fr->vertBoundsFound[0]==1))
 		{
       printf("Local minimum (with %s confidence interval) at:\n",p->ciSigmaDesc);
 			if((float)(fr->vertUBound[0]-fr->fitVert[0])==(float)(fr->fitVert[0]-fr->vertLBound[0]))

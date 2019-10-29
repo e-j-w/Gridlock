@@ -19,7 +19,7 @@ void fit2ParChisqConf(const parameters * p, fit_results * fr)
   long double a,b,c;
   long double delta=p->ciDelta;
   long double minPtVal = eval2Par(fr->fitVert[0],fr->fitVert[1],fr);
-  fr->vertBoundsFound=1;
+  fr->vertBoundsFound[0]=1;
   
   //find x bounds
   a=4.*fr->a[1]*fr->a[0] - fr->a[2]*fr->a[2];
@@ -28,7 +28,7 @@ void fit2ParChisqConf(const parameters * p, fit_results * fr)
   if((b*b - 4*a*c)<0.) 
     c=4.*fr->a[1]*(fr->a[5] + delta - minPtVal) - fr->a[4]*fr->a[4];//try flipping delta
   if((b*b - 4*a*c)<0.)  
-    fr->vertBoundsFound=0;
+    fr->vertBoundsFound[0]=0;
   else
     {
       fr->vertUBound[0]=(-1.*b + (long double)sqrt((double)(b*b - 4.*a*c)))/(2.*a);
@@ -42,7 +42,7 @@ void fit2ParChisqConf(const parameters * p, fit_results * fr)
   if((b*b - 4*a*c)<0.) 
     c=4.*fr->a[0]*(fr->a[5] + delta - minPtVal) - fr->a[3]*fr->a[3];//try flipping delta
   if((b*b - 4*a*c)<0.)  
-    fr->vertBoundsFound=0;
+    fr->vertBoundsFound[0]=0;
   else
     {
       fr->vertUBound[1]=(-1.*b + (long double)sqrt((double)(b*b - 4.*a*c)))/(2.*a);
@@ -75,7 +75,7 @@ void printFitVertex2Par(const data * d, const parameters * p, const fit_results 
     printf("Saddle point");
   }
   
-  if(fr->vertBoundsFound==1)
+  if(fr->vertBoundsFound[0]==1)
     {
       printf(" (with %s confidence interval) at:\n",p->ciSigmaDesc);
       //these values were calculated at long double precision, 
@@ -89,7 +89,7 @@ void printFitVertex2Par(const data * d, const parameters * p, const fit_results 
     {
       printf(" at:\nx0 = %LE\n",fr->fitVert[0]);
     }
-  if(fr->vertBoundsFound==1)
+  if(fr->vertBoundsFound[0]==1)
     {
       if ((float)(fr->fitVert[1]-fr->vertLBound[1])==(float)(fr->vertUBound[1]-fr->fitVert[1]))
         printf("y0 = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);

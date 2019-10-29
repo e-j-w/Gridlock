@@ -16,7 +16,7 @@ void fit3ParChisqConf(const parameters * p, fit_results * fr)
   
   long double a,b,c;
   long double delta=p->ciDelta;
-  fr->vertBoundsFound=1;
+  fr->vertBoundsFound[0]=1;
   
   a=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[0]*fr->a[2] - fr->a[4]*fr->a[4]) - 16.*(fr->a[2]*fr->a[2]*fr->a[3]*fr->a[3] - fr->a[2]*fr->a[3]*fr->a[4]*fr->a[5]) - 4.*fr->a[4]*fr->a[4]*fr->a[5]*fr->a[5];
   b=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[2]*fr->a[6] - 2.*fr->a[4]*fr->a[8]) - 16.*(2.*fr->a[2]*fr->a[2]*fr->a[3]*fr->a[7] - fr->a[2]*fr->a[5]*(fr->a[3]*fr->a[8] + fr->a[7]*fr->a[4])) - 8.*fr->a[5]*fr->a[5]*fr->a[4]*fr->a[8];
@@ -24,7 +24,7 @@ void fit3ParChisqConf(const parameters * p, fit_results * fr)
   if((b*b - 4*a*c)<0.)
     c=(16.*fr->a[1]*fr->a[2] - 4.*fr->a[5]*fr->a[5])*(4.*fr->a[2]*(fr->a[9] + delta - fr->vertVal) - fr->a[8]*fr->a[8]) - 16.*(fr->a[2]*fr->a[2]*fr->a[7]*fr->a[7] - fr->a[2]*fr->a[5]*fr->a[7]*fr->a[8]) - 4.*fr->a[5]*fr->a[5]*fr->a[8]*fr->a[8];//try flipping delta
   if((b*b - 4*a*c)<0.)
-    fr->vertBoundsFound=0;
+    fr->vertBoundsFound[0]=0;
   else
     {
       fr->vertUBound[0]=(-1.*b + (long double)sqrt((double)(b*b - 4.*a*c)))/(2.*a);
@@ -37,7 +37,7 @@ void fit3ParChisqConf(const parameters * p, fit_results * fr)
   if((b*b - 4*a*c)<0.) 
     c=(16.*fr->a[0]*fr->a[2] - 4.*fr->a[4]*fr->a[4])*(4.*fr->a[0]*(fr->a[9] + delta - fr->vertVal) - fr->a[6]*fr->a[6]) - 16.*(fr->a[0]*fr->a[0]*fr->a[8]*fr->a[8] - fr->a[0]*fr->a[4]*fr->a[6]*fr->a[8]) - 4.*fr->a[4]*fr->a[4]*fr->a[6]*fr->a[6];//try flipping delta
   if((b*b - 4*a*c)<0.)  
-    fr->vertBoundsFound=0;
+    fr->vertBoundsFound[0]=0;
   else
     {
       fr->vertUBound[1]=(-1.*b + (long double)sqrt((double)(b*b - 4.*a*c)))/(2.*a);
@@ -50,7 +50,7 @@ void fit3ParChisqConf(const parameters * p, fit_results * fr)
   if((b*b - 4*a*c)<0.) 
     c=(16.*fr->a[0]*fr->a[1] - 4.*fr->a[3]*fr->a[3])*(4.*fr->a[0]*(fr->a[9] + delta - fr->vertVal) - fr->a[6]*fr->a[6]) - 16.*(fr->a[0]*fr->a[0]*fr->a[7]*fr->a[7] - fr->a[0]*fr->a[3]*fr->a[6]*fr->a[7]) - 4.*fr->a[3]*fr->a[3]*fr->a[6]*fr->a[6];//try flipping delta
   if((b*b - 4*a*c)<0.)  
-    fr->vertBoundsFound=0;
+    fr->vertBoundsFound[0]=0;
   else
     {
       fr->vertUBound[2]=(-1.*b + (long double)sqrt((double)(b*b - 4.*a*c)))/(2.*a);
@@ -107,7 +107,7 @@ void print3Par(const data * d, const parameters * p, const fit_results * fr)
     printf("Minimum in x direction");
   else
     printf("Maximum in x direction");
-  if(fr->vertBoundsFound==1)
+  if(fr->vertBoundsFound[0]==1)
     {
       printf(" (with %s confidence interval), ",p->ciSigmaDesc);
       //these values were calculated at long double precision, 
@@ -126,7 +126,7 @@ void print3Par(const data * d, const parameters * p, const fit_results * fr)
     printf("Minimum in y direction");
   else
     printf("Maximum in y direction");
-  if(fr->vertBoundsFound==1)
+  if(fr->vertBoundsFound[0]==1)
     {
       printf(" (with %s confidence interval), ",p->ciSigmaDesc);
       if ((float)(fr->fitVert[1]-fr->vertLBound[1])==(float)(fr->vertUBound[1]-fr->fitVert[1]))
@@ -143,7 +143,7 @@ void print3Par(const data * d, const parameters * p, const fit_results * fr)
     printf("Minimum in z direction");
   else
     printf("Maximum in z direction");
-  if(fr->vertBoundsFound==1)
+  if(fr->vertBoundsFound[0]==1)
     {
       printf(" (with %s confidence interval), ",p->ciSigmaDesc);
       if ((float)(fr->fitVert[2]-fr->vertLBound[2])==(float)(fr->vertUBound[2]-fr->fitVert[2]))

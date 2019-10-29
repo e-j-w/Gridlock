@@ -80,7 +80,7 @@ typedef struct
   long double vertUBound[POWSIZE],vertLBound[POWSIZE];//upper and lower bounds of the vertex
   long double vertVal; //value of the fit function at the vertex;
   long double chisq,ndf;
-  int vertBoundsFound;
+  int vertBoundsFound[POWSIZE];
   //confidence interval data
   int ciEEValues;//number of values on the error ellipse/ellipsoid used to get confidence interval
   double ciEEVal[POWSIZE][CI_EE_DIM];//values on the error ellipse/ellipsoid used to get confidence interval
