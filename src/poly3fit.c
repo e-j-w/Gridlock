@@ -411,7 +411,15 @@ void fitPoly3(const parameters * p, const data * d, fit_results * fr, plot_data 
   fr->fitVert[1]=-1.0*fr->a[1] + sqrt(fr->a[1]*fr->a[1] - 3.*fr->a[0]*fr->a[2]);
   fr->fitVert[1]/=3.*fr->a[0];
   
-  
+  //re-order critical points in ascending order
+  if(fr->fitVert[0]>fr->fitVert[1])
+    {
+      long double tmpVal=fr->fitVert[0];
+      fr->fitVert[0]=fr->fitVert[1];
+      fr->fitVert[1]=tmpVal;
+    }
+
+
   //find confidence bounds if neccessary
   if(strcmp(p->dataType,"chisq")==0)
   	{

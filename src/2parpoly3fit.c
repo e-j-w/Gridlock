@@ -110,7 +110,7 @@ void fit2ParPoly3ChisqConf(const data * d, const parameters * p, fit_results * f
 						fr->vertBoundsFound[i]=1;
 						fr->vertLBound[i]=svarfr->vertLBound[minInd];
 						fr->vertUBound[i]=svarfr->vertUBound[minInd];
-            printf("i: %i, vert: %Lf, lbound: %Lf, ubound: %Lf\n",i,fr->fitVert[i],fr->vertLBound[i],fr->vertUBound[i]);
+            //printf("i: %i, vert: %Lf, lbound: %Lf, ubound: %Lf\n",i,fr->fitVert[i],fr->vertLBound[i],fr->vertUBound[i]);
 					}
 				else
 					fr->vertBoundsFound[0]=0;
