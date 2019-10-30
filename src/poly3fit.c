@@ -5,6 +5,16 @@ long double evalPoly3(long double x, const fit_results * fr)
 					+ fr->a[2]*x + fr->a[3];
 }
 
+
+//returns the index of the vertex corresponding to the local minimum
+int getPoly3LocalMinIndex(const fit_results * fr)
+{
+  if(evalPoly3(fr->fitVert[0],fr)<evalPoly3(fr->fitVert[1],fr))
+    return 0;
+  else
+    return 1;
+}
+
 //gets the roots of the polynomial
 //y: amount to offset the polynomial by before finding roots
 //roots: array to store the roots in (must have length of at least 3)
@@ -119,7 +129,9 @@ long double evalPoly3X(const long double y, const fit_results * fr, long double 
 //determine uncertainty bounds for the critical point by intersection of fit function with line defining values at min + delta
 //done by shifting the function by the value at the minimum + a confidence level, and finding the roots around that minimum
 //delta is the desired confidence level (1.00 for 1-sigma in 1 parameter)
-void fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt)
+//min: 1 if the confidence interval is around a minimum, 0 if the confidence interval is around a maximum
+//ind: index in the confidence bound array to use
+void fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt, int min, int ind)
 {
   
   long double vertVal = evalPoly3(pt,fr);
@@ -127,11 +139,15 @@ void fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt)
   long double delta=p->ciDelta;
   
   long double *roots=(long double*)calloc(3,sizeof(long double));
-  int numRoots=getPoly3Roots(delta + vertVal,fr,roots);
-  
+  int numRoots;
+  if(min)
+    numRoots=getPoly3Roots(vertVal + delta,fr,roots);
+  else
+    numRoots=getPoly3Roots(vertVal - delta,fr,roots);
+
   if(numRoots==3)
   	{
-      fr->vertBoundsFound[0]=1;
+      fr->vertBoundsFound[ind]=1;
       //printf("a0=%LE, a1=%LE, a2=%LE, a3=%LE]\n",fr->a[0],fr->a[1],fr->a[2],fr->a[3]);
   		//printf("Bounds around point at x=%LE are [%LE %LE %LE]\n",pt,roots[0],roots[1],roots[2]);
   		int i;
@@ -146,8 +162,10 @@ void fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt)
 						if(pt-roots[i] < lInterval)
 							lInterval=pt-roots[i];
 				}
-			fr->vertUBound[0]=pt+uInterval;
-			fr->vertLBound[0]=pt-lInterval;
+      long double ival = pt+uInterval;
+			memcpy(&fr->vertUBound[ind],&ival,sizeof(long double));
+      ival = pt-lInterval;
+			memcpy(&fr->vertLBound[ind],&ival,sizeof(long double));
   	}
 
   free(roots);
@@ -197,27 +215,65 @@ void printPoly3(const data * d, const parameters * p, const fit_results * fr)
   	{
     	printf("Critical points at x = [ %LE %LE ]\n",fr->fitVert[0],fr->fitVert[1]);
     	printf("At critical points, y = [ %LE %LE ]\n",evalPoly3(fr->fitVert[0],fr),evalPoly3(fr->fitVert[1],fr));
+      
     	//print confidence bounds
-    	if((strcmp(p->dataType,"chisq")==0)&&(fr->vertBoundsFound[0]==1))
+    	if(strcmp(p->dataType,"chisq")==0)
     		{
+          printf("\n");
 					if(evalPoly3(fr->fitVert[0],fr)<evalPoly3(fr->fitVert[1],fr))
 						{
-							if((float)(fr->vertUBound[0]-fr->fitVert[0])==(float)(fr->fitVert[0]-fr->vertLBound[0]))
-								printf("Local minimum (with %s confidence interval): x = %LE +/- %LE\n",p->ciSigmaDesc, fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
-							else
-								printf("Local minimum (with %s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+              if(fr->vertBoundsFound[0]==1)
+                {
+                  if((float)(fr->vertUBound[0]-fr->fitVert[0])==(float)(fr->fitVert[0]-fr->vertLBound[0]))
+                    printf("Local minimum (with %s confidence interval): x = %LE +/- %LE\n",p->ciSigmaDesc, fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
+                  else
+                    printf("Local minimum (with %s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+                }
+              else
+                {
+                  printf("Local minimum (with unbound %s confidence interval): x = %LE\n",p->ciSigmaDesc, fr->fitVert[0]);
+                }
+              if(fr->vertBoundsFound[1]==1)
+                {
+                  if((float)(fr->vertUBound[1]-fr->fitVert[1])==(float)(fr->fitVert[1]-fr->vertLBound[1]))
+                    printf("Local maximum (with %s confidence interval): x = %LE +/- %LE\n",p->ciSigmaDesc, fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
+                  else
+                    printf("Local maximum (with %s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[1]);
+                }
+              else
+                {
+                  printf("Local maximum (with unbound %s confidence interval): x = %LE\n",p->ciSigmaDesc, fr->fitVert[1]);
+                }
 						}
 					else
 						{
-							if((float)(fr->vertUBound[0]-fr->fitVert[1])==(float)(fr->fitVert[1]-fr->vertLBound[0]))
-								printf("Local minimum (with %s confidence interval): x = %LE +/- %LE\n",p->ciSigmaDesc,fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1]);
-							else
-								printf("Local minimum with (%s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[1],fr->vertUBound[0]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[0]);
+							if(fr->vertBoundsFound[0]==1)
+                {
+                  if((float)(fr->vertUBound[0]-fr->fitVert[0])==(float)(fr->fitVert[0]-fr->vertLBound[0]))
+                    printf("Local maximum (with %s confidence interval): x = %LE +/- %LE\n",p->ciSigmaDesc, fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
+                  else
+                    printf("Local maximum (with %s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+                }
+              else
+                {
+                  printf("Local maximum (with unbound %s confidence interval): x = %LE\n",p->ciSigmaDesc, fr->fitVert[0]);
+                }
+              if(fr->vertBoundsFound[1]==1)
+                {
+                  if((float)(fr->vertUBound[1]-fr->fitVert[1])==(float)(fr->fitVert[1]-fr->vertLBound[1]))
+                    printf("Local minimum (with %s confidence interval): x = %LE +/- %LE\n",p->ciSigmaDesc, fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
+                  else
+                    printf("Local minimum (with %s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1],fr->fitVert[1]-fr->vertLBound[1]);
+                }
+              else
+                {
+                  printf("Local minimum (with unbound %s confidence interval): x = %LE\n",p->ciSigmaDesc, fr->fitVert[1]);
+                }
 						}
 				}
       else if((strcmp(p->dataType,"chisq")==0)&&(fr->vertBoundsFound[0]==0))
         {
-          printf("Specified confidence interval (%s) is unbound for the local minimum.\n",p->ciSigmaDesc);
+          
         }
     }
   else
@@ -360,9 +416,16 @@ void fitPoly3(const parameters * p, const data * d, fit_results * fr, plot_data 
   if(strcmp(p->dataType,"chisq")==0)
   	{
   		if(evalPoly3(fr->fitVert[0],fr)<evalPoly3(fr->fitVert[1],fr))
-  			fitPoly3ChisqConf(p,fr,fr->fitVert[0]);
+        {
+          fitPoly3ChisqConf(p,fr,fr->fitVert[0],1,0);
+          fitPoly3ChisqConf(p,fr,fr->fitVert[1],0,1);
+        }			
   		else
-  			fitPoly3ChisqConf(p,fr,fr->fitVert[1]);
+        {
+          fitPoly3ChisqConf(p,fr,fr->fitVert[0],0,0);
+          fitPoly3ChisqConf(p,fr,fr->fitVert[1],1,1);
+        }
+  			
   	}
   //print results
   if(print==1)

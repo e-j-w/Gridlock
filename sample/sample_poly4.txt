@@ -13,6 +13,6 @@ FIND_MAX_GRID_POINT_FROM_FIT
 2.5	    3
 3	    4
 3.5	    1
-4	    2.2
+4	    -2.2
 4.5     10.5
 5       17.7

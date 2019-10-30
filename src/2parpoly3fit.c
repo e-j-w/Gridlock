@@ -94,7 +94,7 @@ void fit2ParPoly3ChisqConf(const data * d, const parameters * p, fit_results * f
         //compute confidence interval with variable fixed to 0 if requested
         if(strcmp(p->dataType,"chisq")==0)
           if((fixZero==i+1)||(fixZero==3))
-            fitPoly3ChisqConf(svarp,svarfr,0.);
+            fitPoly3ChisqConf(svarp,svarfr,0.,1,0);
 
 				//save critical point corresponding to minimum
         if((fixZero==i+1)||(fixZero==3))
@@ -104,11 +104,13 @@ void fit2ParPoly3ChisqConf(const data * d, const parameters * p, fit_results * f
 				else
 					fr->fitVert[i]=svarfr->fitVert[1];
 				//save confidence bounds, if applicable
-				if((strcmp(p->dataType,"chisq")==0)&&(svarfr->vertBoundsFound[0]==1))
+        int minInd = getPoly3LocalMinIndex(svarfr);
+				if((strcmp(p->dataType,"chisq")==0)&&(svarfr->vertBoundsFound[minInd]==1))
 					{
-						fr->vertBoundsFound[0]=1;
-						fr->vertLBound[i]=svarfr->vertLBound[0];
-						fr->vertUBound[i]=svarfr->vertUBound[0];
+						fr->vertBoundsFound[i]=1;
+						fr->vertLBound[i]=svarfr->vertLBound[minInd];
+						fr->vertUBound[i]=svarfr->vertUBound[minInd];
+            printf("i: %i, vert: %Lf, lbound: %Lf, ubound: %Lf\n",i,fr->fitVert[i],fr->vertLBound[i],fr->vertUBound[i]);
 					}
 				else
 					fr->vertBoundsFound[0]=0;
@@ -469,7 +471,7 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
               temp2->a[2]=temp1->a[8];
               temp2->a[3]=temp1->a[9];
               //fit confidence interval of the 3rd order polynomial to get bound for y (using ciDelta assuming 2 variables)
-              fitPoly3ChisqConf(p,temp2,temp1->fitVert[1]);
+              fitPoly3ChisqConf(p,temp2,temp1->fitVert[1],1,0);
               temp1->vertLBound[1]=temp2->vertLBound[0];
               temp1->vertUBound[1]=temp2->vertUBound[0];
               free(temp2);
@@ -506,7 +508,7 @@ void fit2ParPoly3(const parameters * p, const data * d, fit_results * fr, plot_d
           temp2->a[2]=temp1->a[7];
           temp2->a[3]=temp1->a[9];
           //fit confidence interval of the 3rd order polynomial to get bound for x (using ciDelta assuming 2 variables)
-          fitPoly3ChisqConf(p,temp2,temp1->fitVert[0]);
+          fitPoly3ChisqConf(p,temp2,temp1->fitVert[0],1,0);
           temp1->vertLBound[0]=temp2->vertLBound[0];
           temp1->vertUBound[0]=temp2->vertUBound[0];
           free(temp2);

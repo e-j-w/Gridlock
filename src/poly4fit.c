@@ -20,13 +20,12 @@ int evalPoly4XSearch(const data * d, const fit_results * fr, const long double y
   long double distanceSolvedThreshold = (d->max_m - d->min_m)/10000000.0;
   long double searchVal=closeToVal;
   long double distance=evalPoly4(searchVal,fr)-y;
-  int distSign;
+  int initDistSign = signbit(distance)==0;
 
   //printf("stepSize: %Lf, distanceSolvedThreshold: %Lf, distanceAbortThreshold: %Lfi\n",stepSize,distanceSolvedThreshold,distanceAbortThreshold);
 
   while((fabsl(distance))>distanceSolvedThreshold)
     {
-      distSign = signbit(distance)==0;
       if(dir==1)
         searchVal+=stepSize;
       else
@@ -34,7 +33,7 @@ int evalPoly4XSearch(const data * d, const fit_results * fr, const long double y
       distance=evalPoly4(searchVal,fr)-y;
       if(distance>distanceAbortThreshold)
         return 0;
-      if((signbit(distance)==0)!=distSign)
+      if((signbit(distance)==0)!=initDistSign)
         {
           //we have passed the point of interest!
           //rewind back and decrease the step size
@@ -57,7 +56,9 @@ int evalPoly4XSearch(const data * d, const fit_results * fr, const long double y
 //determine uncertainty bounds for the local minimum by intersection of fit function with line defining values at min + delta
 //done using iterative search
 //delta is the desired confidence level (1.00 for 1-sigma in 1 parameter)
-void fitPoly4ChisqConf(const parameters * p, const data * d, fit_results * fr, long double pt, int ind)
+//min: 1 if the confidence interval is around a minimum, 0 if the confidence interval is around a maximum
+//ind: index in the confidence bound array to use
+void fitPoly4ChisqConf(const parameters * p, const data * d, fit_results * fr, long double pt, int min, int ind)
 {
   
   long double vertVal = evalPoly4(pt,fr);
@@ -67,15 +68,31 @@ void fitPoly4ChisqConf(const parameters * p, const data * d, fit_results * fr, l
   long double boundVal=0.;
   fr->vertBoundsFound[ind]=0;
 
-  if(evalPoly4XSearch(d, fr, vertVal+delta, pt, 1, &boundVal)==1)
+  if(min)
     {
-      memcpy(&fr->vertUBound[ind],&boundVal,sizeof(long double));
-      if(evalPoly4XSearch(d, fr, vertVal+delta, pt, 0, &boundVal)==1)
+      if(evalPoly4XSearch(d, fr, vertVal+delta, pt, 1, &boundVal)==1)
         {
-          memcpy(&fr->vertLBound[ind],&boundVal,sizeof(long double));
-          fr->vertBoundsFound[ind]=1;
+          memcpy(&fr->vertUBound[ind],&boundVal,sizeof(long double));
+          if(evalPoly4XSearch(d, fr, vertVal+delta, pt, 0, &boundVal)==1)
+            {
+              memcpy(&fr->vertLBound[ind],&boundVal,sizeof(long double));
+              fr->vertBoundsFound[ind]=1;
+            }
         }
     }
+  else
+    {
+      if(evalPoly4XSearch(d, fr, vertVal-delta, pt, 1, &boundVal)==1)
+        {
+          memcpy(&fr->vertUBound[ind],&boundVal,sizeof(long double));
+          if(evalPoly4XSearch(d, fr, vertVal-delta, pt, 0, &boundVal)==1)
+            {
+              memcpy(&fr->vertLBound[ind],&boundVal,sizeof(long double));
+              fr->vertBoundsFound[ind]=1;
+            }
+        }
+    }
+  
   
   //printf("Bounds: %Lf %Lf\n",fr->vertLBound[ind],fr->vertUBound[ind]);
 
@@ -132,8 +149,7 @@ void printPoly4(const data * d, const parameters * p, const fit_results * fr)
                 }
               else
                 {
-                  printf("Local minimum: x = %LE\n",fr->fitVert[i]);
-                  printf("Specified confidence interval (%s) is unbound for this local minimum.\n",p->ciSigmaDesc);
+                  printf("Local minimum (with unbound %s confidence interval): x = %LE\n",p->ciSigmaDesc,fr->fitVert[i]);
                 }
             }
           else
@@ -143,7 +159,24 @@ void printPoly4(const data * d, const parameters * p, const fit_results * fr)
         }
       else
         {
-          printf("Local maximum: x = %LE\n",fr->fitVert[i]);
+          if(strcmp(p->dataType,"chisq")==0)
+            {
+              if(fr->vertBoundsFound[i]==1)
+                {
+                  if((float)(fr->vertUBound[i]-fr->fitVert[i])==(float)(fr->fitVert[i]-fr->vertLBound[i]))
+                  printf("Local maximum (with %s confidence interval): x = %LE +/- %LE\n",p->ciSigmaDesc, fr->fitVert[i],fr->vertUBound[i]-fr->fitVert[i]);
+                else
+                  printf("Local maximum (with %s confidence interval): x = %LE + %LE - %LE\n",p->ciSigmaDesc,fr->fitVert[i],fr->vertUBound[i]-fr->fitVert[i],fr->fitVert[i]-fr->vertLBound[i]);
+                }
+              else
+                {
+                  printf("Local maximum (with unbound %s confidence interval): x = %LE\n",p->ciSigmaDesc,fr->fitVert[i]);
+                }
+            }
+          else
+            {
+              printf("Local maximum: x = %LE\n",fr->fitVert[i]);
+            }
         }
         
     }
@@ -297,6 +330,24 @@ void fitPoly4(const parameters * p, const data * d, fit_results * fr, plot_data 
     fr->fitVert[i]=roots[i];
   free(roots);
 
+  //sort the vertices
+  int sorted = -1;
+  long double tmpVal = 0;
+  while(sorted!=0)
+    {
+      sorted=0;
+      for(i=0;i<fr->numFitVert-1;i++)
+        {
+          if(fr->fitVert[i]>fr->fitVert[i+1])
+            {
+              tmpVal = fr->fitVert[i];
+              fr->fitVert[i] = fr->fitVert[i+1];
+              fr->fitVert[i+1] = tmpVal;
+              sorted++;
+            }
+        }
+    }
+
   if(strcmp(p->dataType,"chisq")==0)
     {
       for(i=0;i<fr->numFitVert;i++)
@@ -304,7 +355,11 @@ void fitPoly4(const parameters * p, const data * d, fit_results * fr, plot_data 
           //check that the vertex is a minimum
           if((12.0*fr->a[0]*fr->fitVert[i]*fr->fitVert[i] + 6.0*fr->a[1]*fr->fitVert[i] + 2.0*fr->a[2])>=0)
             {
-              fitPoly4ChisqConf(p,d,fr,fr->fitVert[i],i);
+              fitPoly4ChisqConf(p,d,fr,fr->fitVert[i],1,i);
+            }
+          else
+            {
+              fitPoly4ChisqConf(p,d,fr,fr->fitVert[i],0,i);
             }
         }
     }
