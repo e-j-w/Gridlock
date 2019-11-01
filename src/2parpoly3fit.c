@@ -178,7 +178,7 @@ void print2ParPoly3(const data * d, const parameters * p, const fit_results * fr
   printf("\nFIT RESULTS\n-----------\n");
   printf("Fit parameter uncertainties reported at 1-sigma.\n");
   printf("Fit function: f(x,y,z) = a1*x^3 + a2*y^3 + a3*x^2*y\n                       + a4*x*y^2 + a5*x^2 + a6*y^2\n                       + a7*x*y + a8*x + a9*y + a10\n\n");
-  //printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
+  printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
   printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
   for(i=1;i<10;i++)
     printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
