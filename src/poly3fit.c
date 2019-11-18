@@ -131,7 +131,8 @@ long double evalPoly3X(const long double y, const fit_results * fr, long double 
 //delta is the desired confidence level (1.00 for 1-sigma in 1 parameter)
 //min: 1 if the confidence interval is around a minimum, 0 if the confidence interval is around a maximum
 //ind: index in the confidence bound array to use
-void fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt, int min, int ind)
+//returns true if the confidence interval is found successfully
+int fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt, int min, int ind)
 {
   
   long double vertVal = evalPoly3(pt,fr);
@@ -169,6 +170,11 @@ void fitPoly3ChisqConf(const parameters * p, fit_results * fr, long double pt, i
   	}
 
   free(roots);
+
+  if(numRoots==3)
+    return 1;
+  else
+    return 0;
 
 }
 
