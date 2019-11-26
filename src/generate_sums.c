@@ -61,4 +61,5 @@ void generateSums(data * d,const parameters * p)
                     }
         }
     }
+    
 }

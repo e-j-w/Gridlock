@@ -30,6 +30,7 @@ void fit2ParPoly3ChisqConf(const data * d, const parameters * p, fit_results * f
   svarp->numVar=1;
   svarp->ciDelta=p->ciDelta;
   strcpy(svarp->plotMode,"1d");
+  strcpy(svarp->fitType,"poly3");
   if(strcmp(p->dataType,"chisq")==0)
     strcpy(svarp->dataType,"chisq");
   	
@@ -91,31 +92,37 @@ void fit2ParPoly3ChisqConf(const data * d, const parameters * p, fit_results * f
 					
 				}
       
-      //fit and find critical points of this data
-      generateSums(svard,svarp);
-      fitPoly3(svarp,svard,svarfr,svarpd,0);//fit but don't print data
-
-      //compute confidence interval with variable fixed to 0 if requested
-      if(strcmp(p->dataType,"chisq")==0)
-        if((fixZero==i+1)||(fixZero==3))
-          fitPoly3ChisqConf(svarp,svarfr,0.,1,0);
-
-      //save critical point corresponding to minimum
-      int minInd = getPoly3LocalMinIndex(svarfr);
-      if((fixZero==i+1)||(fixZero==3))
-        fr->fitVert[i]=0.;
-      else
-        fr->fitVert[i]=svarfr->fitVert[minInd];
-      //save confidence bounds, if applicable
-      if((strcmp(p->dataType,"chisq")==0)&&(svarfr->vertBoundsFound[minInd]==1))
+      //check that a fit is possible
+      if(svard->lines>=4)
         {
-          fr->vertBoundsFound[i]=1;
-          fr->vertLBound[i]=svarfr->vertLBound[minInd];
-          fr->vertUBound[i]=svarfr->vertUBound[minInd];
-          //printf("i: %i, vert: %Lf, lbound: %Lf, ubound: %Lf\n",i,fr->fitVert[i],fr->vertLBound[i],fr->vertUBound[i]);
+          //fit and find critical points of this data
+          generateSums(svard,svarp);
+          fitPoly3(svarp,svard,svarfr,svarpd,0);//fit but don't print data
+
+          //compute confidence interval with variable fixed to 0 if requested
+          if(strcmp(p->dataType,"chisq")==0)
+            if((fixZero==i+1)||(fixZero==3))
+              fitPoly3ChisqConf(svarp,svarfr,0.,1,0);
+
+          //save critical point corresponding to minimum
+          int minInd = getPoly3LocalMinIndex(svarfr);
+          if((fixZero==i+1)||(fixZero==3))
+            fr->fitVert[i]=0.;
+          else
+            fr->fitVert[i]=svarfr->fitVert[minInd];
+          //save confidence bounds, if applicable
+          if((strcmp(p->dataType,"chisq")==0)&&(svarfr->vertBoundsFound[minInd]==1))
+            {
+              fr->vertBoundsFound[i]=1;
+              fr->vertLBound[i]=svarfr->vertLBound[minInd];
+              fr->vertUBound[i]=svarfr->vertUBound[minInd];
+              //printf("i: %i, vert: %Lf, lbound: %Lf, ubound: %Lf\n",i,fr->fitVert[i],fr->vertLBound[i],fr->vertUBound[i]);
+            }
+          else
+            fr->vertBoundsFound[i]=0;
         }
       else
-        fr->vertBoundsFound[0]=0;
+        fr->vertBoundsFound[i]=0;
       
     }
 
