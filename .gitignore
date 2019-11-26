@@ -5,3 +5,4 @@ gridlock
 *.txt
 .nfs*
 *~
+octave-workspace

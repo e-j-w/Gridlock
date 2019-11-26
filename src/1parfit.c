@@ -109,10 +109,23 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
   if(strcmp(p->dataType,"chisq")==0)
     if( ((fr->a[0] >= 0.)&&(fr->fitVert[0]<0.)) || ((fr->a[0] < 0.)&&(fr->fitVert[0]>0.)) || (p->forceZeroX) )
       {
-        if( ((fr->a[0] >= 0.)&&(fr->fitVert[0]<0.)) || ((fr->a[0] < 0.)&&(fr->fitVert[0]>0.)) )
-          printf("Upper bound (with %s confidence interval) assuming minimum at zero: x = %LE\n",p->ciSigmaDesc, eval1ParX(eval1Par(0.0,fr)+p->ciDelta,fr,1));
+        if( ((fr->a[0] >= 0.)&&(fr->fitVert[0]<0.)) || ((fr->a[0] < 0.)&&(fr->fitVert[0]>0.)) || ((fr->a[0] >= 0.)&&(p->forceZeroX)) )
+          {
+            long double uBound = eval1ParX(eval1Par(0.0,fr)+p->ciDelta,fr,1);
+            if(uBound == uBound)
+              printf("Upper bound (with %s confidence interval) assuming minimum at zero: x = %LE\n",p->ciSigmaDesc, uBound);
+            else
+              printf("%s confidence interval is unbound if assuming a minimum at zero.\n", p->ciSigmaDesc);
+          }
         else
-          printf("Lower bound (with %s confidence interval) assuming minimum at zero: x = %LE\n",p->ciSigmaDesc, eval1ParX(eval1Par(0.0,fr)+p->ciDelta,fr,0));
+          {
+            long double lBound = eval1ParX(eval1Par(0.0,fr)-p->ciDelta,fr,0);
+            if(lBound == lBound)
+              printf("Lower bound (with %s confidence interval) assuming maximum at zero: x = %LE\n",p->ciSigmaDesc, lBound);
+            else
+              printf("%s confidence interval is unbound if assuming a maximum at zero.\n", p->ciSigmaDesc);
+          }
+          
       }
       
       
