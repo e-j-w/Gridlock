@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 	generateSums(d,p); //construct sums for fitting (see generate_sums.c) 
 		
 	//Call specific fitting routines depending on the fit type specified
-	if(strcmp(p->fitType,"par1")==0) //see 1parfit.c
+	if(strcmp(p->fitType,"poly2")==0) //see 1parfit.c
 		fit1Par(p,d,fr,pd,1);
 	else if(strcmp(p->fitType,"par2")==0) //see 2parfit.c
 		fit2Par(p,d,fr,pd,1);

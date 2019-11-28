@@ -105,13 +105,13 @@ void importData(data * d, parameters * p)
   //check the fit type
   if(strcmp(p->fitType,"poly1")==0)
   	strcpy(p->fitType,"lin");
-  else if(strcmp(p->fitType,"poly2")==0)
-  	strcpy(p->fitType,"par1");
+  else if(strcmp(p->fitType,"par1")==0)
+  	strcpy(p->fitType,"poly2");
   else if(strcmp(p->fitType,"2par")==0)
   	strcpy(p->fitType,"par2");
   else if(strcmp(p->fitType,"3par")==0)
   	strcpy(p->fitType,"par3");
-  if(strcmp(p->fitType,"par1")==0)
+  if(strcmp(p->fitType,"poly2")==0)
     p->numVar=1;
   else if(strcmp(p->fitType,"par2")==0)
     p->numVar=2;

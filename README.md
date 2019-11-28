@@ -24,7 +24,7 @@ Use `make` to compile.  Optional data plotting requires `gnuplot` to be installe
 
 To run the program from anywhere, move the resulting `gridlock` executable to any directory under your `$PATH` environment variable.
 
-Tested using gcc and GNU make on Ubuntu 14.04/16.04, Scientific Linux/CentOS 6, and Arch Linux (as of June 2019).  The code may not build on compilers/platforms without support for 128-bit floating point (__float128) values, which are used to obtain higher precision in fits.  Otherwise the code is self-contained and should work on more or less any Linux distro.
+Tested using gcc and GNU make on Ubuntu 14.04/16.04, Scientific Linux/CentOS 6, CentOS 7, and Arch Linux (as of June 2019).  The code may not build on compilers/platforms without support for 128-bit floating point (__float128) values, which are used to obtain higher precision in fits.  Otherwise the code is self-contained and should work on more or less any Linux distro.
 
 ## How to use
 
@@ -49,7 +49,7 @@ It is also possible to plot data (using `gnuplot`) by including a line in the da
 |:---:|:---:|:---:|
 |**lin** | line | f(x) = a<sub>1</sub>x + a<sub>2</sub>|
 |**lin_deming** | line (Deming regression) | f(x) = a<sub>1</sub>x + a<sub>2</sub> with errors in x (see note below)|
-|**par1** | parabola (2nd order polynomial) | f(x) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>x + a<sub>3</sub>|
+|**poly2** | parabola (2nd order polynomial) | f(x) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>x + a<sub>3</sub>|
 |**poly3** | cubic polynomial | f(x) = a<sub>1</sub>x<sup>3</sup> + a<sub>2</sub>x<sup>2</sup> + a<sub>3</sub>x + a<sub>4</sub>|
 |**poly4** | quartic polynomial | f(x) = a<sub>1</sub>x<sup>4</sup> + a<sub>2</sub>x<sup>3</sup> + a<sub>3</sub>x<sup>2</sup> + a<sub>4</sub>x + a<sub>5</sub>|
 

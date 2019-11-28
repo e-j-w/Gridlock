@@ -156,7 +156,7 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
                     pd->fit[i][k][j]=(double)pd->fixedParVal[k];
                 }
             }
-          if(strcmp(p->fitType,"par1")==0)
+          if(strcmp(p->fitType,"poly2")==0)
             pd->fit[i][p->numVar][j]=(double)eval1Par(pd->fit[i][0][j],fr);
           else if((strcmp(p->fitType,"lin")==0)||(strcmp(p->fitType,"lin_deming")==0))
             pd->fit[i][p->numVar][j]=(double)evalLin(pd->fit[i][0][j],fr);
