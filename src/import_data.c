@@ -12,6 +12,7 @@ void importData(data * d, parameters * p)
   int lineValid;
   int linenum=0;
   p->plotData=0;
+  p->refitFilter=0;
   for(i=0;i<POWSIZE;i++)
     {
       p->llimit[i]=-1*BIG_NUMBER;
@@ -234,7 +235,7 @@ void importData(data * d, parameters * p)
                     }
                   }
                 }
-
+                
                 //check variable and data values for NaN
                 for(i=0;i<p->numVar+2;i++)
                   if(i<POWSIZE)
@@ -242,8 +243,7 @@ void importData(data * d, parameters * p)
                       lineValid=0;
                       break;
                     }
-                      
-
+                
                 //check variable values against limits
                 for(i=0;i<p->numVar;i++)
                   if(i<POWSIZE)
@@ -251,7 +251,6 @@ void importData(data * d, parameters * p)
                       lineValid=0;
                       break;
                     }
-                      
                 
                 //check data values against limits
                 if((d->x[p->numVar][d->lines]>p->dulimit)||(d->x[p->numVar][d->lines]<p->dllimit)){
@@ -380,6 +379,17 @@ void importData(data * d, parameters * p)
                       else
                         {
                           printf("ERROR: could not properly set data lower limit (DATA_LOWER_LIMIT option).\n");
+                          exit(-1);
+                        }
+                    }
+                  if(strcmp(str2,"REFIT_FILTER")==0)
+                    {
+                      p->refitFilter=1;
+                      if(sscanf(str3,"%Lf",&p->refitFilterDist))
+                        printf("Refit filter used with distance: %0.3LE\n",p->refitFilterDist);
+                      else
+                        {
+                          printf("ERROR: could not properly set refit filter (REFIT_FILTER option).\n");
                           exit(-1);
                         }
                     }

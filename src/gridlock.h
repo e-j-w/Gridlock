@@ -37,6 +37,8 @@ typedef struct
   long double uniWeightVal;//value specified for uniform weights
   int filter;//0=no filter,1=linear filter
   double filterSigma;//sigma value to be used for filter
+  int refitFilter;//0=don't refit fiter, 1=refit filter
+  long double refitFilterDist;//distance used when refit filtering
   int forceZeroX,forceZeroY,forceZeroZ;//whether or not to attempt forcing the fitted minimum to zero for x,y,z
   int numCIEvalPts; //number of points to evaluate the confidence interval bounds at (where applicable)
   long double CIEvalPts[100]; //array of x values at which to evaluate the confidence interval at

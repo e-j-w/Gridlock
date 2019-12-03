@@ -382,6 +382,19 @@ void fitPoly3(const parameters * p, const data * d, fit_results * fr, plot_data 
   linEq.vector[1]=d->mxpowsum[0][2];
   linEq.vector[2]=d->mxpowsum[0][1];
   linEq.vector[3]=d->mxpowsum[0][0];
+
+  /*printf("Matrix:\n");
+  for(i=0;i<linEq.dim;i++)
+    {
+      for(j=0;j<linEq.dim;j++)
+        printf(" %LE ",linEq.matrix[i][j]);
+      printf("\n");
+    }
+  printf("Vector:\n");
+  for(i=0;i<linEq.dim;i++)
+    {
+      printf("%LE\n",linEq.vector[i]);
+    }*/
     
 	//solve system of equations and assign values
 	if(!(solve_lin_eq(&linEq)==1))
