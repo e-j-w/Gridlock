@@ -1,3 +1,6 @@
+//forward declarations
+void refitFilterLin(const parameters *, const data *, fit_results *, plot_data *, long double);
+
 //prints the results
 void printLinDeming(const data * d, const parameters * p, const fit_results * fr)
 {
@@ -128,6 +131,13 @@ void fitLinDeming(const parameters * p, const data * d, fit_results * fr, plot_d
   //compute fit parameters
   fr->a[0]=(syy - delta*sxx + sqrt((syy-delta*sxx)*(syy-delta*sxx) + 4.*delta*sxy*sxy))/(2.*sxy);
   fr->a[1]=yb - fr->a[0]*xb;
+
+  //refit filter  
+  if(p->refitFilter==1)
+    {
+      refitFilterLin(p,d,fr,pd,p->refitFilterDist);
+      return;
+    }
   
   
   long double x,y;

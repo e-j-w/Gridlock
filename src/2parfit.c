@@ -1,3 +1,7 @@
+//forward declarations
+void generateSums(data *,const parameters *);
+void refitFilter2Par(const parameters *, const data *, fit_results *, plot_data *, long double);
+
 //evaluates the fit function at the specified point
 long double eval2Par(long double x,long double y, const fit_results * fr)
 {
@@ -269,6 +273,12 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
   //save fit parameters  
   for(i=0;i<linEq.dim;i++)
     fr->a[i]=linEq.solution[i];
+  //refit filter  
+  if(p->refitFilter==1)
+    {
+      refitFilter2Par(p,d,fr,pd,p->refitFilterDist);
+      return;
+    }
   long double f;
   fr->chisq=0;
   for(i=0;i<d->lines;i++)//loop over data points to get chisq
@@ -413,4 +423,41 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
 			plotData(p,fr,pd);
 		}
   
+}
+
+//generate a new data set and refit
+void refitFilter2Par(const parameters * p, const data * d, fit_results * fr, plot_data * pd, long double distance){
+  int i,j;
+
+  //generate a new data set containing only filtered data
+  data *nd=(data*)calloc(1,sizeof(data));
+  parameters *np=(parameters*)calloc(1,sizeof(parameters));
+  memcpy(np,p,sizeof(parameters));
+  np->refitFilter=0;
+  nd->lines=0;
+
+  for (i=0;i<d->lines;i++){
+    long double diff = fabs(d->x[p->numVar][i] - eval2Par(d->x[0][i],d->x[1][i],fr));
+    if(diff<=distance){
+      //keep this data point (remember to copy weight as well)
+      for(j=0;j<=p->numVar+1;j++)
+        nd->x[j][nd->lines] = d->x[j][i];
+      nd->lines++;
+    }
+  }
+
+  nd->max_m=d->max_m;
+  nd->min_m=d->min_m;
+  for(i=0;i<p->numVar;i++)
+    nd->max_x[i]=d->max_x[i];
+
+  if(p->verbose<1)
+    printf("\nRefit filter: %i of %i data point(s) retained.\n",nd->lines,d->lines);
+  //printDataInfo(nd,np); //see print_data_info.c
+
+  generateSums(nd,np); //construct sums for fitting (see generate_sums.c)
+  fit2Par(np,nd,fr,pd,1);
+
+  free(nd);
+  free(np);
 }

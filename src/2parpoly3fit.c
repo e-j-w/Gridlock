@@ -588,8 +588,8 @@ void refitFilter2ParPoly3(const parameters * p, const data * d, fit_results * fr
   for(i=0;i<p->numVar;i++)
     nd->max_x[i]=d->max_x[i];
 
-
-  printf("\nRefit filter: %i of %i data point(s) retained.\n",nd->lines,d->lines);
+  if(p->verbose<1)
+    printf("\nRefit filter: %i of %i data point(s) retained.\n",nd->lines,d->lines);
   //printDataInfo(nd,np); //see print_data_info.c
 
   generateSums(nd,np); //construct sums for fitting (see generate_sums.c)
