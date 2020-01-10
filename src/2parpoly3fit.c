@@ -143,15 +143,27 @@ void printFitVertex2ParPoly3(const data * d, const parameters * p, const fit_res
     }
   else 
     {
+      if((fr->vertBoundsFound[0]==1)||(fr->vertBoundsFound[1]==1))
+        printf("Local minimum (with %s confidence interval) at:\n",p->ciSigmaDesc);
+      else
+        printf("Local minimum at:\n");
+      
       if(fr->vertBoundsFound[0]==1)
         {
-          printf("Local minimum (with %s confidence interval) at:\n",p->ciSigmaDesc);
           //these values were calculated at long double precision, 
           //check if they are the same to within float precision
           if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
             printf("x0 = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
           else
             printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+        }
+      else
+        {
+          printf("x0 = %LE\n",fr->fitVert[0]);
+        }
+
+      if(fr->vertBoundsFound[1]==1)
+        {
           if ((float)(fr->fitVert[1]-fr->vertLBound[1])==(float)(fr->vertUBound[1]-fr->fitVert[1]))
             printf("y0 = %LE +/- %LE\n",fr->fitVert[1],fr->vertUBound[1]-fr->fitVert[1]);
           else
@@ -159,11 +171,9 @@ void printFitVertex2ParPoly3(const data * d, const parameters * p, const fit_res
         }
       else
         {
-          printf("Local minimum at:\n");
-          printf("x0 = %LE\n",fr->fitVert[0]);
           printf("y0 = %LE\n",fr->fitVert[1]);
         }
-      
+          
       printf("\nf(x0,y0) = %LE\n",fr->vertVal);
     }
  

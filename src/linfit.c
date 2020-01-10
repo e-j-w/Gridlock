@@ -8,6 +8,12 @@ long double evalLin(long double x, const fit_results * fr)
 	return fr->a[0]*x + fr->a[1];
 }
 
+//evaluates the fit function x value at the specified y value
+long double evalLinX(long double y, const fit_results * fr)
+{
+  return (y - fr->a[1])/fr->a[0];
+}
+
 long double confIntVal(long double x, const fit_results * fr, const data * d, int upper)
 {
 	int i;	
@@ -57,7 +63,7 @@ long double confIntValX(long double y, const fit_results * fr, const data * d, i
 }
 
 //prints the results
-void printLin(const data * d, const parameters * p, fit_results * fr)
+void printLin(const data * d, const parameters * p, const fit_results * fr)
 {
   //simplified data printing depending on verbosity setting
   if(p->verbose==1)
@@ -117,6 +123,27 @@ void printLin(const data * d, const parameters * p, fit_results * fr)
   handle=gnuplot_init();
   gnuplot_plot_xy(handle, fr->ciEEVal[0], fr->ciEEVal[1], fr->ciEEValues, "Data");
   getc(stdin);*/
+
+  if((p->forceZeroX)&&(strcmp(p->dataType,"chisq")==0))
+    {
+      printf("\n");
+      if(fr->a[0] > 0.)
+        {
+          long double uBound = evalLinX(evalLin(0.0,fr)+p->ciDelta,fr);
+          printf("Upper bound (with %s confidence interval) assuming minimum at zero: x = %LE\n",p->ciSigmaDesc, uBound);
+        }
+      else if(fr->a[0] < 0.)
+        {
+          long double uBound = evalLinX(evalLin(0.0,fr)-p->ciDelta,fr);
+          printf("Lower bound (with %s confidence interval) assuming maximum at zero: x = %LE\n",p->ciSigmaDesc, uBound);
+        }
+      else
+        {
+          printf("Fit is a constant value, no upper or lower bound.\n");
+        }
+
+    }
+  
 
 	
 	if((p->findMinGridPoint == 1)||(p->findMaxGridPoint == 1)){
