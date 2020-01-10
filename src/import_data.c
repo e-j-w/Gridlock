@@ -109,14 +109,18 @@ void importData(data * d, parameters * p)
   else if(strcmp(p->fitType,"par1")==0)
   	strcpy(p->fitType,"poly2");
   else if(strcmp(p->fitType,"2par")==0)
-  	strcpy(p->fitType,"par2");
+  	strcpy(p->fitType,"2parpoly2");
+  else if(strcmp(p->fitType,"par2")==0)
+  	strcpy(p->fitType,"2parpoly2");
   else if(strcmp(p->fitType,"3par")==0)
-  	strcpy(p->fitType,"par3");
+  	strcpy(p->fitType,"3parpoly2");
+  else if(strcmp(p->fitType,"par3")==0)
+  	strcpy(p->fitType,"3parpoly2");
   if(strcmp(p->fitType,"poly2")==0)
     p->numVar=1;
-  else if(strcmp(p->fitType,"par2")==0)
+  else if(strcmp(p->fitType,"2parpoly2")==0)
     p->numVar=2;
-  else if(strcmp(p->fitType,"par3")==0)
+  else if(strcmp(p->fitType,"3parpoly2")==0)
     p->numVar=3;
   else if(strcmp(p->fitType,"lin")==0)
   	{
@@ -136,7 +140,7 @@ void importData(data * d, parameters * p)
       printf("ERROR: a fit type must be specified.\nMake sure to include a line in the file with the format\n\nFIT  type\n\nwhere 'type' is a valid fit type (eg. 'par1').\n");
       printf("\nValid fit types are:\n\nlin (line)\nlin_deming (line with errors in x)\npoly1 (1st order polynomial)\n");
       printf("poly2 (2nd order polynomial)\npoly3 (3rd order polynomial)\npoly4 (4th order polynomial)\npar1 (2nd order polynomial)\n");
-      printf("par2 (2nd order bivariate polynomial)\npar3 (2nd order trivariate polynomial)\n2parpoly3 (3rd order bivariate polynomial)\n");
+      printf("2parpoly2 (2nd order bivariate polynomial)\n2parpoly3 (3rd order bivariate polynomial)\n3parpoly2 (2nd order trivariate polynomial)\n");
       exit(-1);
     }
   else
@@ -144,7 +148,7 @@ void importData(data * d, parameters * p)
       printf("ERROR: invalid fit type '%s' specified.\n",p->fitType);
       printf("\nValid fit types are:\n\nlin (line)\nlin_deming (line with errors in x)\npoly1 (1st order polynomial)\n");
       printf("poly2 (2nd order polynomial)\npoly3 (3rd order polynomial)\npoly4 (4th order polynomial)\npar1 (2nd order polynomial)\n");
-      printf("par2 (2nd order bivariate polynomial)\npar3 (2nd order trivariate polynomial)\n2parpoly3 (3rd order bivariate polynomial)\n");
+      printf("2parpoly2 (2nd order bivariate polynomial)\n2parpoly3 (3rd order bivariate polynomial)\n3parpoly2 (2nd order trivariate polynomial)\n");
       exit(-1);
     }
     
@@ -152,9 +156,9 @@ void importData(data * d, parameters * p)
     {
       if(strcmp(p->fitType,"par1")==0)
         printf("Will fit a parabola.\n");
-      if(strcmp(p->fitType,"par2")==0)
+      if(strcmp(p->fitType,"2parpoly2")==0)
         printf("Will fit a paraboloid with %i free parameters.\n",p->numVar);
-      if(strcmp(p->fitType,"par3")==0)
+      if(strcmp(p->fitType,"3parpoly2")==0)
         printf("Will fit a paraboloid with %i free parameters.\n",p->numVar);
       if(p->uniWeight==1)
       	printf("Uniform weights of value %0.3Lf will be taken.\n",p->uniWeightVal);

@@ -58,14 +58,14 @@ NOTE: The **lin\_deming** function can take an optional parameter specifying the
 
 |**Name**|**Description**|**Form**|
 |:---:|:---:|:---:|
-|**par2** | bivariate parabola (paraboloid) | f(x,y) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>y<sup>2</sup> + a<sub>3</sub>xy + a<sub>4</sub>x + a<sub>5</sub>y + a<sub>6</sub>|
+|**2parpoly2** | bivariate parabola (paraboloid) | f(x,y) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>y<sup>2</sup> + a<sub>3</sub>xy + a<sub>4</sub>x + a<sub>5</sub>y + a<sub>6</sub>|
 |**2parpoly3** | bivariate cubic polynomial | f(x,y) = a<sub>1</sub>x<sup>3</sup> + a<sub>2</sub>y<sup>3</sup> + a<sub>3</sub>x<sup>2</sup>y + a<sub>4</sub>xy<sup>2</sup> + a<sub>5</sub>x<sup>2</sup> + a<sub>6</sub>y<sup>2</sup> +a<sub>7</sub>xy + a<sub>8</sub>x + a<sub>9</sub>y + a<sub>10</sub>|
 
 ### Functions with 3 free parameters:
 
 |**Name**|**Description**|**Form**|
 |:---:|:---:|:---:|
-|**par3** | trivariate parabola | f(x,y,z) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>y<sup>2</sup> + a<sub>3</sub>z<sup>2</sup> + a<sub>4</sub>xy + a<sub>5</sub>xz + a<sub>6</sub>yz + a<sub>7</sub>x + a<sub>8</sub>y + a<sub>9</sub>z + a<sub>10</sub>|
+|**3parpoly2** | trivariate parabola | f(x,y,z) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>y<sup>2</sup> + a<sub>3</sub>z<sup>2</sup> + a<sub>4</sub>xy + a<sub>5</sub>xz + a<sub>6</sub>yz + a<sub>7</sub>x + a<sub>8</sub>y + a<sub>9</sub>z + a<sub>10</sub>|
 
 
 ## Options
@@ -92,8 +92,8 @@ Add these options (eg. 'PLOT 1d') as a single line anywhere in the data file to 
 | UPPER_LIMITS value1 value2 value3 | Upper fit limits for each variable (specify as many values as there are variables).  Use with LOWER_LIMITS to specify a fit range.|
 | DATA_LOWER_LIMIT value | Lower fit limit for data values.  Use with DATA_UPPER_LIMIT to specify a fit range for data values.  This option can be used to filter outlier data.|
 | DATA_UPPER_LIMIT value | Upper fit limit for data values.  Use with DATA_LOWER_LIMIT to specify a fit range for data values.  This option can be used to filter outlier data.|
-| ZEROX | When fitting using the *lin*, *par1*, *par2*, *poly3*, or *2parpoly3* functions with chisq data, show the fit result assuming a minimum in x at x=0.  This option can be stacked with ZEROY for the *par2* and *2parpoly3* fit functions.|
-| ZEROY | When fitting using the *par2* or *2parpoly3* functions with chisq data, show the fit result assuming a minimum in y at y=0.  This option can be stacked with ZEROX.|
+| ZEROX | When fitting using the *lin*, *poly2*, *poly3*, *2parpoly2*, or *2parpoly3* functions with chisq data, show the fit result assuming a minimum in x at x=0.  This option can be stacked with ZEROY for the *2parpoly2* and *2parpoly3* fit functions.|
+| ZEROY | When fitting using the *2parpoly2* or *2parpoly3* functions with chisq data, show the fit result assuming a minimum in y at y=0.  This option can be stacked with ZEROX.|
 | EVAL_CI value | When fitting a function (such as 'lin') which provides a confidence interval, evaluate the bounds of the confidence interval for the given value of the independent variable.|
 | SET_CI_SIGMA value | When fitting chi-square data, manually set the sigma value used to evaluate uncertainties (valid values are 1, 2, 3, 90%).  The program will then handle the appropriate confidence bounds for the number of free parameters used.  Default value is 1-sigma.|
 | SET_CI_DELTA value | For people who know what they're doing and for whom SET_CI_SIGMA isn't enough.  When fitting chi-square data, manually set the delta value used to evaluate confidence bounds (by default, delta is set to the 1-sigma bound ie. 1.00 for 1 parameter, 2.30 for 2 parameters, etc.).|

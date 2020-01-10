@@ -164,11 +164,11 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
             pd->fit[i][p->numVar][j]=(double)evalPoly3(pd->fit[i][0][j],fr);
           else if(strcmp(p->fitType,"poly4")==0)
             pd->fit[i][p->numVar][j]=(double)evalPoly4(pd->fit[i][0][j],fr);
-          else if(strcmp(p->fitType,"par2")==0)
+          else if(strcmp(p->fitType,"2parpoly2")==0)
             pd->fit[i][p->numVar][j]=((double)eval2Par(pd->fit[i][0][j],pd->fit[i][1][j],fr));
           else if(strcmp(p->fitType,"2parpoly3")==0)
             pd->fit[i][p->numVar][j]=((double)eval2ParPoly3(pd->fit[i][0][j],pd->fit[i][1][j],fr));
-          else if(strcmp(p->fitType,"par3")==0)
+          else if(strcmp(p->fitType,"3parpoly2")==0)
             pd->fit[i][p->numVar][j]=(double)eval3Par(pd->fit[i][0][j],pd->fit[i][1][j],pd->fit[i][2][j],fr);
           else
             printf("WARNING: Unknown fit type '%s', cannot plot fit.\n",p->fitType);
@@ -391,7 +391,7 @@ void plotData(const parameters * p, fit_results * fr, plot_data * pd)
           gnuplot_cmd(handle,str);
           sprintf(str,"set cbrange [%f:%f]",pd->min_m,pd->max_m); //set the color bar range
           gnuplot_cmd(handle,str);
-          if(strcmp(p->fitType,"par3")==0)
+          if(strcmp(p->fitType,"3parpoly2")==0)
             {
               gnuplot_setcolor(handle,"black");
               gnuplot_cmd(handle,"set pointsize 1.5");
