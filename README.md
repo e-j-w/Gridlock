@@ -35,9 +35,7 @@ gridlock /path/to/data/file
 
 In addition to the data itself, data files must contain a line specifying the desired fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Available fitting functions* section below).  Example data files are included in the `sample` directory.
 
-It is possible to specify grid fitting limits for each parameter in data files (see the *Options* section below and the `sample_3par.txt` file for an example).
-
-It is also possible to plot data (using `gnuplot`) by including a line in the data file specifying a plotting style, see the *Options* section below.
+Various options are available for processing data (see the *Options* section below). For example, it is possible to specify grid fitting limits for each parameter in data files (see the `sample_3parpoly2.txt` file for an example).  It is also possible to automatically plot the data and the fit function (using `gnuplot`).
 
 
 ## Available fitting functions
