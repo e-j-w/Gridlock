@@ -1,4 +1,4 @@
-FIT par1
+FIT poly2
 DATA_TYPE chisq
 PLOT 1d
 0.1	6.257993
