@@ -119,6 +119,13 @@ void fit2ParPoly3ChisqConf(const data * d, const parameters * p, fit_results * f
               fr->vertUBound[i]=svarfr->vertUBound[minInd];
               //printf("i: %i, vert: %Lf, lbound: %Lf, ubound: %Lf\n",i,fr->fitVert[i],fr->vertLBound[i],fr->vertUBound[i]);
             }
+          else if((strcmp(p->dataType,"chisq")==0) && ((fixZero==i+1)||(fixZero==3)))
+            {
+              //fallback for minimum fixed to zero
+              fr->vertUBound[i]=evalPoly3X(evalPoly3(0.0,svarfr)+svarp->ciDelta, svarfr,0.0,1);
+              fr->vertLBound[i]=-1.0*fr->vertUBound[i];
+              fr->vertBoundsFound[i]=1;
+            }
           else
             fr->vertBoundsFound[i]=0;
         }

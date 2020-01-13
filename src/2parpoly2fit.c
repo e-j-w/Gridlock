@@ -328,7 +328,29 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
   //check zero bounds
   if(strcmp(p->dataType,"chisq")==0)
     {
+      
+      //fixZero - 0: don't fix minimum to 0, 1: fix minimum in x to 0, 2: fix minimum in y to 0, 3: fix minimum in x and y to 0
+      int fixZero = 0;
       if((p->forceZeroX==1) && (p->forceZeroY==1))
+        fixZero = 3;
+      else if(p->forceZeroX==1)
+        fixZero = 1;
+      else if(p->forceZeroY==1)
+        fixZero = 2;
+
+      //setup automatic zero bounds
+      if(fixZero==0)
+        {
+          if((fr->fitVert[0]<0.)&&(fr->fitVert[1]<0.))
+            fixZero = 3;
+          else if(fr->fitVert[0]<0.)
+            fixZero = 1;
+          else if(fr->fitVert[1]<0.)
+            fixZero = 2;
+        } 
+      
+
+      if(fixZero==3)
         {
           //make a copy of the fit results to work on
           fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
@@ -345,43 +367,39 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
             }
           free(temp1);
         }
-      else if((fr->fitVert[0]<0.) || (p->forceZeroX==1))
+      else if(fixZero==1)
         {
-          if((fr->fitVert[1]>=0.) || (p->forceZeroX==1))
+          //make a copy of the fit results to work on
+          fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
+          memcpy(temp1,fr,sizeof(fit_results));
+          //compute fit vertex assuming x is fixed to 0 (from 1st derivative condition)
+          temp1->fitVert[0]=0.;
+          temp1->fitVert[1]=(-1.*temp1->a[4])/(2.*temp1->a[1]);
+          temp1->vertVal=eval2Par(temp1->fitVert[0],temp1->fitVert[1],temp1);
+          //fit confidence interval to get bound for x
+          fit2ParChisqConf(p,temp1);
+          temp1->vertLBound[0]=-1.*temp1->vertUBound[0]; //mirror bounds in x
+          //determine confidence in y by fitting the parabola at x=0
+          fit_results *temp2=(fit_results*)calloc(1,sizeof(fit_results));
+          //map fit parameters into a 1D parabola
+          temp2->a[0]=temp1->a[1];
+          temp2->a[1]=temp1->a[4];
+          temp2->a[2]=temp1->a[5];
+          //find value at the vertex of the parabola
+          temp2->vertVal=temp1->vertVal;
+          //fit confidence interval of the parabola (using ciDelta assuming 2 variables)
+          fit1ParChisqConf(p,temp2);
+          temp1->vertLBound[1]=temp2->vertLBound[0];
+          temp1->vertUBound[1]=temp2->vertUBound[0];
+          free(temp2);
+          if(print==1)
             {
-              //make a copy of the fit results to work on
-              fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
-              memcpy(temp1,fr,sizeof(fit_results));
-              //compute fit vertex assuming x is fixed to 0 (from 1st derivative condition)
-              temp1->fitVert[0]=0.;
-              temp1->fitVert[1]=(-1.*temp1->a[4])/(2.*temp1->a[1]);
-              temp1->vertVal=eval2Par(temp1->fitVert[0],temp1->fitVert[1],temp1);
-              //fit confidence interval to get bound for x
-              fit2ParChisqConf(p,temp1);
-              temp1->vertLBound[0]=-1.*temp1->vertUBound[0]; //mirror bounds in x
-              //determine confidence in y by fitting the parabola at x=0
-              fit_results *temp2=(fit_results*)calloc(1,sizeof(fit_results));
-              //map fit parameters into a 1D parabola
-              temp2->a[0]=temp1->a[1];
-              temp2->a[1]=temp1->a[4];
-              temp2->a[2]=temp1->a[5];
-              //find value at the vertex of the parabola
-              temp2->vertVal=temp1->vertVal;
-              //fit confidence interval of the parabola (using ciDelta assuming 2 variables)
-              fit1ParChisqConf(p,temp2);
-              temp1->vertLBound[1]=temp2->vertLBound[0];
-              temp1->vertUBound[1]=temp2->vertUBound[0];
-              free(temp2);
-              if(print==1)
-                {
-                  printf("\nAssuming minimum at zero for x,\n");
-                  printFitVertex2Par(d,p,temp1);
-                }
-              free(temp1);
+              printf("\nAssuming minimum at zero for x,\n");
+              printFitVertex2Par(d,p,temp1);
             }
-          
+          free(temp1);
         }
-      else if((fr->fitVert[1]<0.) || (p->forceZeroY==1)) //implies fitVert[0]>=0.
+      else if(fixZero==2)
         {
           //make a copy of the fit results to work on
           fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
