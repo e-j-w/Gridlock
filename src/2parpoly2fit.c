@@ -349,25 +349,7 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
             fixZero = 2;
         } 
       
-
-      if(fixZero==3)
-        {
-          //make a copy of the fit results to work on
-          fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
-          memcpy(temp1,fr,sizeof(fit_results));
-          //set fit vertex to (0,0)
-          temp1->fitVert[0]=0.;
-          temp1->fitVert[1]=0.;
-          //fit confidence interval to get bound for x and y
-          fit2ParChisqConf(p,temp1);
-          if(print==1)
-            {
-              printf("\nAssuming minimum at zero for both x and y,\n");
-              printFitVertex2Par(d,p,temp1);
-            }
-          free(temp1);
-        }
-      else if(fixZero==1)
+      if(fixZero==1) //x minimum fixed to zero
         {
           //make a copy of the fit results to work on
           fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
@@ -399,7 +381,7 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
             }
           free(temp1);
         }
-      else if(fixZero==2)
+      else if(fixZero==2) //y minimum fixed to zero
         {
           //make a copy of the fit results to work on
           fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
@@ -431,6 +413,63 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
             }
           free(temp1);
         }
+      else if(fixZero==3) //x and y minimum fixed to 0
+        {
+          //make a copy of the fit results to work on
+          fit_results *temp1=(fit_results*)calloc(1,sizeof(fit_results));
+          memcpy(temp1,fr,sizeof(fit_results));
+          //set fit vertex to (0,0)
+          temp1->fitVert[0]=0.;
+          temp1->fitVert[1]=0.;
+          temp1->vertVal=eval2Par(temp1->fitVert[0],temp1->fitVert[1],temp1);
+
+          //fit confidence interval to get bound for x and y
+          fit2ParChisqConf(p,temp1);
+
+          //use different methods depending if original fit vertex x and y values are different signs
+          //if they are the same sign, then the confidence interval found using the (0,0) vertex value + delta bounds above should be valid
+          //if they are different signs, then the (0,0) vertex value + delta bounds will be very large in one of the variables
+          //so in the latter case, use the parabola projection method which is used if only one of the variables is fixed to zero
+          //but only use it for the variable which is negative at the original fit vertex
+          if(((fr->fitVert[0] >= 0.)&&(fr->fitVert[1] < 0.)) || ((fr->fitVert[1] >= 0.)&&(fr->fitVert[0] < 0.))){
+            //determine confidence in y by fitting the parabolas at x=0 and y=0
+            fit_results *temp2=(fit_results*)calloc(1,sizeof(fit_results));
+            //find value at the vertex of the parabola
+            temp2->vertVal=temp1->vertVal;
+            if(fr->fitVert[0] < 0.)
+              {
+                //map fit parameters into a 1D parabola projection at x=0
+                temp2->a[0]=temp1->a[1];
+                temp2->a[1]=temp1->a[4];
+                temp2->a[2]=temp1->a[5];
+                //fit confidence interval of the parabola (using ciDelta assuming 2 variables)
+                fit1ParChisqConf(p,temp2);
+                temp1->vertLBound[1]=temp2->vertLBound[0];
+                temp1->vertUBound[1]=temp2->vertUBound[0];
+              }
+            if(fr->fitVert[0] < 0.)
+              {
+                //map fit parameters into a 1D parabola projection at y=0
+                temp2->a[0]=temp1->a[0];
+                temp2->a[1]=temp1->a[3];
+                temp2->a[2]=temp1->a[5];
+                //find value at the vertex of the parabola
+                temp2->vertVal=temp1->vertVal;
+                //fit confidence interval of the parabola (using ciDelta assuming 2 variables)
+                fit1ParChisqConf(p,temp2);
+                temp1->vertLBound[0]=temp2->vertLBound[0];
+                temp1->vertUBound[0]=temp2->vertUBound[0];
+              }
+            free(temp2);
+          }
+          if(print==1)
+            {
+              printf("\nAssuming minimum at zero for both x and y,\n");
+              printFitVertex2Par(d,p,temp1);
+            }
+          free(temp1);
+        }
+      
     }
       
 
