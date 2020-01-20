@@ -447,7 +447,7 @@ void fit2Par(const parameters * p, const data * d, fit_results * fr, plot_data *
                 temp1->vertLBound[1]=temp2->vertLBound[0];
                 temp1->vertUBound[1]=temp2->vertUBound[0];
               }
-            if(fr->fitVert[0] < 0.)
+            if(fr->fitVert[1] < 0.)
               {
                 //map fit parameters into a 1D parabola projection at y=0
                 temp2->a[0]=temp1->a[0];

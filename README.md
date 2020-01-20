@@ -33,7 +33,7 @@ The program is run from the command line, with the only argument being the path 
 gridlock /path/to/data/file
 ```
 
-In addition to the data itself, data files must contain a line specifying the desired fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'par1', see *Available fitting functions* section below).  Example data files are included in the `sample` directory.
+In addition to the data itself, data files must contain a line specifying the desired fit function, formatted 'FIT type' where 'type' is the name of the fit function (eg. 'poly2', see *Available fitting functions* section below).  Example data files are included in the `sample` directory.
 
 Various options are available for processing data (see the *Options* section below). For example, it is possible to specify grid fitting limits for each parameter in data files (see the `sample_3parpoly2.txt` file for an example).  It is also possible to automatically plot the data and the fit function (using `gnuplot`).
 
