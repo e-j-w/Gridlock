@@ -23,7 +23,7 @@ Use `make` to compile.  Optional data plotting requires `gnuplot` to be installe
 
 To run the program from anywhere, move the resulting `gridlock` executable to any directory under your `$PATH` environment variable.
 
-Tested using gcc and GNU make on Ubuntu 14.04/16.04, Scientific Linux/CentOS 6, CentOS 7, and Arch Linux (as of June 2019).  The code may not build on compilers/platforms without support for 128-bit floating point (__float128) values, which are used to obtain higher precision in fits.  Otherwise the code is self-contained and should work on more or less any Linux distro.
+Tested using gcc and GNU make on Ubuntu 14.04/16.04, Scientific Linux/CentOS 6, CentOS 7, and Arch Linux (as of April 2020).  The code may not build on compilers/platforms without support for 128-bit floating point (__float128) values, which are used to obtain higher precision in fits.  Otherwise the code is self-contained and should work on more or less any Linux distro.
 
 ## How to use
 

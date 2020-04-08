@@ -105,6 +105,8 @@ gnuplot_ctrl * gnuplot_init(void)
      */
     handle = (gnuplot_ctrl*)malloc(sizeof(gnuplot_ctrl)) ;
     handle->nplots = 0 ;
+    handle->colSet = 0 ;
+    handle->smooth = 0 ;
     gnuplot_setstyle(handle, "points") ;
     handle->ntmp = 0 ;
 
@@ -249,13 +251,12 @@ void gnuplot_setsmooth(gnuplot_ctrl * h, int val)
 
 void gnuplot_setcolor(gnuplot_ctrl * h, char * color)
 {
-    if (strcmp(color, "black") &&
-        strcmp(color, "blue")) {
+    if (strcmp(color, "black") && strcmp(color, "blue")) {
         fprintf(stderr, "warning: unknown requested color: using default\n") ;
         h->colSet=0;
     } else {
         h->colSet=1;
-        strcpy(h->col, color) ;
+        strcpy(h->col, color);
     }
     return ;
 }
