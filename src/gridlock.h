@@ -90,7 +90,7 @@ typedef struct
   double ciLVal[POWSIZE][CI_DIM];//values on the lower confidence interval curve
   double ciXVal[POWSIZE][CI_DIM];//x values on the confidence interval curve
   //fit forms
-  char fitForm[POWSIZE][256];//string containing form of the fitted equation
+  char fitForm[POWSIZE][512];//string containing form of the fitted equation
   /*char ciUForm[POWSIZE][256];//string containing form of the upper confidence interval
   char ciLForm[POWSIZE][256];//string containing form of the lower confidence interval
   char piUForm[POWSIZE][256];//string containing form of the upper prediction interval
