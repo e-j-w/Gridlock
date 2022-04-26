@@ -6,6 +6,7 @@ long double eval2ParPoly3(long double,long double, const fit_results *);
 long double eval1Par(long double, const fit_results *);
 long double eval2Par(long double,long double, const fit_results *);
 long double eval3Par(long double,long double,long double, const fit_results *);
+long double evalPoly2Root0(long double, const fit_results *);
 
 //generate data to be plotted
 //for multidimensional paraboloid fits, do this by by selecting datapoints nearest to the fit vertex
@@ -158,6 +159,8 @@ void preparePlotData(const data * d, const parameters * p, const fit_results * f
             }
           if(strcmp(p->fitType,"poly2")==0)
             pd->fit[i][p->numVar][j]=(double)eval1Par(pd->fit[i][0][j],fr);
+          else if(strcmp(p->fitType,"poly2root0")==0)
+            pd->fit[i][p->numVar][j]=(double)evalPoly2Root0(pd->fit[i][0][j],fr);
           else if((strcmp(p->fitType,"lin")==0)||(strcmp(p->fitType,"lin_deming")==0))
             pd->fit[i][p->numVar][j]=(double)evalLin(pd->fit[i][0][j],fr);
           else if(strcmp(p->fitType,"poly3")==0)

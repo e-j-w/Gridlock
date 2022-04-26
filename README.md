@@ -8,8 +8,7 @@ Gridlock is a program for fitting grids of data points with various functions an
 
 ## Features
 
-* Fits data on a grid of up to 3 free variables.
-* Uses fast non-iterative linear least-squares method.
+* Fits data on a grid of up to 3 free variables, using a fast non-iterative linear least-squares method.
 * Automatically calculates and displays certain properties of fits (confidence intervals, intercepts, vertices).
 * Various polynomial type fitting functions implemented.
 * Simple ASCII data file format (compatible with gnuplot, excel, etc.).
@@ -49,6 +48,7 @@ Various options are available for processing data (see the *Options* section bel
 |**poly2** | parabola (2nd order polynomial) | f(x) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>x + a<sub>3</sub>|
 |**poly3** | cubic polynomial | f(x) = a<sub>1</sub>x<sup>3</sup> + a<sub>2</sub>x<sup>2</sup> + a<sub>3</sub>x + a<sub>4</sub>|
 |**poly4** | quartic polynomial | f(x) = a<sub>1</sub>x<sup>4</sup> + a<sub>2</sub>x<sup>3</sup> + a<sub>3</sub>x<sup>2</sup> + a<sub>4</sub>x + a<sub>5</sub>|
+|**poly2root0** | parabola (2nd order polynomial) with the 0th order term fixed to zero | f(x) = a<sub>1</sub>x<sup>2</sup> + a<sub>2</sub>x|
 
 NOTE: The **lin\_deming** function can take an optional parameter specifying the ratio of variances in y and x data.  Default value is 1 (errors perpendicular to line).  The parameter is specified on the fit function line (eg. 'FIT lin\_deming 3' for variance in y data 3x that of x data). 
 

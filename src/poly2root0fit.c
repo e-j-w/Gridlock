@@ -1,21 +1,20 @@
 //forward declarations
 void generateSums(data *,const parameters *);
-void refitFilter1Par(const parameters *, const data *, fit_results *, plot_data *, long double);
+void refitFilterPoly2Root0(const parameters *, const data *, fit_results *, plot_data *, long double);
 
 //evaluates the fit function at the specified point
-long double eval1Par(long double x, const fit_results * fr)
+long double evalPoly2Root0(long double x, const fit_results * fr)
 {
-	return fr->a[0]*x*x+ fr->a[1]*x
-					+ fr->a[2];
+	return fr->a[0]*x*x+ fr->a[1]*x;
 }
 
 //evaluates the fit function x values at the specified y value
-long double eval1ParX(long double y, const fit_results * fr, int pos)
+long double evalPoly2Root0X(long double y, const fit_results * fr, int pos)
 {
   if(pos==0) //negative root
-    return (-1.*fr->a[1] - sqrt(fr->a[1]*fr->a[1] - 4.*fr->a[0]*(fr->a[2]-y)))/(2.*fr->a[0]);
+    return (-1.*fr->a[1] - sqrt(fr->a[1]*fr->a[1] - 4.*fr->a[0]*(0.-y)))/(2.*fr->a[0]);
   else //positive root
-    return (-1.*fr->a[1] + sqrt(fr->a[1]*fr->a[1] - 4.*fr->a[0]*(fr->a[2]-y)))/(2.*fr->a[0]);
+    return (-1.*fr->a[1] + sqrt(fr->a[1]*fr->a[1] - 4.*fr->a[0]*(0.-y)))/(2.*fr->a[0]);
 }
 
 //determine uncertainty bounds for the vertex by intersection of fit function with line defining values at min + delta
@@ -23,7 +22,7 @@ long double eval1ParX(long double y, const fit_results * fr, int pos)
 //derived by: 
 //1) setting f(x,y)=delta+min
 //2) solving for x bounds using the quadratic formula (calculated below)
-void fit1ParChisqConf(const parameters * p, fit_results * fr)
+void fitPoly2Root0ChisqConf(const parameters * p, fit_results * fr)
 {
   
   long double a,b,c;
@@ -32,9 +31,9 @@ void fit1ParChisqConf(const parameters * p, fit_results * fr)
   
   a=fr->a[0];
   b=fr->a[1];
-  c=fr->a[2] - delta - fr->vertVal;
+  c=0. - delta - fr->vertVal;
   if((b*b - 4*a*c)<0.) 
-    c=fr->a[2] + delta - fr->vertVal;//try flipping delta
+    c=delta - fr->vertVal;//try flipping delta
   if((b*b - 4*a*c)<0.)
     fr->vertBoundsFound[0]=0;
   else{
@@ -52,64 +51,62 @@ void fit1ParChisqConf(const parameters * p, fit_results * fr)
 }
 
 //prints fit data
-void print1Par(const data * d, const parameters * p, const fit_results * fr)
+void printPoly2Root0(const data * d, const parameters * p, const fit_results * fr)
 {
 
   int i;
 
   //simplified data printing depending on verbosity setting
-  if(p->verbose==1){
-    //print vertex of paraboloid
-    for(i=0;i<p->numVar;i++)
-      printf("%LE ",fr->fitVert[i]);
-    printf("\n");
-    return;
-  }else if(p->verbose==2){
-    //print coefficient values
-    for(i=0;i<3;i++)
-      printf("%LE ",fr->a[i]);
-    printf("\n");
-    return;
-  } 
-  
+  if(p->verbose==1)
+    {
+      //print vertex of paraboloid
+      for(i=0;i<p->numVar;i++)
+        printf("%LE ",fr->fitVert[i]);
+      printf("\n");
+      return;
+    }
+  else if(p->verbose==2)
+    {
+      //print coefficient values
+      for(i=0;i<3;i++)
+        printf("%LE ",fr->a[i]);
+      printf("\n");
+      return;
+    } 
+    
   printf("\nFIT RESULTS\n-----------\n");
   printf("Fit parameter uncertainties reported at 1-sigma.\n");
-  printf("Fit function: f(x,y) = a1*x^2 + a2*x + a3\n\n");
+  printf("Fit function: f(x,y) = a1*x^2 + a2*x\n\n");
   printf("Best chisq (fit): %0.3Lf\nBest chisq/NDF (fit): %0.3Lf\n\n",fr->chisq,fr->chisq/fr->ndf);
   printf("Coefficients from fit: a1 = %LE +/- %LE\n",fr->a[0],fr->aerr[0]);
-  for(i=1;i<3;i++)
-    printf("                       a%i = %LE +/- %LE\n",i+1,fr->a[i],fr->aerr[i]);
+  printf("                       a2 = %LE +/- %LE\n",fr->a[1],fr->aerr[1]);
   printf("\n");
   
   if(fr->a[0]>=0)
     printf("Minimum in x direction");
   else
     printf("Maximum in x direction");
-  if(fr->vertBoundsFound[0]==1)
-    {
-      printf(" (with %s confidence interval): ",p->ciSigmaDesc);
-      //these values were calculated at long double precision, 
-      //check if they are the same to within float precision
-      if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
-        printf("x0 = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
-      else
-        printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
-    }
-  else
-    {
-      printf(": x0 = %LE\n",fr->fitVert[0]);
-    }
-    
+  if(fr->vertBoundsFound[0]==1){
+    printf(" (with %s confidence interval): ",p->ciSigmaDesc);
+    //these values were calculated at long double precision, 
+    //check if they are the same to within float precision
+    if ((float)(fr->fitVert[0]-fr->vertLBound[0])==(float)(fr->vertUBound[0]-fr->fitVert[0]))
+      printf("x0 = %LE +/- %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0]);
+    else
+      printf("x0 = %LE + %LE - %LE\n",fr->fitVert[0],fr->vertUBound[0]-fr->fitVert[0],fr->fitVert[0]-fr->vertLBound[0]);
+  }else{
+    printf(": x0 = %LE\n",fr->fitVert[0]);
+  }
   printf("f(x0) = %LE\n",fr->vertVal);
 
-  printf("\ny-intercept = %LE\n",eval1Par(0.0,fr));
+  printf("\ny-intercept is zero for this fit function.\n");
 
   if(strcmp(p->dataType,"chisq")==0)
     if( ((fr->a[0] >= 0.)&&(fr->fitVert[0]<0.)) || ((fr->a[0] < 0.)&&(fr->fitVert[0]>0.)) || (p->forceZeroX) )
       {
         if( ((fr->a[0] >= 0.)&&(fr->fitVert[0]<0.)) || ((fr->a[0] < 0.)&&(fr->fitVert[0]>0.)) || ((fr->a[0] >= 0.)&&(p->forceZeroX)) )
           {
-            long double uBound = eval1ParX(eval1Par(0.0,fr)+p->ciDelta,fr,1);
+            long double uBound = evalPoly2Root0X(evalPoly2Root0(0.0,fr)+p->ciDelta,fr,1);
             if(uBound == uBound)
               printf("Upper bound (with %s confidence interval) assuming minimum at zero: x = %LE\n",p->ciSigmaDesc, uBound);
             else
@@ -117,7 +114,7 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
           }
         else
           {
-            long double lBound = eval1ParX(eval1Par(0.0,fr)-p->ciDelta,fr,0);
+            long double lBound = evalPoly2Root0X(evalPoly2Root0(0.0,fr)-p->ciDelta,fr,0);
             if(lBound == lBound)
               printf("Lower bound (with %s confidence interval) assuming maximum at zero: x = %LE\n",p->ciSigmaDesc, lBound);
             else
@@ -136,7 +133,7 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
       long double minVal = BIG_NUMBER;
       int minPt = -1;
       for(i=0;i<d->lines;i++){
-        currentVal = eval1Par(d->x[0][i],fr);
+        currentVal = evalPoly2Root0(d->x[0][i],fr);
         if(currentVal < minVal){
           minVal = currentVal;
           minPt = i;
@@ -151,7 +148,7 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
       long double maxVal = -1.0*BIG_NUMBER;
       int maxPt = -1;
       for(i=0;i<d->lines;i++){
-        currentVal = eval1Par(d->x[0][i],fr);
+        currentVal = evalPoly2Root0(d->x[0][i],fr);
         if(currentVal > maxVal){
           maxVal = currentVal;
           maxPt = i;
@@ -165,21 +162,21 @@ void print1Par(const data * d, const parameters * p, const fit_results * fr)
 
 }
 
-void plotForm1Par(const parameters * p, fit_results * fr)
+void plotFormPoly2Root0(const parameters * p, fit_results * fr)
 {
 	//set up equation forms for plotting
 	if(strcmp(p->plotMode,"1d")==0)
-		sprintf(fr->fitForm[0], "%.10LE*(x**2) + %.10LE*x + %.10LE",fr->a[0],fr->a[1],fr->a[2]);
+		sprintf(fr->fitForm[0], "%.10LE*(x**2) + %.10LE*x",fr->a[0],fr->a[1]);
 }
 
 
 
 //fit data to a paraboloid of the form
-//f(x,y) = a1*x^2 + a2*x + a3
-void fit1Par(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
+//f(x,y) = a1*x^2 + a2*x
+void fitPoly2Root0(const parameters * p, const data * d, fit_results * fr, plot_data * pd, int print)
 {
 
-  int numFitPar = 3;
+  int numFitPar = 2;
   fr->ndf=d->lines-numFitPar;
   if(fr->ndf < 0)
     {
@@ -199,30 +196,21 @@ void fit1Par(const parameters * p, const data * d, fit_results * fr, plot_data *
   //construct equations (n=1 specific case)
   int i,j;
   lin_eq_type linEq;
-  linEq.dim=3;
+  linEq.dim=2;
   
   linEq.matrix[0][0]=d->xpowsum[0][4];
   linEq.matrix[0][1]=d->xpowsum[0][3];
-  linEq.matrix[0][2]=d->xpowsum[0][2];
   
-  linEq.matrix[1][1]=d->xpowsum[0][2];
-  linEq.matrix[1][2]=d->xpowsum[0][1];
-  
-  linEq.matrix[2][2]=d->xpowsum[0][0];//bottom right entry
-  
-  //mirror the matrix (top right half mirrored to bottom left half)
-  for(i=1;i<linEq.dim;i++)
-    for(j=0;j<i;j++)
-      linEq.matrix[i][j]=linEq.matrix[j][i];
+  linEq.matrix[1][1]=d->xpowsum[0][2];//bottom right entry
+  linEq.matrix[1][0]=linEq.matrix[0][1];
   
   linEq.vector[0]=d->mxpowsum[0][2];
   linEq.vector[1]=d->mxpowsum[0][1];
-  linEq.vector[2]=d->mxpowsum[0][0];
     
 	//solve system of equations and assign values
 	if(!(solve_lin_eq(&linEq)==1))
 		{
-			printf("ERROR: Could not determine fit parameters (par1).\n");
+			printf("ERROR: Could not determine fit parameters (poly2root0).\n");
 			printf("Perhaps there are not enough data points to perform a fit?\n");
       printf("Otherwise you can also try adjusting the fit range using the UPPER_LIMITS and LOWER_LIMITS options.\n");
 			exit(-1);
@@ -232,16 +220,15 @@ void fit1Par(const parameters * p, const data * d, fit_results * fr, plot_data *
   for(i=0;i<linEq.dim;i++)
     fr->a[i]=linEq.solution[i];
   //refit filter  
-  if(p->refitFilter==1)
-    {
-      refitFilter1Par(p,d,fr,pd,p->refitFilterDist);
-      return;
-    }
+  if(p->refitFilter==1){
+    refitFilterPoly2Root0(p,d,fr,pd,p->refitFilterDist);
+    return;
+  }
   long double f;
   fr->chisq=0;
   for(i=0;i<d->lines;i++)//loop over data points for chisq
     {
-      f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[0][i] + fr->a[2];
+      f=fr->a[0]*d->x[0][i]*d->x[0][i] + fr->a[1]*d->x[0][i];
       fr->chisq+=(d->x[1][i] - f)*(d->x[1][i] - f)
                   /(d->x[1+1][i]*d->x[1+1][i]);
     }
@@ -257,27 +244,27 @@ void fit1Par(const parameters * p, const data * d, fit_results * fr, plot_data *
   fr->fitVert[0]=-1.0*fr->a[1]/(2.*fr->a[0]);
 
   //find the value of the fit function at the vertex
-  fr->vertVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[0] + fr->a[2];
+  fr->vertVal=fr->a[0]*fr->fitVert[0]*fr->fitVert[0] + fr->a[1]*fr->fitVert[0];
   
   
   if(strcmp(p->dataType,"chisq")==0)
-  	fit1ParChisqConf(p,fr);//generate confidence interval bounds for chisq data
+  	fitPoly2Root0ChisqConf(p,fr);//generate confidence interval bounds for chisq data
   
   //print results
   if(print==1)
-		print1Par(d,p,fr);
+		printPoly2Root0(d,p,fr);
 	
 	if((p->plotData==1)&&(p->verbose<1))
 		{
 			preparePlotData(d,p,fr,pd);
-			plotForm1Par(p,fr);
+			plotFormPoly2Root0(p,fr);
 			plotData(p,fr,pd);
 		}
   
 }
 
 //generate a new data set and refit
-void refitFilter1Par(const parameters * p, const data * d, fit_results * fr, plot_data * pd, long double distance){
+void refitFilterPoly2Root0(const parameters * p, const data * d, fit_results * fr, plot_data * pd, long double distance){
   int i,j;
 
   //generate a new data set containing only filtered data
@@ -288,7 +275,7 @@ void refitFilter1Par(const parameters * p, const data * d, fit_results * fr, plo
   nd->lines=0;
 
   for (i=0;i<d->lines;i++){
-    long double diff = fabs(d->x[p->numVar][i] - eval1Par(d->x[0][i],fr));
+    long double diff = fabs(d->x[p->numVar][i] - evalPoly2Root0(d->x[0][i],fr));
     if(diff<=distance){
       //keep this data point (remember to copy weight as well)
       for(j=0;j<=p->numVar+1;j++)
@@ -307,7 +294,7 @@ void refitFilter1Par(const parameters * p, const data * d, fit_results * fr, plo
   //printDataInfo(nd,np); //see print_data_info.c
 
   generateSums(nd,np); //construct sums for fitting (see generate_sums.c)
-  fit1Par(np,nd,fr,pd,1);
+  fitPoly2Root0(np,nd,fr,pd,1);
 
   free(nd);
   free(np);

@@ -11,6 +11,7 @@
 #include "linfit.c"
 #include "linfit_deming.c"
 #include "poly2fit.c"
+#include "poly2root0fit.c"
 #include "2parpoly2fit.c"
 #include "3parpoly2fit.c"
 #include "poly3fit.c"
@@ -65,6 +66,8 @@ int main(int argc, char *argv[])
 	//Call specific fitting routines depending on the fit type specified
 	if(strcmp(p->fitType,"poly2")==0) //see poly2fit.c
 		fit1Par(p,d,fr,pd,1);
+	else if(strcmp(p->fitType,"poly2root0")==0) //see poly2root0fit.c
+		fitPoly2Root0(p,d,fr,pd,1);
 	else if(strcmp(p->fitType,"2parpoly2")==0) //see 2parpoly2fit.c
 		fit2Par(p,d,fr,pd,1);
 	else if(strcmp(p->fitType,"3parpoly2")==0) //see 3parpoly2fit.c

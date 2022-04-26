@@ -118,6 +118,8 @@ void importData(data * d, parameters * p)
   	strcpy(p->fitType,"3parpoly2");
   if(strcmp(p->fitType,"poly2")==0)
     p->numVar=1;
+  else if(strcmp(p->fitType,"poly2root0")==0)
+    p->numVar=1;
   else if(strcmp(p->fitType,"2parpoly2")==0)
     p->numVar=2;
   else if(strcmp(p->fitType,"3parpoly2")==0)
@@ -139,7 +141,7 @@ void importData(data * d, parameters * p)
     {
       printf("ERROR: a fit type must be specified.\nMake sure to include a line in the file with the format\n\nFIT  type\n\nwhere 'type' is a valid fit type (eg. 'par1').\n");
       printf("\nValid fit types are:\n\nlin (line)\nlin_deming (line with errors in x)\npoly1 (1st order polynomial)\n");
-      printf("poly2 (2nd order polynomial)\npoly3 (3rd order polynomial)\npoly4 (4th order polynomial)\npar1 (2nd order polynomial)\n");
+      printf("poly2 (2nd order polynomial)\npoly3 (3rd order polynomial)\npoly4 (4th order polynomial)\npoly2root0 (2nd order polynomial, 0th order term fixed to zero)\npar1 (2nd order polynomial)\n");
       printf("2parpoly2 (2nd order bivariate polynomial)\n2parpoly3 (3rd order bivariate polynomial)\n3parpoly2 (2nd order trivariate polynomial)\n");
       exit(-1);
     }
@@ -147,7 +149,7 @@ void importData(data * d, parameters * p)
     {
       printf("ERROR: invalid fit type '%s' specified.\n",p->fitType);
       printf("\nValid fit types are:\n\nlin (line)\nlin_deming (line with errors in x)\npoly1 (1st order polynomial)\n");
-      printf("poly2 (2nd order polynomial)\npoly3 (3rd order polynomial)\npoly4 (4th order polynomial)\npar1 (2nd order polynomial)\n");
+      printf("poly2 (2nd order polynomial)\npoly3 (3rd order polynomial)\npoly4 (4th order polynomial)\npoly2root0 (2nd order polynomial, 0th order term fixed to zero)\npar1 (2nd order polynomial)\n");
       printf("2parpoly2 (2nd order bivariate polynomial)\n2parpoly3 (3rd order bivariate polynomial)\n3parpoly2 (2nd order trivariate polynomial)\n");
       exit(-1);
     }
